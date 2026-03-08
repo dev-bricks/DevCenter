@@ -341,7 +341,7 @@ Einstellungen in `%APPDATA%/DevCenter/settings.json`:
 
 ```bash
 # Repository / Ordner öffnen
-cd "C:\Users\User\OneDrive\Software Entwicklung\SUITEN\DevCenter"
+cd "C:\Users\User\OneDrive\.SOFTWARE\SUITEN\DevCenter"
 
 # Abhängigkeiten installieren
 pip install -r requirements.txt

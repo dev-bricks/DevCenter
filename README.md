@@ -292,15 +292,22 @@ Erstellt mit PyQt6 und Claude AI.
 
 ## English
 
-An all-in-one Python IDE with code editor, analyzer, builder, AI assistant, and file management.
+### DevCenter — Python Development Suite
+
+An all-in-one Python IDE covering the full development cycle: **Write → Analyze → Test → Build → Publish**. DevCenter merges 11 specialized tools into one cohesive suite.
 
 ### Features
 
-- Integrated code editor
-- Static code analysis
-- Build and packaging tools
-- AI assistant integration
-- Project file management
+- **Code Editor:** Syntax highlighting, line numbers, auto-indent, comment toggle (Ctrl+/), multi-tab
+- **Static Analyzer:** AST-based method analysis, cyclomatic complexity, unused imports, bare-except detection
+- **Build System:** One-click EXE via PyInstaller (one-file / one-directory), ICO converter, license collector
+- **AI Assistant:** Claude API integration — code generation, review, explanation, development loop
+- **File Management:** SQLite file index, full-text search, duplicate detection, automatic backups
+
+### Requirements
+
+- Python 3.10+
+- Windows 10/11 (primary), Linux/macOS (experimental)
 
 ### Installation
 
@@ -308,9 +315,18 @@ An all-in-one Python IDE with code editor, analyzer, builder, AI assistant, and 
 git clone https://github.com/lukisch/REL-PUB_DevCenter_SUITE.git
 cd REL-PUB_DevCenter_SUITE
 pip install -r requirements.txt
-python "main.py"
+python main.py
 ```
+
+### Key Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| F5 | Run |
+| F6 | Build |
+| Ctrl+/ | Toggle comment |
+| Ctrl+Shift+A | Toggle AI assistant |
 
 ### License
 
-See [LICENSE](LICENSE) for details.
+GPL v3 — See [LICENSE](LICENSE) for details.
