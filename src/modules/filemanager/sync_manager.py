@@ -114,13 +114,16 @@ class SyncManager:
         
         return False
     
-    def _get_file_hash(self, file_path: str) -> str:
-        """Berechnet MD5-Hash einer Datei"""
-        hash_md5 = hashlib.md5()
-        with open(file_path, 'rb') as f:
-            for chunk in iter(lambda: f.read(8192), b''):
-                hash_md5.update(chunk)
-        return hash_md5.hexdigest()
+    def _get_file_hash(self, file_path: str) -> Optional[str]:
+        """Berechnet MD5-Hash einer Datei. Gibt None zurück bei Lesefehler (z.B. OneDrive-Lock)."""
+        try:
+            hash_md5 = hashlib.md5()
+            with open(file_path, 'rb') as f:
+                for chunk in iter(lambda: f.read(8192), b''):
+                    hash_md5.update(chunk)
+            return hash_md5.hexdigest()
+        except (OSError, PermissionError):
+            return None
     
     def _checkpoint_sqlite_db(self, db_path: str) -> bool:
         """
@@ -130,8 +133,10 @@ class SyncManager:
         """
         try:
             conn = sqlite3.connect(db_path)
-            conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-            conn.close()
+            try:
+                conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            finally:
+                conn.close()
             return True
         except Exception as e:
             print(f"SQLite Checkpoint fehlgeschlagen für {db_path}: {e}")
@@ -256,8 +261,10 @@ class SyncManager:
                     if config.verify_copy:
                         source_hash = self._get_file_hash(str(source_file))
                         target_hash = self._get_file_hash(str(target_file))
-                        
-                        if source_hash != target_hash:
+
+                        if source_hash is None or target_hash is None:
+                            result.errors.append(f"Verifikation nicht möglich (Lesefehler): {rel_path}")
+                        elif source_hash != target_hash:
                             result.errors.append(f"Verifikation fehlgeschlagen: {rel_path}")
                 
             except Exception as e:

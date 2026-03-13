@@ -15,9 +15,9 @@ import json
 
 class AIModel(Enum):
     """Verfügbare AI-Modelle"""
-    CLAUDE_SONNET = "claude-sonnet-4-20250514"
-    CLAUDE_OPUS = "claude-opus-4-20250514"
-    CLAUDE_HAIKU = "claude-haiku-4-20250514"
+    CLAUDE_SONNET = "claude-sonnet-4-6-20250514"
+    CLAUDE_OPUS = "claude-opus-4-6-20250514"
+    CLAUDE_HAIKU = "claude-haiku-4-5-20251001"
 
 
 @dataclass

@@ -5,12 +5,15 @@ Verwaltung von Python-Projekten
 """
 
 import json
+import logging
 import os
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, asdict
 from PyQt6.QtCore import QObject, pyqtSignal
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -275,7 +278,7 @@ python src/main.py
             return config
             
         except Exception as e:
-            print(f"Fehler beim Öffnen des Projekts: {e}")
+            logger.error("Fehler beim Öffnen des Projekts '%s': %s", path, e, exc_info=True)
             return None
     
     def close_project(self):
