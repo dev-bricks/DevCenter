@@ -181,12 +181,36 @@ class AIService:
                 error=str(e)
             )
     
-    def complete_sync(self, 
+    def complete_sync(self,
                       prompt: str,
                       system: str = None,
                       use_history: bool = True) -> AIResponse:
-        """Synchrone Version von complete()"""
-        return asyncio.run(self.complete(prompt, system, use_history))
+        """Synchrone Version von complete() -- Python 3.10+ sicher (kein asyncio.run im GUI-Thread).
+
+        Erstellt stets einen neuen Event-Loop in einem eigenen Thread,
+        um RuntimeError bei bereits laufendem Loop (PyQt6 GUI) zu vermeiden.
+
+        Args:
+            prompt: Eingabe-Text
+            system: Optionaler System-Prompt
+            use_history: Chat-History einbeziehen
+
+        Returns:
+            AIResponse mit Ergebnis oder Fehler
+        """
+        import concurrent.futures
+
+        def _run_in_new_loop() -> AIResponse:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                return loop.run_until_complete(self.complete(prompt, system, use_history))
+            finally:
+                loop.close()
+                asyncio.set_event_loop(None)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            return pool.submit(_run_in_new_loop).result()
     
     async def generate_code(self,
                            description: str,

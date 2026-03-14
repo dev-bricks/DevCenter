@@ -126,7 +126,7 @@ class IcoBuilder:
                 font_size = int(size * 0.6)
                 try:
                     font = ImageFont.truetype("arial.ttf", font_size)
-                except:
+                except (OSError, IOError):
                     font = ImageFont.load_default()
                 
                 # Text zentrieren

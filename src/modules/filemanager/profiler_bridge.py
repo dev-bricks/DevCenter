@@ -120,15 +120,15 @@ class ProfilerBridge:
                 for chunk in iter(lambda: f.read(8192), b''):
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
-        except:
+        except (OSError, IOError):
             return ""
-    
+
     def _read_content_preview(self, file_path: str, max_chars: int = 10000) -> str:
         """Liest Vorschau des Dateiinhalts"""
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 return f.read(max_chars)
-        except:
+        except (OSError, IOError):
             return ""
     
     def index_file(self, file_path: str, project_path: str = None) -> bool:

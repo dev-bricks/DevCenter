@@ -16,6 +16,7 @@ from typing import List, Dict, Optional, Callable, Set
 from dataclasses import dataclass, field
 from concurrent.futures import ThreadPoolExecutor
 import fnmatch
+import threading
 
 
 @dataclass
@@ -83,15 +84,15 @@ class SyncManager:
     
     def __init__(self):
         self.progress_callback: Optional[Callable[[int, str], None]] = None
-        self._cancelled = False
-    
+        self._cancelled = threading.Event()
+
     def set_progress_callback(self, callback: Callable[[int, str], None]):
         """Setzt Callback für Fortschrittsupdates (progress%, message)"""
         self.progress_callback = callback
-    
+
     def cancel(self):
         """Bricht den aktuellen Sync ab"""
-        self._cancelled = True
+        self._cancelled.set()
     
     def _emit_progress(self, progress: int, message: str):
         if self.progress_callback:
@@ -164,7 +165,7 @@ class SyncManager:
             SyncResult mit Statistiken
         """
         start_time = datetime.now()
-        self._cancelled = False
+        self._cancelled.clear()
         
         result = SyncResult(success=True)
         
@@ -199,7 +200,7 @@ class SyncManager:
             )]
             
             for file in files:
-                if self._cancelled:
+                if self._cancelled.is_set():
                     result.success = False
                     result.errors.append("Sync abgebrochen")
                     return result
@@ -218,7 +219,7 @@ class SyncManager:
         
         # Dateien kopieren
         for rel_path in source_files:
-            if self._cancelled:
+            if self._cancelled.is_set():
                 break
             
             processed += 1
@@ -271,7 +272,7 @@ class SyncManager:
                 result.errors.append(f"Fehler bei {rel_path}: {e}")
         
         # Verwaiste Dateien löschen
-        if config.delete_orphans and not self._cancelled:
+        if config.delete_orphans and not self._cancelled.is_set():
             self._emit_progress(95, "Verwaiste Dateien werden entfernt...")
             
             for root, dirs, files in os.walk(target):

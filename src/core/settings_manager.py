@@ -197,7 +197,7 @@ class SettingsManager(QObject):
                 else:
                     return default
             return obj
-        except:
+        except (json.JSONDecodeError, OSError, KeyError):
             return default
     
     def set(self, key: str, value: Any, save: bool = True):

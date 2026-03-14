@@ -344,14 +344,18 @@ class Kompilator:
         """
         if output_path is None:
             output_path = f'{config.name}.spec'
-        
+
+        # Backslashes in Windows-Pfaden durch Forward-Slashes ersetzen
+        # (PyInstaller akzeptiert beide; verhindert SyntaxError in .spec-Dateien)
+        script_path = str(config.script_path).replace('\\', '/')
+
         spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 # Generiert von DevCenter Kompilator
 
 block_cipher = None
 
 a = Analysis(
-    ['{config.script_path}'],
+    ['{script_path}'],
     pathex=[],
     binaries={config.binary_files},
     datas={config.data_files},
@@ -393,7 +397,7 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
     entitlements_file=None,
 '''
             if config.icon:
-                spec_content += f"    icon='{config.icon}',\n"
+                spec_content += f"    icon='{str(config.icon).replace(chr(92), chr(47))}',\n"
             spec_content += ')\n'
         else:
             spec_content += f'''exe = EXE(
@@ -409,7 +413,7 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
     console={config.console},
 '''
             if config.icon:
-                spec_content += f"    icon='{config.icon}',\n"
+                spec_content += f"    icon='{str(config.icon).replace(chr(92), chr(47))}',\n"
             spec_content += f''')
 
 coll = COLLECT(

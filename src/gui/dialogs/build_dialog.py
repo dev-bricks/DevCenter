@@ -358,7 +358,7 @@ class BuildDialog(QDialog):
                         if line and not line.startswith('#'):
                             pkg = line.split('==')[0].split('>=')[0].split('[')[0]
                             self.imports_list.addItem(pkg)
-            except:
+            except (OSError, FileNotFoundError):
                 pass
     
     def _browse_output(self):
