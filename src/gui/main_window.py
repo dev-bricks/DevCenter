@@ -9,13 +9,13 @@ import os
 from pathlib import Path
 from typing import Optional, Dict
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QMainWindow, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QMenuBar, QMenu, QToolBar, QStatusBar, QSplitter,
     QLabel, QPushButton, QMessageBox, QFileDialog, QDockWidget
 )
-from PyQt6.QtCore import Qt, QTimer, QSize, pyqtSignal
-from PyQt6.QtGui import QAction, QFont, QKeySequence
+from PySide6.QtCore import Qt, QTimer, QSize, Signal
+from PySide6.QtGui import QAction, QFont, QKeySequence
 
 # Lokale Imports
 sys.path.insert(0, str(Path(__file__).parent.parent))

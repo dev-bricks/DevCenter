@@ -11,7 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, asdict
-from PyQt6.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 logger = logging.getLogger(__name__)
 
@@ -51,10 +51,10 @@ class ProjectManager(QObject):
         recent_projects_changed: Liste der Recent Projects hat sich geändert
     """
     
-    project_opened = pyqtSignal(object)  # ProjectConfig
-    project_closed = pyqtSignal()
-    project_created = pyqtSignal(object)  # ProjectConfig
-    recent_projects_changed = pyqtSignal(list)
+    project_opened = Signal(object)  # ProjectConfig
+    project_closed = Signal()
+    project_created = Signal(object)  # ProjectConfig
+    recent_projects_changed = Signal(list)
     
     PROJECT_FILE = "devcenter.json"
     MAX_RECENT = 10

@@ -6,12 +6,13 @@ Datei-Navigation und Projekt-Struktur
 
 import os
 from pathlib import Path
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit,
     QPushButton, QMenu, QLabel, QMessageBox, QInputDialog
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QDir, QModelIndex
-from PyQt6.QtGui import QAction, QFileSystemModel
+from PySide6.QtCore import Qt, Signal, QDir, QModelIndex
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QFileSystemModel
 
 
 class ExplorerPanel(QWidget):
@@ -25,10 +26,10 @@ class ExplorerPanel(QWidget):
     - Schnelle Navigation
     """
     
-    file_selected = pyqtSignal(str)  # Datei zum Öffnen
-    file_renamed = pyqtSignal(str, str)  # alt, neu
-    file_deleted = pyqtSignal(str)
-    folder_created = pyqtSignal(str)
+    file_selected = Signal(str)  # Datei zum Öffnen
+    file_renamed = Signal(str, str)  # alt, neu
+    file_deleted = Signal(str)
+    folder_created = Signal(str)
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -340,7 +341,7 @@ class ExplorerPanel(QWidget):
     
     def _copy_path(self, path: str):
         """Kopiert Pfad in Zwischenablage"""
-        from PyQt6.QtWidgets import QApplication
+        from PySide6.QtWidgets import QApplication
         QApplication.clipboard().setText(path)
     
     def _open_in_explorer(self, path: str):

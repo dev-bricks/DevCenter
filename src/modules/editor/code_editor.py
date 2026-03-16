@@ -9,12 +9,12 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QPlainTextEdit, QWidget, QVBoxLayout, QHBoxLayout,
     QTextEdit, QFrame, QMenu, QApplication
 )
-from PyQt6.QtCore import Qt, QRect, QSize, pyqtSignal, QRegularExpression
-from PyQt6.QtGui import (
+from PySide6.QtCore import Qt, QRect, QSize, Signal, QRegularExpression
+from PySide6.QtGui import (
     QColor, QPainter, QTextFormat, QFont, QFontMetrics,
     QSyntaxHighlighter, QTextCharFormat, QTextCursor, QPalette,
     QKeySequence, QShortcut, QAction
@@ -187,8 +187,8 @@ class CodeEditor(QPlainTextEdit):
     """
     
     # Signals
-    file_modified = pyqtSignal(bool)
-    cursor_position_changed = pyqtSignal(int, int)  # line, column
+    file_modified = Signal(bool)
+    cursor_position_changed = Signal(int, int)  # line, column
     
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -4,12 +4,12 @@ DevCenter - Problems Panel
 Anzeige von Fehlern, Warnungen und Hinweisen
 """
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem,
     QPushButton, QLabel, QComboBox, QLineEdit
 )
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QIcon
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QColor, QIcon
 from dataclasses import dataclass
 from typing import List, Optional
 from enum import Enum
@@ -45,7 +45,7 @@ class ProblemsPanel(QWidget):
     - Live-Updates
     """
     
-    problem_clicked = pyqtSignal(str, int, int)  # file, line, column
+    problem_clicked = Signal(str, int, int)  # file, line, column
     
     def __init__(self, parent=None):
         super().__init__(parent)

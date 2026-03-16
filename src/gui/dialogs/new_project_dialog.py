@@ -6,12 +6,12 @@ Dialog zum Erstellen eines neuen Projekts
 
 import os
 from pathlib import Path
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
     QLineEdit, QTextEdit, QPushButton, QFileDialog,
     QLabel, QComboBox, QGroupBox, QCheckBox
 )
-from PyQt6.QtCore import Qt
+from PySide6.QtCore import Qt
 
 
 class NewProjectDialog(QDialog):
@@ -230,7 +230,7 @@ class NewProjectDialog(QDialog):
         full_path = Path(base_path) / safe_name
         
         if full_path.exists():
-            from PyQt6.QtWidgets import QMessageBox
+            from PySide6.QtWidgets import QMessageBox
             result = QMessageBox.question(
                 self, "Verzeichnis existiert",
                 f"Das Verzeichnis '{full_path}' existiert bereits.\nTrotzdem fortfahren?",
@@ -275,7 +275,7 @@ class NewProjectDialog(QDialog):
 
 
 if __name__ == "__main__":
-    from PyQt6.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     import sys
     
     app = QApplication(sys.argv)

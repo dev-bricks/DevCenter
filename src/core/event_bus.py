@@ -5,7 +5,7 @@ Zentrale Ereignisverwaltung für Modul-Kommunikation
 """
 
 from typing import Callable, Dict, List, Any
-from PyQt6.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 from enum import Enum, auto
 
 
@@ -81,7 +81,7 @@ class EventBus(QObject):
         event_emitted: Allgemeines Signal für alle Events
     """
     
-    event_emitted = pyqtSignal(object)  # Event
+    event_emitted = Signal(object)  # Event
     
     def __init__(self):
         super().__init__()

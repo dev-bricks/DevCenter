@@ -5,21 +5,21 @@ Wizard für EXE-Erstellung
 """
 
 import os
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit,
     QCheckBox, QComboBox, QPushButton, QLabel, QGroupBox,
     QFileDialog, QProgressBar, QTextEdit, QTabWidget, QWidget,
     QListWidget, QListWidgetItem
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QThread
+from PySide6.QtCore import Qt, Signal, QThread
 from typing import Optional
 
 
 class BuildWorker(QThread):
     """Worker Thread für Build-Prozess"""
     
-    progress = pyqtSignal(int, str)
-    finished = pyqtSignal(bool, str)
+    progress = Signal(int, str)
+    finished = Signal(bool, str)
     
     def __init__(self, kompilator, config):
         super().__init__()
@@ -52,8 +52,8 @@ class BuildDialog(QDialog):
     - Build-Log
     """
     
-    build_started = pyqtSignal()
-    build_finished = pyqtSignal(bool, str)
+    build_started = Signal()
+    build_finished = Signal(bool, str)
     
     def __init__(self, script_path: str, project_path: str = None, parent=None):
         super().__init__(parent)

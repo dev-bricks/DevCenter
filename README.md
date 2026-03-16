@@ -50,7 +50,7 @@ python main.py
 ### Abhängigkeiten
 
 ```
-PyQt6>=6.4.0          # GUI-Framework
+PySide6>=6.5.0        # GUI-Framework
 pyinstaller>=5.0      # EXE-Erstellung
 Pillow>=9.0           # Bildverarbeitung
 anthropic>=0.18.0     # Claude API
@@ -277,12 +277,12 @@ python tests/test_core.py
 
 GPL v3 - Siehe [LICENSE](LICENSE)
 
-Dieses Projekt verwendet PyQt6 (GPL).
+Dieses Projekt verwendet PySide6 (LGPL).
 
 ## 🤝 Mitwirkende
 
 Basiert auf dem Fusionskonzept der Entwickler-Suite.
-Erstellt mit PyQt6 und Claude AI.
+Erstellt mit PySide6 und Claude AI.
 
 ---
 

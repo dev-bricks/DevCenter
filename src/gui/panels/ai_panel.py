@@ -5,20 +5,20 @@ Chat-Interface für Code-Generierung und Hilfe
 """
 
 import asyncio
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPlainTextEdit,
     QPushButton, QLabel, QComboBox, QSplitter, QProgressBar
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QThread, pyqtSlot
-from PyQt6.QtGui import QFont, QTextCursor
+from PySide6.QtCore import Qt, Signal, QThread, Slot
+from PySide6.QtGui import QFont, QTextCursor
 from typing import Optional
 
 
 class AIWorker(QThread):
     """Worker Thread für AI-Anfragen"""
     
-    response_received = pyqtSignal(str, bool)  # content, success
-    progress_update = pyqtSignal(str)
+    response_received = Signal(str, bool)  # content, success
+    progress_update = Signal(str)
     
     def __init__(self, ai_service, prompt: str, system: str = None):
         super().__init__()
@@ -59,8 +59,8 @@ class AIAssistantPanel(QWidget):
     - Verlauf
     """
     
-    code_generated = pyqtSignal(str)  # Generierter Code
-    insert_code_requested = pyqtSignal(str)  # Code zum Einfügen
+    code_generated = Signal(str)  # Generierter Code
+    insert_code_requested = Signal(str)  # Code zum Einfügen
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -224,7 +224,7 @@ class AIAssistantPanel(QWidget):
         self._worker.response_received.connect(self._on_response)
         self._worker.start()
     
-    @pyqtSlot(str, bool)
+    @Slot(str, bool)
     def _on_response(self, content: str, success: bool):
         """Verarbeitet AI-Antwort"""
         self._set_loading(False)

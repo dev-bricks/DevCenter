@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 from dataclasses import dataclass, asdict, field
-from PyQt6.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 
 @dataclass
@@ -100,8 +100,8 @@ class SettingsManager(QObject):
         theme_changed: Theme wurde geändert (theme_name)
     """
     
-    settings_changed = pyqtSignal(str, object)
-    theme_changed = pyqtSignal(str)
+    settings_changed = Signal(str, object)
+    theme_changed = Signal(str)
     
     def __init__(self, settings_path: str = None):
         super().__init__()

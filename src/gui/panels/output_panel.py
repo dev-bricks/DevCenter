@@ -6,12 +6,12 @@ Terminal-Ausgabe und Prozess-Steuerung
 
 import os
 import sys
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit,
     QPushButton, QComboBox, QLabel, QToolBar
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QProcess, QTimer
-from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QTextCursor
+from PySide6.QtCore import Qt, Signal, QProcess, QTimer
+from PySide6.QtGui import QFont, QTextCharFormat, QColor, QTextCursor
 
 
 class OutputPanel(QWidget):
@@ -25,8 +25,8 @@ class OutputPanel(QWidget):
     - Scrolling-Kontrolle
     """
     
-    process_started = pyqtSignal(str)  # command
-    process_finished = pyqtSignal(int)  # exit_code
+    process_started = Signal(str)  # command
+    process_finished = Signal(int)  # exit_code
     
     def __init__(self, parent=None):
         super().__init__(parent)
