@@ -97,7 +97,7 @@ class NewProjectDialog(QDialog):
         self.template_combo.addItems([
             "Leeres Projekt",
             "CLI-Anwendung",
-            "GUI-Anwendung (PyQt6)",
+            "GUI-Anwendung (PySide6)",
             "Web-API (Flask)",
             "Package/Library"
         ])

@@ -12,6 +12,10 @@ DevCenter ist eine All-in-One Desktop-IDE für Python-Projekte, die den komplett
 
 **Code schreiben → Analysieren → Testen → Kompilieren → Veröffentlichen**
 
+## Screenshot
+
+![DevCenter Hauptfenster](README/screenshots/main.png)
+
 ### 🔧 Fusionierte Tools
 
 DevCenter vereint 11 spezialisierte Entwicklertools zu einer kohärenten Suite:
@@ -37,7 +41,8 @@ DevCenter vereint 11 spezialisierte Entwicklertools zu einer kohärenten Suite:
 ### Installation
 
 ```bash
-# Repository klonen oder Dateien kopieren
+# Repository klonen
+git clone https://github.com/dev-bricks/DevCenter.git
 cd DevCenter
 
 # Abhängigkeiten installieren
@@ -46,6 +51,15 @@ pip install -r requirements.txt
 # Starten
 python main.py
 ```
+
+### Windows-Launcher und EXE-Build
+
+```batch
+START_DevCenter.bat
+build_exe.bat
+```
+
+`build_exe.bat` erstellt eine lokale One-File-EXE mit PyInstaller. Die erzeugten Artefakte in `build/`, `dist/` und `releases/` werden nicht versioniert.
 
 ### Abhängigkeiten
 
@@ -161,6 +175,11 @@ DevCenter/
 - ✅ Automatische Backups mit WAL-Checkpoint
 - ✅ Musterbasierte Ausschlüsse
 
+### Einstellungen & Persistenz
+- ✅ Strukturierte JSON-Einstellungen für Editor, Build, AI, Sync und Appearance
+- ✅ Theme- und Fensterzustand werden beim Beenden gespeichert und beim Start wiederhergestellt
+- ✅ Import/Export von Einstellungen für reproduzierbare Arbeitsumgebungen
+
 ## 🎨 Benutzeroberfläche
 
 ```
@@ -226,7 +245,7 @@ Einstellungen werden gespeichert in:
     "console": true
   },
   "ai": {
-    "api_key": "sk-...",
+    "api_key": "",
     "model": "claude-sonnet-4-20250514",
     "max_tokens": 4096
   },
@@ -242,11 +261,21 @@ Einstellungen werden gespeichert in:
 
 ```bash
 # Alle Tests ausführen
-python -m pytest tests/ -v
+python -m unittest discover -s tests -v
 
-# Oder mit unittest
-python tests/test_core.py
+# Syntaxprüfung
+python -m compileall -q main.py manage_translations.py translator.py src tests
 ```
+
+GitHub Actions führt dieselben Smoke-Checks auf Python 3.10, 3.11 und 3.12 aus.
+
+## Datenschutz / Privacy
+
+DevCenter ist eine lokale Desktop-Anwendung. Projekte, Einstellungen, Datei-Indizes und Build-Artefakte bleiben standardmäßig auf dem lokalen Rechner. Netzwerkzugriffe entstehen nur durch explizit konfigurierte Integrationen, zum Beispiel die optionale Claude/Anthropic-API im AI-Assistenten oder manuell gestartete Paketinstallationen.
+
+API-Schlüssel gehören nicht in das Repository. Verwenden Sie Umgebungsvariablen, den lokalen Schlüsselbund oder die Anwendungseinstellungen.
+
+Details stehen in [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 
 ## 📊 Statistiken
 
@@ -296,6 +325,8 @@ Erstellt mit PySide6 und Claude AI.
 
 An all-in-one Python IDE covering the full development cycle: **Write → Analyze → Test → Build → Publish**. DevCenter merges 11 specialized tools into one cohesive suite.
 
+![DevCenter main window](README/screenshots/main.png)
+
 ### Features
 
 - **Code Editor:** Syntax highlighting, line numbers, auto-indent, comment toggle (Ctrl+/), multi-tab
@@ -303,6 +334,7 @@ An all-in-one Python IDE covering the full development cycle: **Write → Analyz
 - **Build System:** One-click EXE via PyInstaller (one-file / one-directory), ICO converter, license collector
 - **AI Assistant:** Claude API integration — code generation, review, explanation, development loop
 - **File Management:** SQLite file index, full-text search, duplicate detection, automatic backups
+- **Settings Persistence:** Structured JSON settings for editor, build, AI, sync, and appearance, including import/export support
 
 ### Requirements
 
@@ -312,8 +344,8 @@ An all-in-one Python IDE covering the full development cycle: **Write → Analyz
 ### Installation
 
 ```bash
-git clone https://github.com/lukisch/REL-PUB_DevCenter_SUITE.git
-cd REL-PUB_DevCenter_SUITE
+git clone https://github.com/dev-bricks/DevCenter.git
+cd DevCenter
 pip install -r requirements.txt
 python main.py
 ```
@@ -335,7 +367,7 @@ GPL v3 — See [LICENSE](LICENSE) for details.
 
 ## Haftung / Liability
 
-Dieses Projekt ist eine **unentgeltliche Open-Source-Schenkung** im Sinne der §§ 516 ff. BGB. Die Haftung des Urhebers ist gemäß **§ 521 BGB** auf **Vorsatz und grobe Fahrlässigkeit** beschränkt. Ergänzend gelten die Haftungsausschlüsse aus GPL-3.0 / MIT / Apache-2.0 §§ 15–16 (je nach gewählter Lizenz).
+Dieses Projekt ist eine **unentgeltliche Open-Source-Schenkung** im Sinne der §§ 516 ff. BGB. Die Haftung des Urhebers ist gemäß **§ 521 BGB** auf **Vorsatz und grobe Fahrlässigkeit** beschränkt. Ergänzend gelten die Haftungsausschlüsse der GPL-3.0.
 
 Nutzung auf eigenes Risiko. Keine Wartungszusage, keine Verfügbarkeitsgarantie, keine Gewähr für Fehlerfreiheit oder Eignung für einen bestimmten Zweck.
 

@@ -6,9 +6,10 @@ Zentrale Einstellungsverwaltung
 
 import json
 import os
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict, field, fields
 from PySide6.QtCore import QObject, Signal
 
 
@@ -107,6 +108,7 @@ class SettingsManager(QObject):
         super().__init__()
         self.settings_path = settings_path or self._default_settings_path()
         self.settings = AppSettings()
+        self._extra_settings: Dict[str, Any] = {}
         self._load()
     
     def _default_settings_path(self) -> str:
@@ -129,16 +131,17 @@ class SettingsManager(QObject):
                 data = json.load(f)
             
             # Einstellungen rekonstruieren
+            self._extra_settings = self._extract_extra_settings(data)
             if 'editor' in data:
-                self.settings.editor = EditorSettings(**data['editor'])
+                self.settings.editor = self._load_section(data['editor'], EditorSettings)
             if 'build' in data:
-                self.settings.build = BuildSettings(**data['build'])
+                self.settings.build = self._load_section(data['build'], BuildSettings)
             if 'ai' in data:
-                self.settings.ai = AISettings(**data['ai'])
+                self.settings.ai = self._load_section(data['ai'], AISettings)
             if 'sync' in data:
-                self.settings.sync = SyncSettings(**data['sync'])
+                self.settings.sync = self._load_section(data['sync'], SyncSettings)
             if 'appearance' in data:
-                self.settings.appearance = AppearanceSettings(**data['appearance'])
+                self.settings.appearance = self._load_section(data['appearance'], AppearanceSettings)
             
             # Allgemeine Einstellungen
             self.settings.language = data.get('language', 'de')
@@ -149,6 +152,50 @@ class SettingsManager(QObject):
         except Exception as e:
             print(f"Fehler beim Laden der Einstellungen: {e}")
             self.settings = AppSettings()
+            self._extra_settings = {}
+
+    def _load_section(self, raw: Any, settings_type):
+        """Build a settings dataclass from known fields and ignore extra keys."""
+        if not isinstance(raw, dict):
+            return settings_type()
+        valid_fields = {item.name for item in fields(settings_type)}
+        values = {key: value for key, value in raw.items() if key in valid_fields}
+        return settings_type(**values)
+
+    def _extract_extra_settings(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Keep unknown persisted settings so older UI aliases are not lost."""
+        known_top_level = {
+            'editor',
+            'build',
+            'ai',
+            'sync',
+            'appearance',
+            'language',
+            'check_updates',
+            'telemetry_enabled',
+            'window_state',
+        }
+        section_types = {
+            'editor': EditorSettings,
+            'build': BuildSettings,
+            'ai': AISettings,
+            'sync': SyncSettings,
+            'appearance': AppearanceSettings,
+        }
+        extra: Dict[str, Any] = {
+            key: value for key, value in data.items() if key not in known_top_level
+        }
+        for section, settings_type in section_types.items():
+            raw = data.get(section)
+            if not isinstance(raw, dict):
+                continue
+            valid_fields = {item.name for item in fields(settings_type)}
+            section_extra = {
+                key: value for key, value in raw.items() if key not in valid_fields
+            }
+            if section_extra:
+                extra[section] = section_extra
+        return extra
     
     def _save(self):
         """Speichert Einstellungen in Datei"""
@@ -156,7 +203,17 @@ class SettingsManager(QObject):
         settings_file.parent.mkdir(parents=True, exist_ok=True)
         
         try:
-            data = {
+            data = self._settings_to_dict()
+
+            with open(settings_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+
+        except Exception as e:
+            print(f"Fehler beim Speichern der Einstellungen: {e}")
+
+    def _settings_to_dict(self) -> Dict[str, Any]:
+        """Serialize known settings plus custom settings."""
+        known = {
                 'editor': asdict(self.settings.editor),
                 'build': asdict(self.settings.build),
                 'ai': asdict(self.settings.ai),
@@ -167,12 +224,64 @@ class SettingsManager(QObject):
                 'telemetry_enabled': self.settings.telemetry_enabled,
                 'window_state': self.settings.window_state
             }
-            
-            with open(settings_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-                
-        except Exception as e:
-            print(f"Fehler beim Speichern der Einstellungen: {e}")
+        data = deepcopy(self._extra_settings)
+        self._deep_update(data, known)
+        return data
+
+    def _deep_update(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
+        """Merge source into target while keeping nested extra keys."""
+        for key, value in source.items():
+            if isinstance(value, dict) and isinstance(target.get(key), dict):
+                self._deep_update(target[key], value)
+            else:
+                target[key] = value
+
+    def _get_from(self, source: Any, key: str, missing: object) -> Any:
+        obj = source
+        for part in key.split('.'):
+            if isinstance(obj, dict):
+                if part not in obj:
+                    return missing
+                obj = obj[part]
+            elif hasattr(obj, part):
+                obj = getattr(obj, part)
+            else:
+                return missing
+        return obj
+
+    def _set_known(self, key: str, value: Any) -> bool:
+        parts = key.split('.')
+        obj = self.settings
+        for part in parts[:-1]:
+            if isinstance(obj, dict):
+                child = obj.setdefault(part, {})
+                if not isinstance(child, dict):
+                    return False
+                obj = child
+            elif hasattr(obj, part):
+                obj = getattr(obj, part)
+            else:
+                return False
+
+        final_key = parts[-1]
+        if isinstance(obj, dict):
+            obj[final_key] = value
+            return True
+        if hasattr(obj, final_key):
+            setattr(obj, final_key, value)
+            return True
+        return False
+
+    def _set_extra(self, key: str, value: Any) -> None:
+        parts = key.split('.')
+        obj = self._extra_settings
+        for part in parts[:-1]:
+            child = obj.setdefault(part, {})
+            if not isinstance(child, dict):
+                child = {}
+                obj[part] = child
+            obj = child
+        obj[parts[-1]] = value
     
     def get(self, key: str, default: Any = None) -> Any:
         """
@@ -185,19 +294,14 @@ class SettingsManager(QObject):
         Returns:
             Einstellungswert oder default
         """
-        parts = key.split('.')
-        obj = self.settings
-        
+        missing = object()
         try:
-            for part in parts:
-                if hasattr(obj, part):
-                    obj = getattr(obj, part)
-                elif isinstance(obj, dict):
-                    obj = obj.get(part, default)
-                else:
-                    return default
-            return obj
-        except (json.JSONDecodeError, OSError, KeyError):
+            value = self._get_from(self.settings, key, missing)
+            if value is not missing:
+                return value
+            value = self._get_from(self._extra_settings, key, missing)
+            return default if value is missing else value
+        except (json.JSONDecodeError, OSError, KeyError, TypeError):
             return default
     
     def set(self, key: str, value: Any, save: bool = True):
@@ -209,30 +313,18 @@ class SettingsManager(QObject):
             value: Neuer Wert
             save: Sofort speichern
         """
-        parts = key.split('.')
-        obj = self.settings
-        
         try:
-            # Navigiere zum Elternobjekt
-            for part in parts[:-1]:
-                if hasattr(obj, part):
-                    obj = getattr(obj, part)
-                else:
-                    return
-            
-            # Wert setzen
-            final_key = parts[-1]
-            if hasattr(obj, final_key):
-                setattr(obj, final_key, value)
-                
-                if save:
-                    self._save()
-                
-                self.settings_changed.emit(key, value)
-                
-                # Spezielle Signale
-                if key.startswith('appearance.theme'):
-                    self.theme_changed.emit(value)
+            if not self._set_known(key, value):
+                self._set_extra(key, value)
+
+            if save:
+                self._save()
+
+            self.settings_changed.emit(key, value)
+
+            # Spezielle Signale
+            if key.startswith('appearance.theme'):
+                self.theme_changed.emit(value)
                     
         except Exception as e:
             print(f"Fehler beim Setzen von {key}: {e}")
@@ -263,15 +355,7 @@ class SettingsManager(QObject):
     def export_settings(self, path: str) -> bool:
         """Exportiert Einstellungen in eine Datei"""
         try:
-            data = {
-                'editor': asdict(self.settings.editor),
-                'build': asdict(self.settings.build),
-                'ai': asdict(self.settings.ai),
-                'sync': asdict(self.settings.sync),
-                'appearance': asdict(self.settings.appearance),
-                'language': self.settings.language,
-                'check_updates': self.settings.check_updates
-            }
+            data = self._settings_to_dict()
             
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
@@ -287,16 +371,17 @@ class SettingsManager(QObject):
                 data = json.load(f)
             
             # Einstellungen übernehmen
+            self._extra_settings = self._extract_extra_settings(data)
             if 'editor' in data:
-                self.settings.editor = EditorSettings(**data['editor'])
+                self.settings.editor = self._load_section(data['editor'], EditorSettings)
             if 'build' in data:
-                self.settings.build = BuildSettings(**data['build'])
+                self.settings.build = self._load_section(data['build'], BuildSettings)
             if 'ai' in data:
-                self.settings.ai = AISettings(**data['ai'])
+                self.settings.ai = self._load_section(data['ai'], AISettings)
             if 'sync' in data:
-                self.settings.sync = SyncSettings(**data['sync'])
+                self.settings.sync = self._load_section(data['sync'], SyncSettings)
             if 'appearance' in data:
-                self.settings.appearance = AppearanceSettings(**data['appearance'])
+                self.settings.appearance = self._load_section(data['appearance'], AppearanceSettings)
             
             self._save()
             self.settings_changed.emit('*', None)

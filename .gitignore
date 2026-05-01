@@ -13,6 +13,11 @@ __pycache__/
 .eggs/
 dist/
 build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # ---- Virtuelle Umgebungen ----
 venv/
@@ -27,17 +32,28 @@ TESTS.txt
 TESTERGEBNISSE.txt
 BUGREPORT.md
 DIAGNOSE_REPORT.md
+SKILL.md
 
 # ---- Persoenliche / Sensible Daten ----
 _USER/
 .env
 .env.*
+*.env
 credentials.json
 client_secret*.json
 token.json
 *.pem
 *.key
 keyring/
+secrets/
+secret/
+*.secret
+*.secrets
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
 
 # ---- Build-Artefakte & Releases ----
 releases/
@@ -46,6 +62,11 @@ releases/
 *.msix
 *.appx
 *.spec
+logs/
+*.log
+*.tmp
+*.bak
+*.orig
 
 # ---- IDE & Editoren ----
 .claude/
@@ -61,10 +82,12 @@ Thumbs.db
 .DS_Store
 ehthumbs.db
 
+# ---- Lokale Sync-/Host-Nebenstaende ----
+*-ASUS-GEI.md
+
 # ---- Standard-Patterns ----
 PLAN.txt
 _archive/
 _private/
-*.log
 
 # ---- Projektspezifisch (hier eigene Eintraege anfuegen) ----

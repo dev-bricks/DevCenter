@@ -212,7 +212,7 @@ Die Tools ergänzen sich hervorragend und decken den kompletten Entwicklungszykl
 - **UX verbessern:** Einheitliche Oberfläche
 
 **Geschätzter Aufwand:** 13 Wochen für MVP
-**Empfohlenes Framework:** PyQt6 (bereits in PythonBox/ProSync verwendet)
+**Empfohlenes Framework:** PySide6 (Migration abgeschlossen; LGPL-freundliches Qt-Framework)
 
 ---
 *Analyse erstellt: 03.01.2026*
@@ -298,15 +298,15 @@ DevCenter/
 #### Tag 3-4: Core Framework
 ```python
 # src/core/event_bus.py
-from PyQt6.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 class EventBus(QObject):
     """Zentrale Signal-Verteilung zwischen Modulen"""
     
     # Editor Events
-    file_opened = pyqtSignal(str)           # path
-    file_saved = pyqtSignal(str)            # path
-    file_modified = pyqtSignal(str, bool)   # path, is_modified
+    file_opened = Signal(str)           # path
+    file_saved = Signal(str)            # path
+    file_modified = Signal(str, bool)   # path, is_modified
     
     # Analyzer Events
     analysis_requested = pyqtSignal(str)    # path
@@ -471,9 +471,9 @@ class WelcomeDialog(QDialog):
 #### Tag 1-2: Editor Widget Grundlage
 ```python
 # src/modules/editor/code_editor.py
-from PyQt6.Qsci import QsciScintilla, QsciLexerPython
+from PySide6.QtWidgets import QPlainTextEdit
 
-class CodeEditor(QsciScintilla):
+class CodeEditor(QPlainTextEdit):
     """Python Code Editor basierend auf PythonBox"""
     
     def __init__(self, parent=None):
@@ -1344,8 +1344,7 @@ SHORTCUTS = {
 
 ```
 requirements.txt:
-PyQt6>=6.4.0
-QScintilla>=2.13.0
+PySide6>=6.5.0
 pyinstaller>=5.0.0
 Pillow>=9.0.0
 anthropic>=0.18.0

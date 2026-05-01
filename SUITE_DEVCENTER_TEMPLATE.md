@@ -11,7 +11,7 @@ DevCenter ist eine All-in-One Desktop-IDE für den kompletten Python-Entwicklung
 | **Stand** | 2026-01-09 |
 | **Status** | MVP (85% fertig) |
 | **Sprache** | Python 3.10+ |
-| **Framework** | PyQt6 + QScintilla |
+| **Framework** | PySide6 |
 | **Codebase** | ~7.500 Zeilen / 26 Dateien |
 
 ---
@@ -340,8 +340,9 @@ Einstellungen in `%APPDATA%/DevCenter/settings.json`:
 ### 8.2 Installation
 
 ```bash
-# Repository / Ordner öffnen
-cd "C:\Users\User\OneDrive\.SOFTWARE\SUITEN\DevCenter"
+# Repository klonen oder Projektordner öffnen
+git clone https://github.com/dev-bricks/DevCenter.git
+cd DevCenter
 
 # Abhängigkeiten installieren
 pip install -r requirements.txt
@@ -353,8 +354,8 @@ python main.py
 ### 8.3 Abhängigkeiten
 
 ```
-PyQt6>=6.4.0          # GUI-Framework
-QScintilla>=2.13.0    # Code-Editor
+PySide6>=6.5.0        # GUI-Framework
+# QScintilla>=2.13.0  # Optionaler Code-Editor
 pyinstaller>=5.0      # EXE-Erstellung
 Pillow>=9.0           # Bildverarbeitung
 anthropic>=0.18.0     # Claude API

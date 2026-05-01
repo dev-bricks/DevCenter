@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QLabel, QPushButton, QMessageBox, QFileDialog, QDockWidget
 )
 from PySide6.QtCore import Qt, QTimer, QSize, Signal
-from PySide6.QtGui import QAction, QFont, QKeySequence
+from PySide6.QtGui import QAction, QFont, QKeySequence, QIcon
 
 # Lokale Imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -942,7 +942,7 @@ class MainWindow(QMainWindow):
             <li>ProFiler/ProSync - File Management</li>
             </ul>
             <hr>
-            <p>© 2026 - Erstellt mit PyQt6</p>
+            <p>© 2026 - Erstellt mit PySide6</p>
             """
         )
     
@@ -983,8 +983,14 @@ def main():
     """Haupteinstiegspunkt"""
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    icon_path = Path(__file__).resolve().parents[2] / "DevCenter.ico"
+    icon = QIcon(str(icon_path)) if icon_path.exists() else QIcon()
+    if not icon.isNull():
+        app.setWindowIcon(icon)
     
     window = MainWindow()
+    if not icon.isNull():
+        window.setWindowIcon(icon)
     window.show()
     
     sys.exit(app.exec())

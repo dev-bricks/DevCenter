@@ -188,7 +188,7 @@ class AIService:
         """Synchrone Version von complete() -- Python 3.10+ sicher (kein asyncio.run im GUI-Thread).
 
         Erstellt stets einen neuen Event-Loop in einem eigenen Thread,
-        um RuntimeError bei bereits laufendem Loop (PyQt6 GUI) zu vermeiden.
+        um RuntimeError bei bereits laufendem Loop (PySide6 GUI) zu vermeiden.
 
         Args:
             prompt: Eingabe-Text

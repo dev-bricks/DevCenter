@@ -116,7 +116,7 @@ class SyncManager:
         return False
     
     def _get_file_hash(self, file_path: str) -> Optional[str]:
-        """Berechnet MD5-Hash einer Datei. Gibt None zurück bei Lesefehler (z.B. OneDrive-Lock)."""
+        """Berechnet MD5-Hash einer Datei. Gibt None zurück bei Lesefehler (z.B. Sync-Lock)."""
         try:
             hash_md5 = hashlib.md5()
             with open(file_path, 'rb') as f:

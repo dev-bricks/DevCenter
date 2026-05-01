@@ -22,7 +22,8 @@ class TestProjectManager(unittest.TestCase):
         """Erstellt temporäres Verzeichnis"""
         self.temp_dir = tempfile.mkdtemp()
         from core.project_manager import ProjectManager
-        self.pm = ProjectManager()
+        self.settings_file = os.path.join(self.temp_dir, "settings.json")
+        self.pm = ProjectManager(settings_path=self.settings_file)
     
     def tearDown(self):
         """Räumt auf"""
@@ -63,7 +64,12 @@ class TestSettingsManager(unittest.TestCase):
     
     def setUp(self):
         from core.settings_manager import SettingsManager
-        self.sm = SettingsManager()
+        self.temp_dir = tempfile.mkdtemp()
+        self.settings_file = os.path.join(self.temp_dir, "settings.json")
+        self.sm = SettingsManager(self.settings_file)
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
     
     def test_get_default(self):
         """Testet Default-Wert"""
@@ -81,6 +87,18 @@ class TestSettingsManager(unittest.TestCase):
         self.sm.set('level1.level2.level3', 42)
         value = self.sm.get('level1.level2.level3')
         self.assertEqual(value, 42)
+
+    def test_extra_keys_persist(self):
+        """Testet Persistenz nicht modellierter Schlüssel"""
+        from core.settings_manager import SettingsManager
+
+        self.sm.set('build.output_dir', 'custom_dist')
+        self.sm.set('level1.level2.level3', 42)
+
+        reloaded = SettingsManager(self.settings_file)
+
+        self.assertEqual(reloaded.get('build.output_dir'), 'custom_dist')
+        self.assertEqual(reloaded.get('level1.level2.level3'), 42)
 
 
 class TestEventBus(unittest.TestCase):
