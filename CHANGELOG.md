@@ -16,6 +16,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ### Behoben / Fixed
 - Persistenz unbekannter Einstellungsschluessel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
+- Fehlende `chardet`-Abhaengigkeit fuer frische CI-/Installationsumgebungen ergaenzt.
 
 ## [1.0.0] - YYYY-MM-DD
 
