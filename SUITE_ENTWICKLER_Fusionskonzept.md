@@ -309,18 +309,18 @@ class EventBus(QObject):
     file_modified = Signal(str, bool)   # path, is_modified
     
     # Analyzer Events
-    analysis_requested = pyqtSignal(str)    # path
-    analysis_complete = pyqtSignal(dict)    # results
-    errors_found = pyqtSignal(list)         # error_list
+    analysis_requested = Signal(str)        # path
+    analysis_complete = Signal(dict)        # results
+    errors_found = Signal(list)             # error_list
     
     # Builder Events
-    build_requested = pyqtSignal(str)       # project_path
-    build_progress = pyqtSignal(int, str)   # percent, message
-    build_complete = pyqtSignal(bool, str)  # success, output_path
+    build_requested = Signal(str)           # project_path
+    build_progress = Signal(int, str)       # percent, message
+    build_complete = Signal(bool, str)      # success, output_path
     
     # Project Events
-    project_opened = pyqtSignal(str)        # project_path
-    project_closed = pyqtSignal()
+    project_opened = Signal(str)            # project_path
+    project_closed = Signal()
     
     _instance = None
     
@@ -431,7 +431,7 @@ class DevCenterProject:
 ```python
 # src/gui/widgets/project_explorer.py
 class ProjectExplorer(QDockWidget):
-    file_double_clicked = pyqtSignal(str)
+    file_double_clicked = Signal(str)
     
     def __init__(self, parent=None):
         super().__init__("Project Explorer", parent)
@@ -455,8 +455,8 @@ class ProjectExplorer(QDockWidget):
 class WelcomeDialog(QDialog):
     """Startbildschirm mit Recent Projects"""
     
-    project_selected = pyqtSignal(str)
-    new_project_requested = pyqtSignal()
+    project_selected = Signal(str)
+    new_project_requested = Signal()
 ```
 
 **Tasks:**
@@ -615,9 +615,9 @@ class OutputPanel(QDockWidget):
 ```python
 # src/modules/editor/python_runner.py
 class PythonRunner(QObject):
-    output_received = pyqtSignal(str)
-    error_received = pyqtSignal(str)
-    finished = pyqtSignal(int)  # exit_code
+    output_received = Signal(str)
+    error_received = Signal(str)
+    finished = Signal(int)  # exit_code
     
     def run(self, script_path: str, args: list = None):
         self.process = QProcess()
@@ -690,7 +690,7 @@ class ASTAnalyzer:
 ```python
 # src/modules/analyzer/problems_provider.py
 class ProblemsProvider(QObject):
-    problems_updated = pyqtSignal(list)
+    problems_updated = Signal(list)
     
     def analyze_and_report(self, path: str):
         result = self.analyzer.analyze_file(path)
@@ -796,8 +796,8 @@ class CodeNavigator:
 from PyInstaller.__main__ import run as pyinstaller_run
 
 class BuildEngine(QObject):
-    progress = pyqtSignal(int, str)
-    finished = pyqtSignal(bool, str)
+    progress = Signal(int, str)
+    finished = Signal(bool, str)
     
     def build(self, config: BuildConfig):
         self.progress.emit(10, "Preparing build...")
@@ -1010,8 +1010,8 @@ class StorePackager:
 from anthropic import Anthropic
 
 class AIService(QObject):
-    response_received = pyqtSignal(str)
-    error_occurred = pyqtSignal(str)
+    response_received = Signal(str)
+    error_occurred = Signal(str)
     
     def __init__(self):
         self.client = Anthropic(api_key=self._get_api_key())
@@ -1197,7 +1197,7 @@ class ProfilerBridge:
 class GlobalSearchDialog(QDialog):
     """Projekt-weite Suche (Ctrl+Shift+F)"""
     
-    file_selected = pyqtSignal(str, int)  # path, line
+    file_selected = Signal(str, int)  # path, line
 ```
 
 **Tasks:**
