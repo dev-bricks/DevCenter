@@ -203,6 +203,8 @@ class CodeEditor(QPlainTextEdit):
         
         # Tab-Einstellungen
         self.tab_size = 4
+        self.show_line_numbers = True
+        self.highlight_current_line_enabled = True
         tab_width = QFontMetrics(font).horizontalAdvance(' ') * self.tab_size
         self.setTabStopDistance(tab_width)
         
@@ -214,6 +216,7 @@ class CodeEditor(QPlainTextEdit):
         
         # Line Number Area
         self.line_number_area = LineNumberArea(self)
+        self.line_number_area.setVisible(self.show_line_numbers)
         
         # Connections
         self.blockCountChanged.connect(self._update_line_number_area_width)
@@ -254,6 +257,9 @@ class CodeEditor(QPlainTextEdit):
     
     def line_number_area_width(self) -> int:
         """Berechnet die Breite des Zeilennummern-Bereichs"""
+        if not self.show_line_numbers:
+            return 0
+
         digits = 1
         max_num = max(1, self.blockCount())
         while max_num >= 10:
@@ -266,6 +272,7 @@ class CodeEditor(QPlainTextEdit):
     def _update_line_number_area_width(self, new_block_count):
         """Aktualisiert die Breite des Zeilennummern-Bereichs"""
         self.setViewportMargins(self.line_number_area_width(), 0, 0, 0)
+        self.line_number_area.setVisible(self.show_line_numbers)
     
     def _update_line_number_area(self, rect, dy):
         """Aktualisiert den Zeilennummern-Bereich beim Scrollen"""
@@ -289,6 +296,9 @@ class CodeEditor(QPlainTextEdit):
     
     def line_number_area_paint_event(self, event):
         """Zeichnet die Zeilennummern"""
+        if not self.show_line_numbers:
+            return
+
         painter = QPainter(self.line_number_area)
         painter.fillRect(event.rect(), QColor("#1e1e1e"))
         
@@ -322,7 +332,7 @@ class CodeEditor(QPlainTextEdit):
         """Hebt die aktuelle Zeile hervor"""
         extra_selections = []
         
-        if not self.isReadOnly():
+        if self.highlight_current_line_enabled and not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
             line_color = QColor("#282828")
             selection.format.setBackground(line_color)
@@ -332,6 +342,44 @@ class CodeEditor(QPlainTextEdit):
             extra_selections.append(selection)
         
         self.setExtraSelections(extra_selections)
+
+    def apply_settings(
+        self,
+        font_family: Optional[str] = None,
+        font_size: Optional[int] = None,
+        tab_size: Optional[int] = None,
+        show_line_numbers: Optional[bool] = None,
+        auto_complete: Optional[bool] = None,
+        highlight_current_line: Optional[bool] = None,
+    ):
+        """Wendet Editor-Einstellungen auf diese Instanz an."""
+        font = QFont(self.font())
+
+        if font_family is not None:
+            font.setFamily(font_family)
+        if font_size is not None:
+            font.setPointSize(font_size)
+
+        self.setFont(font)
+
+        if tab_size is not None:
+            self.tab_size = max(1, int(tab_size))
+
+        tab_width = QFontMetrics(self.font()).horizontalAdvance(' ') * self.tab_size
+        self.setTabStopDistance(tab_width)
+
+        if show_line_numbers is not None:
+            self.show_line_numbers = bool(show_line_numbers)
+
+        if auto_complete is not None:
+            self.autocomplete_enabled = bool(auto_complete)
+
+        if highlight_current_line is not None:
+            self.highlight_current_line_enabled = bool(highlight_current_line)
+
+        self._update_line_number_area_width(0)
+        self.line_number_area.update()
+        self._highlight_current_line()
     
     def _emit_cursor_position(self):
         """Sendet die aktuelle Cursor-Position"""

@@ -17,6 +17,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 ### Behoben / Fixed
 - Persistenz unbekannter Einstellungsschluessel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
 - Fehlende `chardet`-Abhaengigkeit fuer frische CI-/Installationsumgebungen ergaenzt.
+- Editor-Einstellungen werden nach dem Speichern auf offene Tabs angewendet; der Dialog persistiert jetzt auch „Aktuelle Zeile hervorheben“ und aktualisiert Schrift, Tab-Breite, Zeilennummern und Cursor-Markierung unmittelbar.
 
 ## [1.0.0] - YYYY-MM-DD
 

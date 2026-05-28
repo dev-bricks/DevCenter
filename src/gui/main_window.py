@@ -12,10 +12,10 @@ from typing import Optional, Dict
 from PySide6.QtWidgets import (
     QMainWindow, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QMenuBar, QMenu, QToolBar, QStatusBar, QSplitter,
-    QLabel, QPushButton, QMessageBox, QFileDialog, QDockWidget
+    QLabel, QPushButton, QMessageBox, QFileDialog, QDockWidget, QInputDialog
 )
 from PySide6.QtCore import Qt, QTimer, QSize, Signal
-from PySide6.QtGui import QAction, QFont, QKeySequence, QIcon
+from PySide6.QtGui import QAction, QFont, QKeySequence, QIcon, QTextCursor
 
 # Lokale Imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
         # Aktives Projekt
         self.current_project: Optional[ProjectConfig] = None
         self.open_files: Dict[str, CodeEditor] = {}
+        self._search_term = ""
         
         # UI Setup
         self.setWindowTitle("DevCenter")
@@ -546,13 +547,11 @@ class MainWindow(QMainWindow):
     
     def _restore_state(self):
         """Stellt den Fensterzustand wieder her"""
-        state = self.settings.get('window.state', {})
-        
-        if 'geometry' in state:
-            pass  # TODO: Geometrie wiederherstellen
-        
-        if 'maximized' in state and state['maximized']:
-            self.showMaximized()
+        geometry, state = self.settings.restore_window_state()
+        if geometry:
+            self.restoreGeometry(geometry)
+        if state:
+            self.restoreState(state)
     
     def _show_welcome(self):
         """Zeigt Welcome-Screen oder öffnet letztes Projekt"""
@@ -605,6 +604,7 @@ class MainWindow(QMainWindow):
     def _new_file(self):
         """Erstellt eine neue leere Datei"""
         editor = CodeEditor()
+        self._apply_editor_settings(editor)
         self.editor_tabs.addTab(editor, "Unbenannt")
         self.editor_tabs.setCurrentWidget(editor)
         self._connect_editor(editor)
@@ -628,6 +628,7 @@ class MainWindow(QMainWindow):
         
         # Neue Datei öffnen
         editor = CodeEditor()
+        self._apply_editor_settings(editor)
         if editor.load_file(path):
             self.open_files[path] = editor
             name = os.path.basename(path)
@@ -641,6 +642,21 @@ class MainWindow(QMainWindow):
         """Verbindet Editor-Signale"""
         editor.file_modified.connect(self._on_file_modified)
         editor.cursor_position_changed.connect(self._on_cursor_changed)
+
+    def _apply_editor_settings(self, editor: CodeEditor):
+        """Wendet die aktuellen Editor-Einstellungen auf einen Editor an."""
+        line_numbers = self.settings.get('editor.line_numbers', None)
+        if line_numbers is None:
+            line_numbers = self.settings.get('editor.show_line_numbers', True)
+
+        editor.apply_settings(
+            font_family=self.settings.get('editor.font_family', 'Consolas'),
+            font_size=self.settings.get('editor.font_size', 11),
+            tab_size=self.settings.get('editor.tab_size', 4),
+            show_line_numbers=bool(line_numbers),
+            auto_complete=self.settings.get('editor.auto_complete', True),
+            highlight_current_line=self.settings.get('editor.highlight_current_line', True),
+        )
     
     def _save_file(self):
         """Speichert die aktuelle Datei"""
@@ -760,12 +776,62 @@ class MainWindow(QMainWindow):
             editor.paste()
     
     def _find(self):
-        """TODO: Such-Dialog"""
-        pass
+        """Öffnet einfachen Suchdialog."""
+        editor = self._get_current_editor()
+        if not editor:
+            self.statusbar.showMessage("Kein aktiver Editor vorhanden", 2000)
+            return
+
+        default = editor.textCursor().selectedText() or self._search_term
+        pattern, ok = QInputDialog.getText(
+            self, "Suchen", "Suchbegriff:", text=default
+        )
+        if not ok or not pattern:
+            return
+
+        self._search_term = pattern
+
+        if not editor.find(pattern):
+            cursor = editor.textCursor()
+            cursor.movePosition(QTextCursor.MoveOperation.Start)
+            editor.setTextCursor(cursor)
+            if not editor.find(pattern):
+                self.statusbar.showMessage(f"\"{pattern}\" nicht gefunden", 2500)
+                return
+
+        self.statusbar.showMessage(f"Gefunden: {pattern}", 2500)
     
     def _replace(self):
-        """TODO: Ersetzen-Dialog"""
-        pass
+        """Öffnet einfachen Ersetzen-Dialog."""
+        editor = self._get_current_editor()
+        if not editor:
+            self.statusbar.showMessage("Kein aktiver Editor vorhanden", 2000)
+            return
+
+        search_text, ok = QInputDialog.getText(
+            self, "Ersetzen", "Zu ersetzen:", text=editor.textCursor().selectedText()
+        )
+        if not ok or not search_text:
+            return
+
+        replace_text, ok = QInputDialog.getText(
+            self, "Ersetzen", "Durch diesen Text ersetzen:"
+        )
+        if not ok:
+            return
+
+        text = editor.toPlainText()
+        matches = text.count(search_text)
+        if matches == 0:
+            self.statusbar.showMessage(f'"{search_text}" nicht gefunden', 2500)
+            return
+
+        cursor_pos = editor.textCursor().position()
+        editor.setPlainText(text.replace(search_text, replace_text))
+        cursor = editor.textCursor()
+        cursor.setPosition(min(cursor_pos, len(editor.toPlainText())))
+        editor.setTextCursor(cursor)
+        self.statusbar.showMessage(f"{matches} Ersetzung(en) durchgeführt", 2500)
     
     # === Ansicht-Operationen ===
     
@@ -920,7 +986,10 @@ class MainWindow(QMainWindow):
         self.ai_service.set_api_key(self.settings.get('ai.api_key', ''))
         
         # Editor-Einstellungen auf alle offenen Editoren anwenden
-        # TODO: Implementieren
+        for index in range(self.editor_tabs.count()):
+            widget = self.editor_tabs.widget(index)
+            if isinstance(widget, CodeEditor):
+                self._apply_editor_settings(widget)
     
     def _show_about(self):
         """Zeigt den Über-Dialog"""

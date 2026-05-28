@@ -382,6 +382,7 @@ class SettingsDialog(QDialog):
         self.line_numbers.setChecked(self.settings.get('editor.line_numbers', True))
         self.auto_complete.setChecked(self.settings.get('editor.auto_complete', True))
         self.auto_save.setChecked(self.settings.get('editor.auto_save', False))
+        self.highlight_line.setChecked(self.settings.get('editor.highlight_current_line', True))
         
         # Build
         self.pyinstaller_path.setText(self.settings.get('build.pyinstaller_path', ''))
@@ -411,6 +412,7 @@ class SettingsDialog(QDialog):
         self.settings.set('editor.line_numbers', self.line_numbers.isChecked())
         self.settings.set('editor.auto_complete', self.auto_complete.isChecked())
         self.settings.set('editor.auto_save', self.auto_save.isChecked())
+        self.settings.set('editor.highlight_current_line', self.highlight_line.isChecked())
         
         # Build
         self.settings.set('build.pyinstaller_path', self.pyinstaller_path.text())
