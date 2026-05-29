@@ -1,20 +1,61 @@
 # 🚀 DevCenter
 
-**Python Development Suite** - Eine integrierte Entwicklungsumgebung für den kompletten Python-Entwicklungszyklus
+**Local-first Python IDE and developer toolkit for Windows.** DevCenter combines a PySide6 code editor, static analyzer, PyInstaller build helper, license collector, file index and optional Claude/Anthropic assistant in one desktop suite.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Python](https://img.shields.io/badge/python-3.10+-green)
 ![License](https://img.shields.io/badge/license-GPL%20v3-blue)
 
-## 📋 Übersicht
+## Overview
+
+DevCenter is a local desktop development suite for Python projects that covers the practical workflow from first file to release checklist:
+
+**Write -> Analyze -> Test -> Build -> Publish**
+
+It is designed for developers who want a lightweight local IDE with built-in project analysis, EXE packaging support, privacy-aware settings, and export planning for a future read-only Web/PWA companion.
+
+This repository is **not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. It is the `dev-bricks/DevCenter` open-source Python desktop app.
+
+![DevCenter main window showing the local Python IDE dashboard](README/screenshots/main.png)
+
+## Why DevCenter
+
+- **Local-first workflow:** projects, indexes, settings and build artifacts stay on your machine by default.
+- **Python desktop focus:** PySide6 interface, syntax highlighting, project explorer, terminal output and settings persistence.
+- **Static analysis built in:** method/class detection, complexity checks, import analysis, TODO/FIXME detection and encoding repair helpers.
+- **Build and release helpers:** PyInstaller wrapper, icon conversion, third-party license collection, release notes and export planning.
+- **Optional AI assistant:** Claude/Anthropic integration is opt-in and should use local settings, keyring or environment variables.
+- **Companion-ready export plan:** `devcenter-workspace-v1.json` is planned for redacted project-status handoff to a static Web/PWA viewer.
+
+## Quick Start
+
+```bash
+git clone https://github.com/dev-bricks/DevCenter.git
+cd DevCenter
+pip install -r requirements.txt
+python main.py
+```
+
+Windows helpers:
+
+```batch
+START_DevCenter.bat
+build_exe.bat
+```
+
+## Keywords
+
+`Python IDE`, `PySide6 IDE`, `local-first developer tools`, `offline Python editor`, `PyInstaller GUI`, `static code analyzer`, `developer toolkit`, `Windows Python desktop app`, `AI-assisted coding`, `license collector`, `project export`, `PWA companion`.
+
+## Deutsch: Übersicht
 
 DevCenter ist eine All-in-One Desktop-IDE für Python-Projekte, die den kompletten Entwicklungszyklus unterstützt:
 
-**Code schreiben → Analysieren → Testen → Kompilieren → Veröffentlichen**
+**Code schreiben -> Analysieren -> Testen -> Kompilieren -> Veröffentlichen**
 
-## Screenshot
+DevCenter ist eine lokale Desktop-Anwendung und nicht mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder Devbox identisch.
 
-![DevCenter Hauptfenster](README/screenshots/main.png)
+![DevCenter Hauptfenster mit lokalem Python-IDE-Dashboard](README/screenshots/main.png)
 
 ### 🔧 Fusionierte Tools
 
