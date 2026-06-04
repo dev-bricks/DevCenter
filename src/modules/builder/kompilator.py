@@ -116,19 +116,21 @@ class Kompilator:
             result = subprocess.run(
                 [sys.executable, '-m', 'PyInstaller', '--version'],
                 capture_output=True,
-                text=True
+                text=True,
+                encoding='utf-8'
             )
             return result.returncode == 0
         except Exception:
             return False
-    
+
     def get_pyinstaller_version(self) -> Optional[str]:
         """Gibt die PyInstaller-Version zurück"""
         try:
             result = subprocess.run(
                 [sys.executable, '-m', 'PyInstaller', '--version'],
                 capture_output=True,
-                text=True
+                text=True,
+                encoding='utf-8'
             )
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -163,10 +165,15 @@ class Kompilator:
             )
         
         self._emit_progress(5, "Build wird vorbereitet...")
-        
-        # Ausgabeverzeichnis erstellen
-        output_dir = Path(config.output_dir)
+
+        # Ausgabeverzeichnis absolut auflösen (relativ zum Skript-Verzeichnis)
+        _script_dir = Path(os.path.dirname(os.path.abspath(config.script_path)))
+        if not os.path.isabs(config.output_dir):
+            output_dir = _script_dir / config.output_dir
+        else:
+            output_dir = Path(config.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
+        config.output_dir = str(output_dir)
         
         # Clean Build
         if config.clean:
@@ -185,6 +192,8 @@ class Kompilator:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 cwd=os.path.dirname(config.script_path) or '.'
             )
             
@@ -323,11 +332,12 @@ class Kompilator:
     
     def _clean_build(self, config: BuildConfig):
         """Entfernt vorherige Build-Artefakte"""
-        build_dir = Path('build') / config.name
+        script_dir = Path(os.path.dirname(config.script_path) or '.')
+        build_dir = script_dir / 'build' / config.name
         if build_dir.exists():
             shutil.rmtree(build_dir, ignore_errors=True)
-        
-        spec_file = Path(f'{config.name}.spec')
+
+        spec_file = script_dir / f'{config.name}.spec'
         if spec_file.exists():
             spec_file.unlink()
     

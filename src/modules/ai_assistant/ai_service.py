@@ -146,7 +146,8 @@ class AIService:
             kwargs = {
                 "model": self.model,
                 "max_tokens": self.max_tokens,
-                "messages": messages
+                "messages": messages,
+                "temperature": self.temperature,
             }
             
             if system:

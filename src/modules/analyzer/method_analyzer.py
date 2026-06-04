@@ -265,7 +265,7 @@ class MethodAnalyzer:
             
             elif isinstance(node, ast.ImportFrom):
                 module = node.module or ''
-                names = [alias.name for alias in node.names]
+                names = [alias.asname if alias.asname else alias.name for alias in node.names]
                 result.imports.append(ImportInfo(
                     module=module,
                     names=names,

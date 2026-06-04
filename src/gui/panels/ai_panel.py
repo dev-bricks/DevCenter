@@ -28,24 +28,21 @@ class AIWorker(QThread):
     
     def run(self):
         """Fuehrt die AI-Anfrage im Hintergrund aus."""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         try:
-            # Synchroner Aufruf da wir in Thread sind
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
             response = loop.run_until_complete(
                 self.ai_service.complete(self.prompt, self.system)
             )
-            
-            loop.close()
-            
             if response.success:
                 self.response_received.emit(response.content, True)
             else:
                 self.response_received.emit(response.error or "Unbekannter Fehler", False)
-                
         except Exception as e:
             self.response_received.emit(str(e), False)
+        finally:
+            loop.close()
+            asyncio.set_event_loop(None)
 
 
 class AIAssistantPanel(QWidget):
@@ -299,24 +296,34 @@ class AIAssistantPanel(QWidget):
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
     
     def _format_code_blocks(self, text: str) -> str:
-        """Formatiert Code-Blöcke"""
+        """Formatiert Code-Blöcke — nicht-Code-Text wird HTML-escaped."""
         import re
-        
-        def replace_code(match):
-            code = match.group(1)
-            escaped = self._escape_html(code)
-            return f'<pre style="background-color: #1e1e1e; padding: 8px; border-radius: 4px; font-family: Consolas; overflow-x: auto;">{escaped}</pre>'
-        
-        # Mehrzeilige Code-Blöcke
-        text = re.sub(r'```(?:python)?\n(.*?)```', replace_code, text, flags=re.DOTALL)
-        
-        # Inline-Code
-        text = re.sub(r'`([^`]+)`', r'<code style="background-color: #1e1e1e; padding: 2px 4px;">\1</code>', text)
-        
-        # Normale Zeilenumbrüche
-        text = text.replace("\n", "<br>")
-        
-        return text
+
+        # Text in Code-Blöcke und normalen Text aufteilen
+        parts = re.split(r'(```(?:python)?\n.*?```)', text, flags=re.DOTALL)
+        result_parts = []
+
+        for part in parts:
+            m = re.match(r'```(?:python)?\n(.*?)```', part, re.DOTALL)
+            if m:
+                code = m.group(1)
+                result_parts.append(
+                    f'<pre style="background-color: #1e1e1e; padding: 8px; border-radius: 4px;'
+                    f' font-family: Consolas; overflow-x: auto;">{self._escape_html(code)}</pre>'
+                )
+            else:
+                # Inline-Code innerhalb des normalen Texts separat behandeln
+                inline_parts = re.split(r'(`[^`\n]+`)', part)
+                for ip in inline_parts:
+                    if ip.startswith('`') and ip.endswith('`') and len(ip) > 2:
+                        result_parts.append(
+                            f'<code style="background-color: #1e1e1e; padding: 2px 4px;">'
+                            f'{self._escape_html(ip[1:-1])}</code>'
+                        )
+                    else:
+                        result_parts.append(self._escape_html(ip).replace("\n", "<br>"))
+
+        return "".join(result_parts)
     
     def _on_generate(self):
         """Code generieren"""

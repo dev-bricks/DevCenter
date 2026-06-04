@@ -1,10 +1,12 @@
 # Exportformat DevCenter
 
-Stand: 2026-05-27
+Stand: 2026-06-01
 
 ## Zweck
 
-`devcenter-workspace-v1.json` ist das geplante Austauschformat zwischen der DevCenter-Desktop-App und einem späteren Web-/PWA-Companion. Es soll Projektstatus, Analyseberichte, Build-Checklisten und redigierte Konfigurationen transportieren, ohne vollständige Quelltexte, API-Schlüssel, lokale Datenbanken oder Build-Artefakte weiterzugeben.
+`devcenter-workspace-v1.json` ist das Austauschformat zwischen der DevCenter-Desktop-App und einem späteren Web-/PWA-Companion. Es transportiert Projektstatus, Analyseberichte, Build-Checklisten und redigierte Konfigurationen, ohne vollständige Quelltexte, API-Schlüssel, lokale Datenbanken oder Build-Artefakte weiterzugeben.
+
+Seit 2026-06-01 erzeugt die Desktop-App diesen Export direkt über `Datei -> Arbeitsstand exportieren...`.
 
 ## Grundregeln
 
@@ -89,3 +91,11 @@ Stand: 2026-05-27
 - Tests decken Secret- und Pfadredaktion ab.
 - Companion kann eine Beispieldatei lokal importieren und anzeigen.
 - Kein Export enthält `api_key`, `token`, `secret`, `%APPDATA%`, `C:\Users\` oder unredigierte Projekt-Vollpfade.
+
+## Implementierter Desktop-Export (2026-06-01)
+
+- Liest Projektmetadaten aus `devcenter.json` und der aktuell geöffneten Projektkonfiguration.
+- Exportiert Analysezusammenfassung und die aktuelle Problem-Liste in redigierter Form.
+- Wandelt Projektpfade in `project-1/...` und externe lokale Pfade in stabile Referenzen wie `output-dir-1` um.
+- Übernimmt nur offene Aufgaben aus `AUFGABEN.txt`; erledigte Punkte bleiben außen vor.
+- Exportiert bewusst keine AI- oder Keyring-Daten.

@@ -1,8 +1,8 @@
 # DevCenter Web-Companion
 
-Stand: 2026-05-27
+Stand: 2026-06-01
 
-Dieser Ordner ist für einen späteren statischen Web-/PWA-Companion vorgesehen. Der Companion soll keine vollständige IDE ersetzen, sondern redigierte DevCenter-Exporte anzeigen.
+Dieser Ordner ist für einen späteren statischen Web-/PWA-Companion vorgesehen. Der Companion soll keine vollständige IDE ersetzen, sondern redigierte DevCenter-Exporte anzeigen. Die Desktop-App erzeugt die passende Datei seit 2026-06-01 direkt über `Datei -> Arbeitsstand exportieren...`.
 
 ## Geplanter Umfang
 
@@ -20,7 +20,7 @@ Dieser Ordner ist für einen späteren statischen Web-/PWA-Companion vorgesehen.
 
 ## Nächste Schritte
 
-1. Beispieldatei für `devcenter-workspace-v1.json` erstellen.
+1. Beispieldatei für `devcenter-workspace-v1.json` aus der Desktop-App erzeugen und als Fixture ablegen.
 2. Minimalen Import-Viewer bauen.
 3. Mobile-Smokes für Android und iOS ergänzen.
 4. Export-/Importvertrag gegen `EXPORTFORMAT.md` testen.

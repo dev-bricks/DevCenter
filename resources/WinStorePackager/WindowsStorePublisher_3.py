@@ -940,13 +940,20 @@ def patch_widgets(translator):
                     *i18n_data_arg,
                     staged_script
                 ]
-                
+
                 startupinfo = None
                 if os.name == 'nt':
                     startupinfo = subprocess.STARTUPINFO()
                     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-                subprocess.check_call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=startupinfo)
+                subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    encoding='utf-8',
+                    errors='replace',
+                    startupinfo=startupinfo,
+                    check=True,
+                )
                 
                 progress.update_status("Aufräumen...")
                 for pattern in ["build", "*.spec"]:
@@ -980,7 +987,7 @@ def patch_widgets(translator):
                 
             except subprocess.CalledProcessError as e:
                 progress.close()
-                err_out = e.stderr.decode('cp1252', errors='ignore') if e.stderr else "Unbekannter Fehler"
+                err_out = e.stderr or e.stdout or "Unbekannter Fehler"
                 self.after(0, lambda: messagebox.showerror("PyInstaller Fehler", f"{err_out}"))
             except Exception as e:
                 progress.close()

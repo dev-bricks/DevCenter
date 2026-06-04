@@ -10,7 +10,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
 from dataclasses import dataclass, asdict, field, fields
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QByteArray, QObject, Signal
 
 
 @dataclass
@@ -77,6 +77,12 @@ class AppearanceSettings:
 
 
 @dataclass
+class GeneralSettings:
+    """Allgemeine Anwendungseinstellungen"""
+    open_last_project: bool = False
+
+
+@dataclass
 class AppSettings:
     """Gesamte Anwendungseinstellungen"""
     editor: EditorSettings = field(default_factory=EditorSettings)
@@ -84,7 +90,8 @@ class AppSettings:
     ai: AISettings = field(default_factory=AISettings)
     sync: SyncSettings = field(default_factory=SyncSettings)
     appearance: AppearanceSettings = field(default_factory=AppearanceSettings)
-    
+    general: GeneralSettings = field(default_factory=GeneralSettings)
+
     # Allgemeine Einstellungen
     language: str = "de"
     check_updates: bool = True
@@ -142,7 +149,9 @@ class SettingsManager(QObject):
                 self.settings.sync = self._load_section(data['sync'], SyncSettings)
             if 'appearance' in data:
                 self.settings.appearance = self._load_section(data['appearance'], AppearanceSettings)
-            
+            if 'general' in data:
+                self.settings.general = self._load_section(data['general'], GeneralSettings)
+
             # Allgemeine Einstellungen
             self.settings.language = data.get('language', 'de')
             self.settings.check_updates = data.get('check_updates', True)
@@ -170,6 +179,7 @@ class SettingsManager(QObject):
             'ai',
             'sync',
             'appearance',
+            'general',
             'language',
             'check_updates',
             'telemetry_enabled',
@@ -181,6 +191,7 @@ class SettingsManager(QObject):
             'ai': AISettings,
             'sync': SyncSettings,
             'appearance': AppearanceSettings,
+            'general': GeneralSettings,
         }
         extra: Dict[str, Any] = {
             key: value for key, value in data.items() if key not in known_top_level
@@ -201,9 +212,19 @@ class SettingsManager(QObject):
         """Speichert Einstellungen in Datei"""
         settings_file = Path(self.settings_path)
         settings_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         try:
             data = self._settings_to_dict()
+
+            # recent_projects wird von ProjectManager verwaltet — nie mit veralteter Kopie überschreiben
+            if settings_file.exists():
+                try:
+                    with open(settings_file, 'r', encoding='utf-8') as f:
+                        current_data = json.load(f)
+                    if 'recent_projects' in current_data:
+                        data['recent_projects'] = current_data['recent_projects']
+                except (json.JSONDecodeError, OSError):
+                    pass
 
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
@@ -219,6 +240,7 @@ class SettingsManager(QObject):
                 'ai': asdict(self.settings.ai),
                 'sync': asdict(self.settings.sync),
                 'appearance': asdict(self.settings.appearance),
+                'general': asdict(self.settings.general),
                 'language': self.settings.language,
                 'check_updates': self.settings.check_updates,
                 'telemetry_enabled': self.settings.telemetry_enabled,
@@ -348,7 +370,9 @@ class SettingsManager(QObject):
             self.settings.sync = SyncSettings()
         elif category == 'appearance':
             self.settings.appearance = AppearanceSettings()
-        
+        elif category == 'general':
+            self.settings.general = GeneralSettings()
+
         self._save()
         self.settings_changed.emit('*', None)
     
@@ -382,7 +406,9 @@ class SettingsManager(QObject):
                 self.settings.sync = self._load_section(data['sync'], SyncSettings)
             if 'appearance' in data:
                 self.settings.appearance = self._load_section(data['appearance'], AppearanceSettings)
-            
+            if 'general' in data:
+                self.settings.general = self._load_section(data['general'], GeneralSettings)
+
             self._save()
             self.settings_changed.emit('*', None)
             return True
@@ -393,17 +419,35 @@ class SettingsManager(QObject):
     def save_window_state(self, geometry: bytes, state: bytes):
         """Speichert Fensterzustand"""
         self.settings.window_state = {
-            'geometry': geometry.hex() if geometry else '',
-            'state': state.hex() if state else ''
+            'geometry': self._serialize_qt_bytes(geometry),
+            'state': self._serialize_qt_bytes(state),
         }
         self._save()
     
     def restore_window_state(self) -> tuple:
         """Stellt Fensterzustand wieder her"""
         ws = self.settings.window_state
-        geometry = bytes.fromhex(ws.get('geometry', '')) if ws.get('geometry') else None
-        state = bytes.fromhex(ws.get('state', '')) if ws.get('state') else None
+        geometry = self._deserialize_qt_bytes(ws.get('geometry', ''))
+        state = self._deserialize_qt_bytes(ws.get('state', ''))
         return geometry, state
+
+    def _serialize_qt_bytes(self, value: Any) -> str:
+        """Serialize Qt byte containers and plain bytes as hex strings."""
+        if not value:
+            return ''
+        if isinstance(value, QByteArray):
+            raw = bytes(value)
+        elif isinstance(value, (bytes, bytearray)):
+            raw = bytes(value)
+        else:
+            raw = bytes(value)
+        return raw.hex()
+
+    def _deserialize_qt_bytes(self, value: str) -> Optional[QByteArray]:
+        """Restore serialized window state into a QByteArray for Qt APIs."""
+        if not value:
+            return None
+        return QByteArray.fromHex(value.encode('ascii'))
 
 
 # Singleton-Instance

@@ -240,3 +240,7 @@ class ProblemsPanel(QWidget):
     def get_warning_count(self) -> int:
         """Gibt Anzahl der Warnungen zurück"""
         return sum(1 for p in self._problems if p.severity == ProblemSeverity.WARNING)
+
+    def get_problems(self) -> List[Problem]:
+        """Gibt eine Kopie der aktuell bekannten Probleme zurück."""
+        return list(self._problems)

@@ -274,12 +274,18 @@ class SyncManager:
         # Verwaiste Dateien löschen
         if config.delete_orphans and not self._cancelled.is_set():
             self._emit_progress(95, "Verwaiste Dateien werden entfernt...")
-            
+
             for root, dirs, files in os.walk(target):
+                dirs[:] = [d for d in dirs if not self._should_exclude(
+                    os.path.join(root, d), config.excludes
+                )]
                 for file in files:
                     full_path = os.path.join(root, file)
                     rel_path = os.path.relpath(full_path, target)
-                    
+
+                    if self._should_exclude(full_path, config.excludes):
+                        continue
+
                     if rel_path not in source_files:
                         try:
                             os.remove(full_path)
@@ -289,6 +295,8 @@ class SyncManager:
         
         # Abschluss
         result.duration = (datetime.now() - start_time).total_seconds()
+        if self._cancelled.is_set():
+            result.errors.append("Sync abgebrochen")
         result.success = len(result.errors) == 0
         
         self._emit_progress(100, f"Sync abgeschlossen: {result.files_copied} Dateien kopiert")

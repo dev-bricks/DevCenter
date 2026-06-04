@@ -61,10 +61,11 @@ class LicenseGenerator:
             # pip-licenses verwenden wenn verfügbar
             if self._pip_licenses_available:
                 result = subprocess.run(
-                    [sys.executable, '-m', 'pip_licenses', 
+                    [sys.executable, '-m', 'pip_licenses',
                      '--format=json', '--with-license-file', '--with-urls'],
                     capture_output=True,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 )
                 
                 if result.returncode == 0:
@@ -83,7 +84,8 @@ class LicenseGenerator:
                 result = subprocess.run(
                     [sys.executable, '-m', 'pip', 'list', '--format=json'],
                     capture_output=True,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 )
                 
                 if result.returncode == 0:
@@ -96,7 +98,8 @@ class LicenseGenerator:
                         detail = subprocess.run(
                             [sys.executable, '-m', 'pip', 'show', name],
                             capture_output=True,
-                            text=True
+                            text=True,
+                            encoding='utf-8'
                         )
                         
                         license_name = "Unknown"

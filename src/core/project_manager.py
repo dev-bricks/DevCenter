@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, fields
 from PySide6.QtCore import QObject, Signal
 
 logger = logging.getLogger(__name__)
@@ -93,14 +93,17 @@ class ProjectManager(QObject):
             # Bestehende Einstellungen laden
             data = {}
             if settings_file.exists():
-                with open(settings_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-            
+                try:
+                    with open(settings_file, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                except (json.JSONDecodeError, ValueError):
+                    data = {}
+
             data['recent_projects'] = self.recent_projects
-            
+
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-        except IOError as e:
+        except Exception as e:
             print(f"Fehler beim Speichern der Recent Projects: {e}")
     
     def _add_to_recent(self, project_path: str, project_name: str):
@@ -201,7 +204,7 @@ if __name__ == "__main__":
         
         # __init__.py
         (project_dir / "src" / "__init__.py").write_text(
-            f'"""{project_name} Package"""\\n',
+            f'"""{project_name} Package"""\n',
             encoding='utf-8'
         )
         
@@ -232,7 +235,7 @@ python src/main.py
         
         # requirements.txt
         (project_dir / "requirements.txt").write_text(
-            "# Projektabhängigkeiten\\n",
+            "# Projektabhängigkeiten\n",
             encoding='utf-8'
         )
     
@@ -262,7 +265,9 @@ python src/main.py
             with open(project_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
-            config = ProjectConfig(**data)
+            valid_fields = {f.name for f in fields(ProjectConfig)}
+            filtered = {k: v for k, v in data.items() if k in valid_fields}
+            config = ProjectConfig(**filtered)
             config.path = str(project_path)  # Pfad aktualisieren
             config.last_opened = datetime.now().isoformat()
             

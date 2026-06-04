@@ -214,19 +214,24 @@ class NewProjectDialog(QDialog):
         """Validiert die Eingaben und schließt den Dialog"""
         name = self.name_edit.text().strip()
         base_path = self.path_edit.text().strip()
-        
+
         if not name:
             self.name_edit.setFocus()
             self.name_edit.setStyleSheet("border: 1px solid #cc0000;")
             return
-        
+
+        safe_name = "".join(c for c in name if c.isalnum() or c in " _-")
+        safe_name = safe_name.replace(" ", "_")
+        if not safe_name:
+            self.name_edit.setFocus()
+            self.name_edit.setStyleSheet("border: 1px solid #cc0000;")
+            return
+
         if not base_path or not os.path.exists(base_path):
             self.path_edit.setFocus()
             return
-        
+
         # Prüfen ob Zielverzeichnis bereits existiert
-        safe_name = "".join(c for c in name if c.isalnum() or c in " _-")
-        safe_name = safe_name.replace(" ", "_")
         full_path = Path(base_path) / safe_name
         
         if full_path.exists():

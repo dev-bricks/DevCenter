@@ -352,13 +352,13 @@ class BuildDialog(QDialog):
         req_path = os.path.join(self.project_path, "requirements.txt")
         if os.path.exists(req_path):
             try:
-                with open(req_path, 'r') as f:
+                with open(req_path, 'r', encoding='utf-8') as f:
                     for line in f:
                         line = line.strip()
                         if line and not line.startswith('#'):
                             pkg = line.split('==')[0].split('>=')[0].split('[')[0]
                             self.imports_list.addItem(pkg)
-            except (OSError, FileNotFoundError):
+            except (OSError, UnicodeDecodeError):
                 pass
     
     def _browse_output(self):
@@ -399,7 +399,7 @@ class BuildDialog(QDialog):
         """Startet den Build"""
         # Import hier um zirkuläre Imports zu vermeiden
         try:
-            from ...modules.builder import Kompilator, BuildConfig
+            from modules.builder import Kompilator, BuildConfig
         except ImportError:
             self.log_output.append("❌ Builder-Modul nicht verfügbar")
             return
@@ -463,7 +463,7 @@ class BuildDialog(QDialog):
     def _on_finished(self, success: bool, result: str):
         """Build abgeschlossen"""
         self.build_btn.setEnabled(True)
-        
+
         if success:
             self.progress_bar.setValue(100)
             self.status_label.setText("✅ Build erfolgreich!")
@@ -473,3 +473,9 @@ class BuildDialog(QDialog):
             self.status_label.setText("❌ Build fehlgeschlagen")
             self.log_output.append(f"\n❌ Fehler: {result}")
             self.build_finished.emit(False, result)
+
+    def reject(self):
+        if self._worker and self._worker.isRunning():
+            self._worker.quit()
+            self._worker.wait(3000)
+        super().reject()

@@ -99,6 +99,7 @@ class SettingsDialog(QDialog):
         
         # Tab Widget
         tabs = QTabWidget()
+        tabs.addTab(self._create_general_tab(), "Allgemein")
         tabs.addTab(self._create_editor_tab(), "Editor")
         tabs.addTab(self._create_build_tab(), "Build")
         tabs.addTab(self._create_ai_tab(), "AI")
@@ -125,6 +126,23 @@ class SettingsDialog(QDialog):
         
         layout.addLayout(btn_layout)
     
+    def _create_general_tab(self) -> QWidget:
+        """Allgemeine Einstellungen"""
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+
+        startup_group = QGroupBox("Startverhalten")
+        startup_layout = QFormLayout(startup_group)
+
+        self.open_last_project = QCheckBox("Letztes Projekt beim Start öffnen")
+        self.open_last_project.setChecked(False)
+        startup_layout.addRow("", self.open_last_project)
+
+        layout.addWidget(startup_group)
+        layout.addStretch()
+
+        return widget
+
     def _create_editor_tab(self) -> QWidget:
         """Editor-Einstellungen"""
         widget = QWidget()
@@ -375,29 +393,36 @@ class SettingsDialog(QDialog):
     
     def _load_settings(self):
         """Lädt Einstellungen in die UI"""
+        # General
+        self.open_last_project.setChecked(self.settings.get('general.open_last_project', False))
+
         # Editor
         self.font_family.setCurrentText(self.settings.get('editor.font_family', 'Consolas'))
         self.font_size.setValue(self.settings.get('editor.font_size', 11))
         self.tab_size.setValue(self.settings.get('editor.tab_size', 4))
-        self.line_numbers.setChecked(self.settings.get('editor.line_numbers', True))
+        self.line_numbers.setChecked(self.settings.get('editor.show_line_numbers', True))
         self.auto_complete.setChecked(self.settings.get('editor.auto_complete', True))
         self.auto_save.setChecked(self.settings.get('editor.auto_save', False))
         self.highlight_line.setChecked(self.settings.get('editor.highlight_current_line', True))
         
         # Build
         self.pyinstaller_path.setText(self.settings.get('build.pyinstaller_path', ''))
-        self.output_dir.setText(self.settings.get('build.output_dir', 'dist'))
+        self.output_dir.setText(self.settings.get('build.default_output_dir', 'dist'))
         self.one_file.setChecked(self.settings.get('build.one_file', True))
-        self.console_mode.setChecked(self.settings.get('build.console', True))
-        self.use_upx.setChecked(self.settings.get('build.upx', False))
+        self.console_mode.setChecked(self.settings.get('build.console_mode', True))
+        self.use_upx.setChecked(self.settings.get('build.upx_enabled', False))
         
         # AI
         self.api_key.setText(self.settings.get('ai.api_key', ''))
         self.max_tokens.setValue(self.settings.get('ai.max_tokens', 4096))
-        
+        self.ai_model.setCurrentText(self.settings.get('ai.model', 'Claude Sonnet'))
+
         # Sync
         self.backup_path.setText(self.settings.get('sync.backup_path', ''))
         self.auto_backup.setChecked(self.settings.get('sync.auto_backup', False))
+        self.backup_interval.setValue(self.settings.get('sync.backup_interval', 1800) // 60)
+        excludes_raw = self.settings.get('sync.excludes', ['__pycache__', '.git', 'venv', 'dist', 'build'])
+        self.excludes_edit.setText(', '.join(excludes_raw) if isinstance(excludes_raw, list) else str(excludes_raw))
         
         # Appearance
         theme_map = {'dark': 0, 'light': 1, 'system': 2}
@@ -405,29 +430,36 @@ class SettingsDialog(QDialog):
     
     def _save_settings(self):
         """Speichert Einstellungen"""
+        # General
+        self.settings.set('general.open_last_project', self.open_last_project.isChecked())
+
         # Editor
         self.settings.set('editor.font_family', self.font_family.currentText())
         self.settings.set('editor.font_size', self.font_size.value())
         self.settings.set('editor.tab_size', self.tab_size.value())
-        self.settings.set('editor.line_numbers', self.line_numbers.isChecked())
+        self.settings.set('editor.show_line_numbers', self.line_numbers.isChecked())
         self.settings.set('editor.auto_complete', self.auto_complete.isChecked())
         self.settings.set('editor.auto_save', self.auto_save.isChecked())
         self.settings.set('editor.highlight_current_line', self.highlight_line.isChecked())
         
         # Build
         self.settings.set('build.pyinstaller_path', self.pyinstaller_path.text())
-        self.settings.set('build.output_dir', self.output_dir.text())
+        self.settings.set('build.default_output_dir', self.output_dir.text())
         self.settings.set('build.one_file', self.one_file.isChecked())
-        self.settings.set('build.console', self.console_mode.isChecked())
-        self.settings.set('build.upx', self.use_upx.isChecked())
+        self.settings.set('build.console_mode', self.console_mode.isChecked())
+        self.settings.set('build.upx_enabled', self.use_upx.isChecked())
         
         # AI
         self.settings.set('ai.api_key', self.api_key.text())
         self.settings.set('ai.max_tokens', self.max_tokens.value())
-        
+        self.settings.set('ai.model', self.ai_model.currentText())
+
         # Sync
         self.settings.set('sync.backup_path', self.backup_path.text())
         self.settings.set('sync.auto_backup', self.auto_backup.isChecked())
+        self.settings.set('sync.backup_interval', self.backup_interval.value() * 60)
+        excludes_list = [e.strip() for e in self.excludes_edit.text().split(',') if e.strip()]
+        self.settings.set('sync.excludes', excludes_list)
         
         # Appearance
         themes = ['dark', 'light', 'system']

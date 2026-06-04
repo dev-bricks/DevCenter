@@ -5,22 +5,30 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Build / Release
+- EXE neu gebaut 2026-06-01 (PyInstaller `--onefile`, `DevCenter.exe`); 25/25 Tests grün, Smoke-Test bestanden. Vorherige EXE: 2026-04-29. Anlass: workspace_export.py neu hinzugefügt.
+
 ### Hinzugefügt / Added
 - GitHub Actions Smoke-Checks für Python 3.10, 3.11 und 3.12.
 - Lokales `build_exe.bat` für den PyInstaller-Build mit `DevCenter.ico`.
 - Datenschutzhinweise für lokale Einstellungen, Datei-Indizes, Build-Artefakte und optionale API-Nutzung.
 - `llms.txt` mit maschinenlesbarer Projektpositionierung, Datenschutzgrenzen und relevanten Suchbegriffen.
+- Redigierter Workspace-Export `devcenter-workspace-v1.json` als Desktop-Funktion unter `Datei -> Arbeitsstand exportieren...`.
 
 ### Geändert / Changed
 - README, Contribution- und Security-Dokumentation auf `dev-bricks/DevCenter` aktualisiert.
 - Beispielkonfiguration für WinStorePackager anonymisiert und neutralisiert.
 - README auf englischen GitHub-Einstieg, klarere DevCenter-Namensabgrenzung und bessere Discoverability-Keywords erweitert.
 - Community-Workflows auf aktuelle Action-Versionen gehoben.
+- `AUFGABEN.txt`, `EXPORTFORMAT.md` und `web_companion/README.md` auf den umgesetzten Exportpfad synchronisiert.
 
 ### Behoben / Fixed
 - Persistenz unbekannter Einstellungsschlüssel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
 - Fehlende `chardet`-Abhängigkeit für frische CI-/Installationsumgebungen ergänzt.
-- Editor-Einstellungen werden nach dem Speichern auf offene Tabs angewendet; der Dialog persistiert jetzt auch „Aktuelle Zeile hervorheben“ und aktualisiert Schrift, Tab-Breite, Zeilennummern und Cursor-Markierung unmittelbar.
+- Editor-Einstellungen werden nach dem Speichern auf offene Tabs angewendet; der Dialog persistiert jetzt auch „Aktuelle Zeile hervorheben” und aktualisiert Schrift, Tab-Breite, Zeilennummern und Cursor-Markierung unmittelbar.
+- Workspace-Exporte redigieren jetzt offene Aufgaben, Projektpfade und aktuelle Analyseprobleme, ohne Secrets oder lokale Vollpfade mitzuschreiben.
+- `WinStorePackager`: subprocess-Deadlock behoben — `check_call` mit PIPE durch `subprocess.run(..., capture_output=True)` ersetzt; Exception-Handler liest jetzt immer `stderr or stdout`.
+- `ProfilerBridge`: SQLite-Connection-Leak auf Windows geschlossen — alle 6 `conn.close()`-Stellen in `search()`, `find_duplicates()` und `get_statistics()` verwenden jetzt `try/finally`.
 
 ## [1.0.0] - YYYY-MM-DD
 

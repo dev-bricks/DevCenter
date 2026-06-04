@@ -12,6 +12,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+from PySide6.QtCore import QByteArray
 from PySide6.QtWidgets import QApplication, QTabWidget
 
 from core.settings_manager import SettingsManager
@@ -47,7 +48,7 @@ class DevCenterSettingsTests(unittest.TestCase):
         settings.set("editor.font_family", "Courier New")
         settings.set("editor.font_size", 14)
         settings.set("editor.tab_size", 2)
-        settings.set("editor.line_numbers", False)
+        settings.set("editor.show_line_numbers", False)
         settings.set("editor.auto_complete", False)
         settings.set("editor.highlight_current_line", False)
         settings.set("ai.api_key", "secret-token")
@@ -70,6 +71,18 @@ class DevCenterSettingsTests(unittest.TestCase):
         self.assertFalse(editor.autocomplete_enabled)
         self.assertFalse(editor.highlight_current_line_enabled)
         self.assertEqual(editor.extraSelections(), [])
+
+    def test_window_state_roundtrip_accepts_qbytearray(self):
+        settings = self._temp_settings()
+
+        geometry = QByteArray(b"geometry-state")
+        state = QByteArray(b"window-state")
+
+        settings.save_window_state(geometry, state)
+        restored_geometry, restored_state = settings.restore_window_state()
+
+        self.assertEqual(bytes(restored_geometry), b"geometry-state")
+        self.assertEqual(bytes(restored_state), b"window-state")
 
 
 if __name__ == "__main__":

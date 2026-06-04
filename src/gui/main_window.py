@@ -4,6 +4,7 @@ DevCenter - Main Window
 Hauptfenster der Anwendung mit vollständiger Panel-Integration
 """
 
+import subprocess
 import sys
 import os
 from pathlib import Path
@@ -22,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.project_manager import ProjectManager, ProjectConfig
 from core.settings_manager import SettingsManager, get_settings
 from core.event_bus import EventBus, EventType, get_event_bus
+from core.workspace_export import export_workspace
 from modules.editor.code_editor import CodeEditor
 from modules.analyzer import MethodAnalyzer, AnalysisResult
 from modules.ai_assistant import AIService
@@ -362,7 +364,11 @@ class MainWindow(QMainWindow):
         save_as_action.setShortcut(QKeySequence("Ctrl+Shift+S"))
         save_as_action.triggered.connect(self._save_file_as)
         file_menu.addAction(save_as_action)
-        
+
+        export_workspace_action = QAction("Arbeitsstand exportieren...", self)
+        export_workspace_action.triggered.connect(self._export_workspace)
+        file_menu.addAction(export_workspace_action)
+
         file_menu.addSeparator()
         
         settings_action = QAction("Einstellungen...", self)
@@ -460,7 +466,7 @@ class MainWindow(QMainWindow):
         analyze_menu = menubar.addMenu("&Analyse")
         
         analyze_file_action = QAction("📊 Aktuelle Datei analysieren", self)
-        analyze_file_action.setShortcut(QKeySequence("Ctrl+Shift+A"))
+        analyze_file_action.setShortcut(QKeySequence("Ctrl+F7"))
         analyze_file_action.triggered.connect(self._analyze_current_file)
         analyze_menu.addAction(analyze_file_action)
         
@@ -567,11 +573,17 @@ class MainWindow(QMainWindow):
         """Erstellt ein neues Projekt"""
         dialog = NewProjectDialog(self)
         if dialog.exec():
-            name, path, description = dialog.get_project_info()
+            name, path, description = dialog.get_values()
             options = dialog.get_options()
-            
+
             project = self.project_manager.create_project(name, path, description)
             if project:
+                if options.get('init_git', False):
+                    try:
+                        subprocess.run(['git', 'init', project.path], check=True,
+                                       capture_output=True)
+                    except (subprocess.CalledProcessError, FileNotFoundError):
+                        pass
                 self._load_project(project)
     
     def _open_project(self):
@@ -645,9 +657,7 @@ class MainWindow(QMainWindow):
 
     def _apply_editor_settings(self, editor: CodeEditor):
         """Wendet die aktuellen Editor-Einstellungen auf einen Editor an."""
-        line_numbers = self.settings.get('editor.line_numbers', None)
-        if line_numbers is None:
-            line_numbers = self.settings.get('editor.show_line_numbers', True)
+        line_numbers = self.settings.get('editor.show_line_numbers', True)
 
         editor.apply_settings(
             font_family=self.settings.get('editor.font_family', 'Consolas'),
@@ -682,9 +692,54 @@ class MainWindow(QMainWindow):
         )
         
         if path:
+            old_path = editor.file_path
+            if old_path and old_path in self.open_files:
+                del self.open_files[old_path]
             editor.save_file(path)
             self.open_files[path] = editor
             self._update_tab_title(editor)
+
+    def _export_workspace(self):
+        """Exportiert einen redigierten Projekt-Arbeitsstand als JSON."""
+        if not self.current_project:
+            QMessageBox.warning(
+                self,
+                "Kein Projekt geöffnet",
+                "Für den Workspace-Export muss zuerst ein DevCenter-Projekt geöffnet werden.",
+            )
+            return
+
+        default_name = f"{self.current_project.name}-workspace.json"
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Arbeitsstand exportieren",
+            str(Path(self.current_project.path) / default_name),
+            "JSON-Dateien (*.json)",
+        )
+        if not path:
+            return
+
+        try:
+            export_workspace(
+                self.current_project,
+                self.settings,
+                path,
+                problems=self.problems_panel.get_problems(),
+            )
+        except OSError as exc:
+            QMessageBox.critical(
+                self,
+                "Export fehlgeschlagen",
+                f"Der Arbeitsstand konnte nicht gespeichert werden:\n{exc}",
+            )
+            return
+
+        self.statusbar.showMessage(f"Arbeitsstand exportiert: {path}", 5000)
+        QMessageBox.information(
+            self,
+            "Export erfolgreich",
+            "Der redigierte Workspace-Export wurde erfolgreich gespeichert.",
+        )
     
     def _close_tab(self, index: int):
         """Schließt einen Tab"""
@@ -701,7 +756,19 @@ class MainWindow(QMainWindow):
                 )
                 
                 if reply == QMessageBox.StandardButton.Save:
-                    self._save_file()
+                    if widget.file_path:
+                        widget.save_file()
+                        self._update_tab_title(widget)
+                    else:
+                        path, _ = QFileDialog.getSaveFileName(
+                            self, "Speichern unter",
+                            filter="Python-Dateien (*.py);;Alle Dateien (*.*)"
+                        )
+                        if not path:
+                            return
+                        widget.save_file(path)
+                        self.open_files[path] = widget
+                        self._update_tab_title(widget)
                 elif reply == QMessageBox.StandardButton.Cancel:
                     return
             
@@ -1025,22 +1092,40 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, event):
         """Wird beim Schließen aufgerufen"""
-        # Ungespeicherte Dateien prüfen
-        for path, editor in self.open_files.items():
-            if editor.is_modified():
-                reply = QMessageBox.question(
-                    self, "Ungespeicherte Änderungen",
-                    f"'{os.path.basename(path)}' wurde geändert. Speichern?",
-                    QMessageBox.StandardButton.Save |
-                    QMessageBox.StandardButton.Discard |
-                    QMessageBox.StandardButton.Cancel
-                )
-                
-                if reply == QMessageBox.StandardButton.Save:
+        # Alle Editoren prüfen — inkl. neue Dateien ohne Pfad die nicht in open_files stehen
+        editors_to_check = []
+        for index in range(self.editor_tabs.count()):
+            widget = self.editor_tabs.widget(index)
+            if isinstance(widget, CodeEditor) and widget.is_modified():
+                editors_to_check.append(widget)
+
+        for editor in editors_to_check:
+            name = os.path.basename(editor.file_path) if editor.file_path else "Unbenannt"
+            reply = QMessageBox.question(
+                self, "Ungespeicherte Änderungen",
+                f"'{name}' wurde geändert. Speichern?",
+                QMessageBox.StandardButton.Save |
+                QMessageBox.StandardButton.Discard |
+                QMessageBox.StandardButton.Cancel
+            )
+
+            if reply == QMessageBox.StandardButton.Save:
+                if editor.file_path:
                     editor.save_file()
-                elif reply == QMessageBox.StandardButton.Cancel:
-                    event.ignore()
-                    return
+                else:
+                    path, _ = QFileDialog.getSaveFileName(
+                        self, "Speichern unter",
+                        filter="Python-Dateien (*.py);;Alle Dateien (*.*)"
+                    )
+                    if not path:
+                        event.ignore()
+                        return
+                    editor.save_file(path)
+                    self.open_files[path] = editor
+                    self._update_tab_title(editor)
+            elif reply == QMessageBox.StandardButton.Cancel:
+                event.ignore()
+                return
         
         # Fenster-Status speichern
         self.settings.save_window_state(self.saveGeometry(), self.saveState())

@@ -66,47 +66,49 @@ class ProfilerBridge:
         """Initialisiert die Datenbank"""
         with self._lock:
             conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS files (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    path TEXT UNIQUE NOT NULL,
-                    name TEXT NOT NULL,
-                    extension TEXT,
-                    size INTEGER,
-                    modified REAL,
-                    hash TEXT,
-                    content TEXT,
-                    indexed_at REAL,
-                    project_path TEXT
-                )
-            ''')
-            
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_name ON files(name)
-            ''')
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_extension ON files(extension)
-            ''')
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_hash ON files(hash)
-            ''')
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_project ON files(project_path)
-            ''')
-            
-            # Volltext-Index
-            cursor.execute('''
-                CREATE VIRTUAL TABLE IF NOT EXISTS files_fts USING fts5(
-                    path, name, content,
-                    content='files',
-                    content_rowid='id'
-                )
-            ''')
-            
-            conn.commit()
-            conn.close()
+            try:
+                cursor = conn.cursor()
+
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS files (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        path TEXT UNIQUE NOT NULL,
+                        name TEXT NOT NULL,
+                        extension TEXT,
+                        size INTEGER,
+                        modified REAL,
+                        hash TEXT,
+                        content TEXT,
+                        indexed_at REAL,
+                        project_path TEXT
+                    )
+                ''')
+
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_name ON files(name)
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_extension ON files(extension)
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_hash ON files(hash)
+                ''')
+                cursor.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_project ON files(project_path)
+                ''')
+
+                # Volltext-Index
+                cursor.execute('''
+                    CREATE VIRTUAL TABLE IF NOT EXISTS files_fts USING fts5(
+                        path, name, content,
+                        content='files',
+                        content_rowid='id'
+                    )
+                ''')
+
+                conn.commit()
+            finally:
+                conn.close()
     
     def _get_connection(self) -> sqlite3.Connection:
         """Gibt eine Thread-sichere Verbindung zurück"""
@@ -165,32 +167,34 @@ class ProfilerBridge:
             
             with self._lock:
                 conn = self._get_connection()
-                cursor = conn.cursor()
-                
-                cursor.execute('''
-                    INSERT OR REPLACE INTO files 
-                    (path, name, extension, size, modified, hash, content, indexed_at, project_path)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (
-                    str(path),
-                    path.name,
-                    path.suffix.lower(),
-                    stat.st_size,
-                    stat.st_mtime,
-                    file_hash,
-                    content,
-                    datetime.now().timestamp(),
-                    project_path
-                ))
-                
-                # FTS aktualisieren
-                cursor.execute('''
-                    INSERT OR REPLACE INTO files_fts (rowid, path, name, content)
-                    SELECT id, path, name, content FROM files WHERE path = ?
-                ''', (str(path),))
-                
-                conn.commit()
-                conn.close()
+                try:
+                    cursor = conn.cursor()
+
+                    cursor.execute('''
+                        INSERT OR REPLACE INTO files
+                        (path, name, extension, size, modified, hash, content, indexed_at, project_path)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        str(path),
+                        path.name,
+                        path.suffix.lower(),
+                        stat.st_size,
+                        stat.st_mtime,
+                        file_hash,
+                        content,
+                        datetime.now().timestamp(),
+                        project_path
+                    ))
+
+                    # FTS aktualisieren
+                    cursor.execute('''
+                        INSERT OR REPLACE INTO files_fts (rowid, path, name, content)
+                        SELECT id, path, name, content FROM files WHERE path = ?
+                    ''', (str(path),))
+
+                    conn.commit()
+                finally:
+                    conn.close()
             
             return True
             
@@ -230,9 +234,12 @@ class ProfilerBridge:
         
         files = [f for f in files if f.is_file()]
         
-        # Ausschlüsse
+        # Ausschlüsse (Pfad-Komponenten, nicht Substring)
         excludes = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
-        files = [f for f in files if not any(e in str(f) for e in excludes)]
+        files = [
+            f for f in files
+            if f.is_relative_to(path) and not any(part in excludes for part in f.relative_to(path).parts)
+        ]
         
         total = len(files)
         indexed = 0
@@ -264,11 +271,11 @@ class ProfilerBridge:
             Liste von SearchResults
         """
         results = []
-        
+        conn = None
         try:
             conn = self._get_connection()
             cursor = conn.cursor()
-            
+
             # Name/Pfad-Suche
             sql = '''
                 SELECT path, name, extension, size, modified, hash
@@ -276,15 +283,15 @@ class ProfilerBridge:
                 WHERE (name LIKE ? OR path LIKE ?)
             '''
             params = [f'%{query}%', f'%{query}%']
-            
+
             if project_path:
                 sql += ' AND project_path = ?'
                 params.append(project_path)
-            
+
             sql += f' LIMIT {limit}'
-            
+
             cursor.execute(sql, params)
-            
+
             for row in cursor.fetchall():
                 file_info = FileInfo(
                     path=row[0],
@@ -298,21 +305,27 @@ class ProfilerBridge:
                     file=file_info,
                     match_type='name' if query.lower() in row[1].lower() else 'path'
                 ))
-            
+
             # Volltext-Suche
             if search_content and len(results) < limit:
                 remaining = limit - len(results)
                 found_paths = {r.file.path for r in results}
-                
-                cursor.execute(f'''
+
+                fts_sql = f'''
                     SELECT f.path, f.name, f.extension, f.size, f.modified, f.hash,
                            snippet(files_fts, 2, '>>>', '<<<', '...', 32) as context
                     FROM files_fts fts
                     JOIN files f ON f.id = fts.rowid
                     WHERE files_fts MATCH ?
-                    LIMIT {remaining}
-                ''', (query,))
-                
+                '''
+                fts_params = [query]
+                if project_path:
+                    fts_sql += ' AND f.project_path = ?'
+                    fts_params.append(project_path)
+                fts_sql += f' LIMIT {remaining}'
+
+                cursor.execute(fts_sql, fts_params)
+
                 for row in cursor.fetchall():
                     if row[0] not in found_paths:
                         file_info = FileInfo(
@@ -328,12 +341,13 @@ class ProfilerBridge:
                             match_type='content',
                             match_context=row[6] if row[6] else ""
                         ))
-            
-            conn.close()
-            
+
         except Exception as e:
             print(f"Such-Fehler: {e}")
-        
+        finally:
+            if conn:
+                conn.close()
+
         return results
     
     def find_duplicates(self, project_path: str = None) -> Dict[str, List[str]]:
@@ -347,32 +361,35 @@ class ProfilerBridge:
             Dict mit Hash -> Liste von Pfaden
         """
         duplicates = {}
-        
+        conn = None
         try:
             conn = self._get_connection()
             cursor = conn.cursor()
-            
+
             sql = '''
                 SELECT hash, GROUP_CONCAT(path, '|||') as paths
                 FROM files
                 WHERE hash IS NOT NULL AND hash != ''
             '''
-            
+            params = []
+
             if project_path:
-                sql += f" AND project_path = '{project_path}'"
-            
+                sql += ' AND project_path = ?'
+                params.append(project_path)
+
             sql += ' GROUP BY hash HAVING COUNT(*) > 1'
-            
-            cursor.execute(sql)
-            
+
+            cursor.execute(sql, params)
+
             for row in cursor.fetchall():
                 duplicates[row[0]] = row[1].split('|||')
-            
-            conn.close()
-            
+
         except Exception as e:
             print(f"Duplikat-Suche Fehler: {e}")
-        
+        finally:
+            if conn:
+                conn.close()
+
         return duplicates
     
     def get_statistics(self, project_path: str = None) -> Dict:
@@ -391,44 +408,46 @@ class ProfilerBridge:
             'by_extension': {},
             'last_indexed': None
         }
-        
+        conn = None
         try:
             conn = self._get_connection()
             cursor = conn.cursor()
-            
-            where = f"WHERE project_path = '{project_path}'" if project_path else ""
-            
+
+            where = 'WHERE project_path = ?' if project_path else ''
+            params = [project_path] if project_path else []
+
             # Gesamt
-            cursor.execute(f'SELECT COUNT(*), SUM(size) FROM files {where}')
+            cursor.execute(f'SELECT COUNT(*), SUM(size) FROM files {where}', params)
             row = cursor.fetchone()
             stats['total_files'] = row[0] or 0
             stats['total_size'] = row[1] or 0
-            
+
             # Nach Extension
             cursor.execute(f'''
                 SELECT extension, COUNT(*), SUM(size)
                 FROM files {where}
                 GROUP BY extension
                 ORDER BY COUNT(*) DESC
-            ''')
-            
+            ''', params)
+
             for row in cursor.fetchall():
                 stats['by_extension'][row[0] or '(keine)'] = {
                     'count': row[1],
                     'size': row[2] or 0
                 }
-            
+
             # Letzter Index
-            cursor.execute(f'SELECT MAX(indexed_at) FROM files {where}')
+            cursor.execute(f'SELECT MAX(indexed_at) FROM files {where}', params)
             row = cursor.fetchone()
             if row[0]:
                 stats['last_indexed'] = datetime.fromtimestamp(row[0])
-            
-            conn.close()
-            
+
         except Exception as e:
             print(f"Statistik-Fehler: {e}")
-        
+        finally:
+            if conn:
+                conn.close()
+
         return stats
     
     def clear_index(self, project_path: str = None):
@@ -440,18 +459,20 @@ class ProfilerBridge:
         """
         with self._lock:
             conn = self._get_connection()
-            cursor = conn.cursor()
-            
-            if project_path:
-                cursor.execute('DELETE FROM files WHERE project_path = ?', (project_path,))
-            else:
-                cursor.execute('DELETE FROM files')
-            
-            # FTS rebuilden
-            cursor.execute('INSERT INTO files_fts(files_fts) VALUES("rebuild")')
-            
-            conn.commit()
-            conn.close()
+            try:
+                cursor = conn.cursor()
+
+                if project_path:
+                    cursor.execute('DELETE FROM files WHERE project_path = ?', (project_path,))
+                else:
+                    cursor.execute('DELETE FROM files')
+
+                # FTS rebuilden
+                cursor.execute('INSERT INTO files_fts(files_fts) VALUES("rebuild")')
+
+                conn.commit()
+            finally:
+                conn.close()
 
 
 if __name__ == "__main__":

@@ -152,16 +152,16 @@ class EventBus(QObject):
         if len(self._event_history) > self._max_history:
             self._event_history.pop(0)
         
-        # Spezifische Subscriber benachrichtigen
+        # Spezifische Subscriber benachrichtigen (Kopie, falls Callback unsubscribed)
         if event_type in self._subscribers:
-            for callback in self._subscribers[event_type]:
+            for callback in list(self._subscribers[event_type]):
                 try:
                     callback(event)
                 except Exception as e:
                     print(f"Event Handler Error: {e}")
-        
-        # Globale Subscriber benachrichtigen
-        for callback in self._global_subscribers:
+
+        # Globale Subscriber benachrichtigen (Kopie, falls Callback unsubscribed)
+        for callback in list(self._global_subscribers):
             try:
                 callback(event)
             except Exception as e:
