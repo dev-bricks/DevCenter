@@ -171,9 +171,18 @@ class ProfilerBridge:
                     cursor = conn.cursor()
 
                     cursor.execute('''
-                        INSERT OR REPLACE INTO files
+                        INSERT INTO files
                         (path, name, extension, size, modified, hash, content, indexed_at, project_path)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT(path) DO UPDATE SET
+                            name=excluded.name,
+                            extension=excluded.extension,
+                            size=excluded.size,
+                            modified=excluded.modified,
+                            hash=excluded.hash,
+                            content=excluded.content,
+                            indexed_at=excluded.indexed_at,
+                            project_path=excluded.project_path
                     ''', (
                         str(path),
                         path.name,
