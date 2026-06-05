@@ -177,6 +177,10 @@ class OutputPanel(QWidget):
             QProcess.ProcessError.UnknownError: "Unbekannter Fehler"
         }
         self.append_error(f"\n⚠ {error_messages.get(error, 'Fehler')}")
+        if error == QProcess.ProcessError.FailedToStart:
+            self.run_button.setEnabled(True)
+            self.stop_button.setEnabled(False)
+            self.status_label.setText("Fehler: Prozess konnte nicht gestartet werden")
     
     def append_output(self, text: str):
         """Fügt normale Ausgabe hinzu"""

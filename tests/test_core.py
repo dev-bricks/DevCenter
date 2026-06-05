@@ -1066,6 +1066,20 @@ class TestKompilatorSubprocessEncoding(unittest.TestCase):
                       "build() Popen muss encoding='utf-8' angeben")
 
 
+class TestOutputPanelFailedToStartResetsUI(unittest.TestCase):
+    """Statischer Test: OutputPanel._on_error muss bei FailedToStart die Buttons zurücksetzen."""
+
+    def test_on_error_resets_buttons_on_failed_to_start(self):
+        """Bei FailedToStart feuert Qt kein finished() — ohne Reset bleibt run_button dauerhaft deaktiviert."""
+        import inspect
+        from gui.panels.output_panel import OutputPanel
+        source = inspect.getsource(OutputPanel._on_error)
+        self.assertIn('FailedToStart', source,
+                      "_on_error muss FailedToStart-Fall behandeln")
+        self.assertIn('run_button.setEnabled(True)', source,
+                      "_on_error muss run_button bei FailedToStart wieder aktivieren")
+
+
 class TestNewProjectDialogPathUpdate(unittest.TestCase):
     """Statischer Test: path_edit muss textChanged mit _update_path verbinden."""
 
