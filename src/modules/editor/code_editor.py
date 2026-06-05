@@ -586,7 +586,8 @@ class CodeEditor(QPlainTextEdit):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
+            self._is_modified = True  # verhindert spurious file_modified(True) durch setPlainText
             self.setPlainText(content)
             self.file_path = file_path
             self._is_modified = False

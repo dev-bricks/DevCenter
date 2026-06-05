@@ -1104,6 +1104,22 @@ class TestNewProjectDialogPathUpdate(unittest.TestCase):
                       "path_edit.textChanged muss mit _update_path verbunden sein")
 
 
+class TestCodeEditorLoadFileNoSpuriousSignal(unittest.TestCase):
+    """CodeEditor.load_file() darf kein spurious file_modified(True) emittieren."""
+
+    def test_load_file_suppresses_spurious_modified_signal(self):
+        """setPlainText triggert textChanged; ohne Guard wird file_modified(True) fälschlich emittiert."""
+        import inspect
+        from modules.editor.code_editor import CodeEditor
+        source = inspect.getsource(CodeEditor.load_file)
+        # _is_modified=True muss VOR setPlainText erscheinen
+        idx_guard = source.find('self._is_modified = True')
+        idx_set = source.find('self.setPlainText(content)')
+        self.assertGreater(idx_guard, -1, "load_file muss _is_modified=True vor setPlainText setzen")
+        self.assertLess(idx_guard, idx_set,
+                        "Guard _is_modified=True muss vor setPlainText(content) stehen")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)
