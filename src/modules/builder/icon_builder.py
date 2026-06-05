@@ -7,7 +7,7 @@ Basierend auf IcoBuilder
 
 import os
 from pathlib import Path
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 
 
 class IcoBuilder:
@@ -23,7 +23,7 @@ class IcoBuilder:
     def __init__(self):
         self._pillow_available = False
         try:
-            from PIL import Image
+            from PIL import Image  # noqa: F401
             self._pillow_available = True
         except ImportError:
             pass

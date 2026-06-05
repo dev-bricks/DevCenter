@@ -7,10 +7,9 @@ Basierend auf Entwicklerschleife V3
 
 import os
 import asyncio
-from typing import Optional, List, Dict, Any, Callable, AsyncGenerator
+from typing import Optional, List, Dict, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-import json
 
 
 class AIModel(Enum):

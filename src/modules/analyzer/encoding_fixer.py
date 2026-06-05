@@ -5,9 +5,8 @@ Repariert Encoding-Probleme in Dateien
 Basierend auf EncodingFixer mit ftfy
 """
 
-import os
 from pathlib import Path
-from typing import Optional, Tuple, List
+from typing import Tuple, List
 import chardet
 
 
@@ -32,7 +31,7 @@ class EncodingFixer:
     def __init__(self):
         self._ftfy_available = False
         try:
-            import ftfy
+            import ftfy  # noqa: F401
             self._ftfy_available = True
         except ImportError:
             pass

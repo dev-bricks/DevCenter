@@ -9,9 +9,9 @@ from PySide6.QtWidgets import (
     QPushButton, QLabel, QComboBox, QLineEdit
 )
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QIcon
+from PySide6.QtGui import QColor
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 from enum import Enum
 
 

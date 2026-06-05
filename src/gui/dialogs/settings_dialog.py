@@ -4,14 +4,11 @@ DevCenter - Settings Dialog
 Einstellungen für Editor, Build, AI und mehr
 """
 
-import os
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTabWidget, QWidget,
     QFormLayout, QLineEdit, QSpinBox, QCheckBox, QComboBox,
     QPushButton, QLabel, QFileDialog, QGroupBox, QMessageBox
 )
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
 
 
 class SettingsDialog(QDialog):

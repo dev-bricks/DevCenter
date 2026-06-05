@@ -8,8 +8,7 @@ Basierend auf ThirdPartyLicenses
 import subprocess
 import sys
 import json
-from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 
 
@@ -33,7 +32,7 @@ class LicenseGenerator:
     def __init__(self):
         self._pip_licenses_available = False
         try:
-            import pip_licenses
+            import pip_licenses  # noqa: F401
             self._pip_licenses_available = True
         except ImportError:
             pass
@@ -150,13 +149,13 @@ class LicenseGenerator:
         
         try:
             lines = [
-                f"THIRD-PARTY SOFTWARE NOTICES AND INFORMATION",
-                f"",
+                "THIRD-PARTY SOFTWARE NOTICES AND INFORMATION",
+                "",
                 f"This software ({app_name} {app_version}) incorporates components from",
-                f"the projects listed below.",
-                f"",
-                f"=" * 70,
-                f""
+                "the projects listed below.",
+                "",
+                "=" * 70,
+                ""
             ]
             
             for lic in sorted(licenses, key=lambda x: x.name.lower()):

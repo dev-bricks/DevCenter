@@ -8,9 +8,8 @@ Basierend auf MethodenAnalyser V3
 import ast
 import os
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Optional, Set
 from dataclasses import dataclass, field
-from collections import defaultdict
 
 
 @dataclass
@@ -477,13 +476,13 @@ class MethodAnalyzer:
         lines = [
             f"=== Analyse: {os.path.basename(result.file_path)} ===",
             "",
-            f"📊 Statistiken:",
+            "📊 Statistiken:",
             f"   Zeilen gesamt: {result.total_lines}",
             f"   Code-Zeilen: {result.code_lines}",
             f"   Kommentare: {result.comment_lines}",
             f"   Leerzeilen: {result.blank_lines}",
             "",
-            f"📦 Struktur:",
+            "📦 Struktur:",
             f"   Klassen: {len(result.classes)}",
             f"   Funktionen: {len(result.functions)}",
             f"   Imports: {len(result.imports)}",

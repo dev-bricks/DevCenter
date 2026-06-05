@@ -7,11 +7,11 @@ Wizard für EXE-Erstellung
 import os
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit,
-    QCheckBox, QComboBox, QPushButton, QLabel, QGroupBox,
+    QCheckBox, QPushButton, QLabel, QGroupBox,
     QFileDialog, QProgressBar, QTextEdit, QTabWidget, QWidget,
-    QListWidget, QListWidgetItem
+    QListWidget
 )
-from PySide6.QtCore import Qt, Signal, QThread
+from PySide6.QtCore import Signal, QThread
 from typing import Optional
 
 

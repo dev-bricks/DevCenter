@@ -12,17 +12,17 @@ from typing import Optional, Dict
 
 from PySide6.QtWidgets import (
     QMainWindow, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QTabWidget, QMenuBar, QMenu, QToolBar, QStatusBar, QSplitter,
-    QLabel, QPushButton, QMessageBox, QFileDialog, QDockWidget, QInputDialog
+    QTabWidget, QToolBar, QStatusBar, QSplitter,
+    QLabel, QPushButton, QMessageBox, QFileDialog, QInputDialog
 )
-from PySide6.QtCore import Qt, QTimer, QSize, Signal
-from PySide6.QtGui import QAction, QFont, QKeySequence, QIcon, QTextCursor
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QAction, QKeySequence, QIcon, QTextCursor
 
 # Lokale Imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.project_manager import ProjectManager, ProjectConfig
-from core.settings_manager import SettingsManager, get_settings
-from core.event_bus import EventBus, EventType, get_event_bus
+from core.settings_manager import get_settings
+from core.event_bus import EventType, get_event_bus
 from core.workspace_export import export_workspace
 from modules.editor.code_editor import CodeEditor
 from modules.analyzer import MethodAnalyzer, AnalysisResult

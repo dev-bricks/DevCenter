@@ -10,7 +10,7 @@ import sqlite3
 import hashlib
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Optional, Generator
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 import threading
 
@@ -320,7 +320,7 @@ class ProfilerBridge:
                 remaining = limit - len(results)
                 found_paths = {r.file.path for r in results}
 
-                fts_sql = f'''
+                fts_sql = '''
                     SELECT f.path, f.name, f.extension, f.size, f.modified, f.hash,
                            snippet(files_fts, 2, '>>>', '<<<', '...', 32) as context
                     FROM files_fts fts

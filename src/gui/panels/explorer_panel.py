@@ -5,13 +5,11 @@ Datei-Navigation und Projekt-Struktur
 """
 
 import os
-from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit,
     QPushButton, QMenu, QLabel, QMessageBox, QInputDialog
 )
-from PySide6.QtCore import Qt, Signal, QDir, QModelIndex
-from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, Signal, QModelIndex
 from PySide6.QtWidgets import QFileSystemModel
 
 

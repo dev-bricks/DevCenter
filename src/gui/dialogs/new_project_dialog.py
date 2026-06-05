@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QLineEdit, QTextEdit, QPushButton, QFileDialog,
     QLabel, QComboBox, QGroupBox, QCheckBox
 )
-from PySide6.QtCore import Qt
 
 
 class NewProjectDialog(QDialog):

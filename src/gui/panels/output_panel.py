@@ -8,9 +8,9 @@ import os
 import sys
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit,
-    QPushButton, QComboBox, QLabel, QToolBar
+    QPushButton, QLabel
 )
-from PySide6.QtCore import Qt, Signal, QProcess, QTimer
+from PySide6.QtCore import Signal, QProcess
 from PySide6.QtGui import QFont, QTextCharFormat, QColor, QTextCursor
 
 

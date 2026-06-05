@@ -9,10 +9,9 @@ import os
 import sys
 import subprocess
 import shutil
-import json
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Callable
-from dataclasses import dataclass, asdict
+from typing import Optional, List, Callable
+from dataclasses import dataclass
 from datetime import datetime
 
 
@@ -182,7 +181,7 @@ class Kompilator:
         
         # PyInstaller-Kommando zusammenstellen
         cmd = self._build_command(config)
-        self._emit_progress(15, f"Starte PyInstaller...")
+        self._emit_progress(15, "Starte PyInstaller...")
         self._log.append(f"Kommando: {' '.join(cmd)}")
         
         # PyInstaller ausführen

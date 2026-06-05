@@ -9,12 +9,10 @@ import os
 import shutil
 import sqlite3
 import hashlib
-import json
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Optional, Callable, Set
 from dataclasses import dataclass, field
-from concurrent.futures import ThreadPoolExecutor
 import fnmatch
 import threading
 

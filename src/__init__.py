@@ -15,4 +15,4 @@ __version__ = "1.0.0"
 __author__ = "Lukas"
 __app_name__ = "DevCenter"
 
-from .core import ProjectManager, SettingsManager, EventBus
+from .core import ProjectManager as ProjectManager, SettingsManager as SettingsManager, EventBus as EventBus

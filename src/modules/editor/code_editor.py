@@ -5,19 +5,16 @@ Syntax-highlighted Python Editor basierend auf PythonBox
 """
 
 import sys
-import re
-from pathlib import Path
 from typing import Optional
 
 from PySide6.QtWidgets import (
-    QPlainTextEdit, QWidget, QVBoxLayout, QHBoxLayout,
-    QTextEdit, QFrame, QMenu, QApplication
+    QPlainTextEdit, QWidget, QTextEdit, QApplication
 )
 from PySide6.QtCore import Qt, QRect, QSize, Signal, QRegularExpression
 from PySide6.QtGui import (
     QColor, QPainter, QTextFormat, QFont, QFontMetrics,
     QSyntaxHighlighter, QTextCharFormat, QTextCursor, QPalette,
-    QKeySequence, QShortcut, QAction
+    QKeySequence, QAction
 )
 
 
