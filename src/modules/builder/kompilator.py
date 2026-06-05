@@ -187,7 +187,7 @@ class Kompilator:
         
         # PyInstaller ausführen
         try:
-            process = subprocess.Popen(
+            with subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -195,38 +195,37 @@ class Kompilator:
                 encoding='utf-8',
                 errors='replace',
                 cwd=os.path.dirname(config.script_path) or '.'
-            )
-            
-            progress = 20
-            warnings = []
-            
-            while True:
-                line = process.stdout.readline()
-                if not line and process.poll() is not None:
-                    break
-                
-                line = line.strip()
-                if line:
-                    self._log.append(line)
-                    
-                    # Fortschritt schätzen
-                    if "Analyzing" in line:
-                        progress = min(progress + 5, 40)
-                    elif "Processing" in line:
-                        progress = min(progress + 2, 60)
-                    elif "Building" in line:
-                        progress = min(progress + 10, 80)
-                    elif "Copying" in line:
-                        progress = min(progress + 5, 90)
-                    
-                    # Warnungen sammeln
-                    if "WARNING" in line:
-                        warnings.append(line)
-                    
-                    self._emit_progress(progress, line[:100])
-            
-            return_code = process.returncode
-            
+            ) as process:
+                progress = 20
+                warnings = []
+
+                while True:
+                    line = process.stdout.readline()
+                    if not line and process.poll() is not None:
+                        break
+
+                    line = line.strip()
+                    if line:
+                        self._log.append(line)
+
+                        # Fortschritt schätzen
+                        if "Analyzing" in line:
+                            progress = min(progress + 5, 40)
+                        elif "Processing" in line:
+                            progress = min(progress + 2, 60)
+                        elif "Building" in line:
+                            progress = min(progress + 10, 80)
+                        elif "Copying" in line:
+                            progress = min(progress + 5, 90)
+
+                        # Warnungen sammeln
+                        if "WARNING" in line:
+                            warnings.append(line)
+
+                        self._emit_progress(progress, line[:100])
+
+                return_code = process.returncode
+
         except Exception as e:
             return BuildResult(
                 success=False,
