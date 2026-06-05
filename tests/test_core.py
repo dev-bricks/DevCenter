@@ -1017,6 +1017,45 @@ class TestSettingsManagerSavePreservesRecentProjects(unittest.TestCase):
             shutil.rmtree(tmpdir, ignore_errors=True)
 
 
+class TestWinStorePublisherLambdaCapture(unittest.TestCase):
+    """Bug 13: Lambda in except-Block fängt gelöschte Variable `e` ein.
+
+    Python 3 löscht die Variable `e` aus `except Exception as e:` am Ende des
+    except-Blocks. Ein Lambda, das `e` per Closure-Referenz nutzt, wirft dann
+    NameError wenn es später (z.B. via Tkinter after()) ausgeführt wird.
+    Fix: Wert vor dem Lambda in eine lokale Variable kopieren.
+    """
+
+    def _get_source(self):
+        import pathlib
+        p = (pathlib.Path(__file__).parent.parent
+             / "resources" / "WinStorePackager" / "WindowsStorePublisher_3.py")
+        return p.read_text(encoding="utf-8")
+
+    def test_no_bare_lambda_e_in_except_blocks(self):
+        """Kein Lambda darf die except-Variable `e` direkt (ohne Kopie) in einem f-String nutzen."""
+        import re
+        source = self._get_source()
+        lines = source.splitlines()
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            # Suche nach self.after(0, lambda...) das {e} direkt enthält
+            if ('self.after(' in stripped and 'lambda' in stripped and '{e}' in stripped):
+                # Prüfe ob in den 4 vorangehenden Zeilen ein 'except ... as e:' steht
+                context = '\n'.join(lines[max(0, i - 4):i])
+                if re.search(r'except\s+\w[\w.]*\s+as\s+e\s*:', context):
+                    self.fail(
+                        f"Zeile {i + 1}: lambda nutzt {{e}} direkt in except-Block — "
+                        f"NameError nach Block-Ende (Bug 13). Fix: err_msg = str(e) vor lambda."
+                    )
+
+    def test_err_msg_variable_used_in_build_thread(self):
+        """build_thread() muss err_msg als Zwischenvariable vor dem Lambda setzen."""
+        source = self._get_source()
+        self.assertIn('err_msg = f"MSIX-Build fehlgeschlagen:', source,
+                      "err_msg-Kopie vor Lambda in build_thread() fehlt (Bug 13 Fix)")
+
+
 class TestProjectManagerUnknownFields(unittest.TestCase):
     """Bug 37 — ProjectConfig(**data) mit unbekannten Feldern"""
 

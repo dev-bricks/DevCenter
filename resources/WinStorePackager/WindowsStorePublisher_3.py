@@ -991,7 +991,8 @@ def patch_widgets(translator):
                 self.after(0, lambda: messagebox.showerror("PyInstaller Fehler", f"{err_out}"))
             except Exception as e:
                 progress.close()
-                self.after(0, lambda: messagebox.showerror("Fehler", f"EXE-Erzeugung fehlgeschlagen:\n{e}"))
+                err_msg = f"EXE-Erzeugung fehlgeschlagen:\n{e}"
+                self.after(0, lambda: messagebox.showerror("Fehler", err_msg))
         
         thread = threading.Thread(target=build_thread, daemon=True)
         thread.start()
@@ -1151,8 +1152,8 @@ def patch_widgets(translator):
                 self.after(0, lambda: messagebox.showerror("Fehler", error_msg))
             except Exception as e:
                 progress.close()
-                self.after(0, lambda: messagebox.showerror("Fehler", 
-                    f"MSIX-Build fehlgeschlagen:\n{e}"))
+                err_msg = f"MSIX-Build fehlgeschlagen:\n{e}"
+                self.after(0, lambda: messagebox.showerror("Fehler", err_msg))
         
         thread = threading.Thread(target=build_thread, daemon=True)
         thread.start()
