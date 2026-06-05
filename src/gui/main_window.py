@@ -1123,7 +1123,13 @@ class MainWindow(QMainWindow):
 
             if reply == QMessageBox.StandardButton.Save:
                 if editor.file_path:
-                    editor.save_file()
+                    if not editor.save_file():
+                        QMessageBox.critical(
+                            self, "Fehler beim Speichern",
+                            f"'{name}' konnte nicht gespeichert werden."
+                        )
+                        event.ignore()
+                        return
                 else:
                     path, _ = QFileDialog.getSaveFileName(
                         self, "Speichern unter",
@@ -1132,7 +1138,13 @@ class MainWindow(QMainWindow):
                     if not path:
                         event.ignore()
                         return
-                    editor.save_file(path)
+                    if not editor.save_file(path):
+                        QMessageBox.critical(
+                            self, "Fehler beim Speichern",
+                            f"'{name}' konnte nicht gespeichert werden."
+                        )
+                        event.ignore()
+                        return
                     self.open_files[path] = editor
                     self._update_tab_title(editor)
             elif reply == QMessageBox.StandardButton.Cancel:

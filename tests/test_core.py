@@ -1066,6 +1066,18 @@ class TestKompilatorSubprocessEncoding(unittest.TestCase):
                       "build() Popen muss encoding='utf-8' angeben")
 
 
+class TestCloseEventChecksSaveReturnValue(unittest.TestCase):
+    """closeEvent() muss den Rückgabewert von save_file() prüfen und bei Fehler abbrechen."""
+
+    def test_close_event_checks_save_file_return_value(self):
+        """Ohne Prüfung schließt das Fenster bei fehlgeschlagenem Speichern und Daten gehen verloren."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow.closeEvent)
+        self.assertIn('not editor.save_file()', source,
+                      "closeEvent muss save_file()-Rückgabewert prüfen")
+
+
 class TestOutputPanelFailedToStartResetsUI(unittest.TestCase):
     """Statischer Test: OutputPanel._on_error muss bei FailedToStart die Buttons zurücksetzen."""
 
