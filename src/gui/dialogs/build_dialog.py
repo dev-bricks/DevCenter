@@ -476,6 +476,11 @@ class BuildDialog(QDialog):
 
     def reject(self):
         if self._worker and self._worker.isRunning():
-            self._worker.quit()
+            try:
+                self._worker.finished.disconnect(self._on_finished)
+                self._worker.progress.disconnect(self._on_progress)
+            except RuntimeError:
+                pass
+            self._worker.terminate()  # quit() hat keinen Effekt ohne Event-Loop
             self._worker.wait(3000)
         super().reject()

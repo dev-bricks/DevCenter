@@ -728,7 +728,7 @@ class TestBuildDialogWorkerCleanup(unittest.TestCase):
         from gui.dialogs.build_dialog import BuildDialog
         source = inspect.getsource(BuildDialog)
         self.assertIn('def reject(self)', source, "BuildDialog muss reject() überschreiben")
-        self.assertIn('_worker.quit()', source, "reject() muss den Worker-Thread stoppen")
+        self.assertIn('_worker.terminate()', source, "reject() muss terminate() aufrufen (quit() hat keinen Effekt ohne Event-Loop)")
 
 
 class TestMainWindowShortcuts(unittest.TestCase):
@@ -1130,6 +1130,27 @@ class TestCodeEditorLoadFileNoSpuriousSignal(unittest.TestCase):
         self.assertGreater(idx_guard, -1, "load_file muss _is_modified=True vor setPlainText setzen")
         self.assertLess(idx_guard, idx_set,
                         "Guard _is_modified=True muss vor setPlainText(content) stehen")
+
+
+class TestBuildDialogRejectUsesTerminate(unittest.TestCase):
+    """Bug 10: reject() nutzte quit() auf synchronem QThread — hat keinen Effekt.
+    Signale müssen vorher getrennt werden, dann terminate() statt quit()."""
+
+    def test_reject_uses_terminate_not_quit(self):
+        import inspect
+        from gui.dialogs.build_dialog import BuildDialog
+        source = inspect.getsource(BuildDialog.reject)
+        self.assertNotIn('self._worker.quit()', source,
+                         "reject() darf nicht quit() auf synchronem Worker aufrufen")
+        self.assertIn('terminate()', source,
+                      "reject() muss terminate() verwenden um synchronen Worker zu stoppen")
+
+    def test_reject_disconnects_signals_before_terminating(self):
+        import inspect
+        from gui.dialogs.build_dialog import BuildDialog
+        source = inspect.getsource(BuildDialog.reject)
+        self.assertIn('disconnect', source,
+                      "reject() muss Signale trennen bevor der Worker terminiert wird")
 
 
 class TestOutputPanelRunCommandGuardCoversStartingState(unittest.TestCase):
