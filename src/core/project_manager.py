@@ -322,7 +322,8 @@ python src/main.py
         if len(valid_projects) != len(self.recent_projects):
             self.recent_projects = valid_projects
             self._save_recent_projects()
-        
+            self.recent_projects_changed.emit(self.recent_projects)
+
         return self.recent_projects
     
     def clear_recent_projects(self):

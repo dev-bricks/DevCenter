@@ -81,6 +81,15 @@ class TestProjectManager(unittest.TestCase):
         result = self.pm.create_project("CorruptSettingsTest", project_dir)
         self.assertIsNotNone(result, "create_project muss trotz korrupter settings.json funktionieren")
 
+    def test_get_recent_projects_emits_signal_on_stale_cleanup(self):
+        """Regression: get_recent_projects() muss recent_projects_changed emittieren wenn
+        veraltete Einträge entfernt werden — ohne Fix bleibt die UI-Darstellung der Liste veraltet."""
+        import inspect
+        from core.project_manager import ProjectManager
+        source = inspect.getsource(ProjectManager.get_recent_projects)
+        self.assertIn('recent_projects_changed.emit', source,
+                      "get_recent_projects() muss recent_projects_changed emittieren wenn veraltete Einträge entfernt wurden")
+
 
 class TestSettingsManager(unittest.TestCase):
     """Tests für SettingsManager"""
