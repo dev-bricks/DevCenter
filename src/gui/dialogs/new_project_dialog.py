@@ -52,6 +52,7 @@ class NewProjectDialog(QDialog):
         self.path_edit.setPlaceholderText("Projektverzeichnis wählen...")
         default_path = str(Path.home() / "Documents" / "DevCenter Projects")
         self.path_edit.setText(default_path)
+        self.path_edit.textChanged.connect(self._update_path)
         path_layout.addWidget(self.path_edit)
         
         browse_btn = QPushButton("📁 Durchsuchen")

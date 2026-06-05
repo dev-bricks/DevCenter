@@ -1066,6 +1066,18 @@ class TestKompilatorSubprocessEncoding(unittest.TestCase):
                       "build() Popen muss encoding='utf-8' angeben")
 
 
+class TestNewProjectDialogPathUpdate(unittest.TestCase):
+    """Statischer Test: path_edit muss textChanged mit _update_path verbinden."""
+
+    def test_path_edit_connected_to_update_path(self):
+        """Ohne Verbindung: manuelles Tippen in path_edit lässt full_path_label veralten."""
+        import inspect
+        from gui.dialogs.new_project_dialog import NewProjectDialog
+        source = inspect.getsource(NewProjectDialog._setup_ui)
+        self.assertIn('path_edit.textChanged.connect', source,
+                      "path_edit.textChanged muss mit _update_path verbunden sein")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)
