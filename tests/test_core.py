@@ -1104,6 +1104,18 @@ class TestNewProjectDialogPathUpdate(unittest.TestCase):
                       "path_edit.textChanged muss mit _update_path verbunden sein")
 
 
+class TestCloseTabChecksSaveReturnValue(unittest.TestCase):
+    """_close_tab() muss den Rückgabewert von save_file() prüfen und bei Fehler abbrechen."""
+
+    def test_close_tab_checks_save_file_return_value(self):
+        """Ohne Prüfung schließt der Tab bei fehlgeschlagenem Speichern und Daten gehen verloren."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow._close_tab)
+        self.assertIn('not widget.save_file()', source,
+                      "_close_tab muss save_file()-Rückgabewert prüfen")
+
+
 class TestCodeEditorLoadFileNoSpuriousSignal(unittest.TestCase):
     """CodeEditor.load_file() darf kein spurious file_modified(True) emittieren."""
 

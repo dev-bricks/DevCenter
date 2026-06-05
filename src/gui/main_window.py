@@ -769,7 +769,12 @@ class MainWindow(QMainWindow):
                 
                 if reply == QMessageBox.StandardButton.Save:
                     if widget.file_path:
-                        widget.save_file()
+                        if not widget.save_file():
+                            QMessageBox.critical(
+                                self, "Fehler beim Speichern",
+                                f"Die Datei konnte nicht gespeichert werden:\n{widget.file_path}"
+                            )
+                            return
                         self._update_tab_title(widget)
                     else:
                         path, _ = QFileDialog.getSaveFileName(
@@ -778,7 +783,12 @@ class MainWindow(QMainWindow):
                         )
                         if not path:
                             return
-                        widget.save_file(path)
+                        if not widget.save_file(path):
+                            QMessageBox.critical(
+                                self, "Fehler beim Speichern",
+                                f"Die Datei konnte nicht gespeichert werden:\n{path}"
+                            )
+                            return
                         self.open_files[path] = widget
                         self._update_tab_title(widget)
                 elif reply == QMessageBox.StandardButton.Cancel:
