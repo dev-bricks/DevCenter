@@ -1298,6 +1298,29 @@ class TestNewProjectDialogBorderReset(unittest.TestCase):
                       "_reset_name_style() muss setStyleSheet('') aufrufen")
 
 
+class TestOutputPanelAppendOutputFormat(unittest.TestCase):
+    """Bug B-003: append_output() muss explizites QTextCharFormat mit Standardfarbe setzen."""
+
+    def test_append_output_uses_explicit_format(self):
+        """append_output() muss QTextCharFormat verwenden — ohne Fix erbt die Ausgabe
+        die Farbe des vorherigen Texts (grau nach info, rot nach error)."""
+        import inspect
+        from gui.panels.output_panel import OutputPanel
+        source = inspect.getsource(OutputPanel.append_output)
+        self.assertIn('QTextCharFormat', source,
+                      "append_output() muss QTextCharFormat verwenden")
+        self.assertIn('insertText', source,
+                      "append_output() muss cursor.insertText(text, fmt) verwenden")
+
+    def test_append_output_sets_default_color(self):
+        """append_output() muss die Standardtextfarbe #cccccc explizit setzen."""
+        import inspect
+        from gui.panels.output_panel import OutputPanel
+        source = inspect.getsource(OutputPanel.append_output)
+        self.assertIn('#cccccc', source,
+                      "append_output() muss die Standardtextfarbe #cccccc setzen")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)

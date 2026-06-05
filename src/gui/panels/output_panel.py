@@ -184,9 +184,12 @@ class OutputPanel(QWidget):
     
     def append_output(self, text: str):
         """Fügt normale Ausgabe hinzu"""
-        self.output.moveCursor(QTextCursor.MoveOperation.End)
-        self.output.insertPlainText(text)
-        
+        cursor = self.output.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        fmt = QTextCharFormat()
+        fmt.setForeground(QColor("#cccccc"))
+        cursor.insertText(text, fmt)
+
         if self._auto_scroll:
             self.output.verticalScrollBar().setValue(
                 self.output.verticalScrollBar().maximum()

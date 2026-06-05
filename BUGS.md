@@ -23,6 +23,11 @@ _(Keine offenen Bugs)_
 **Datei:** `src/gui/dialogs/new_project_dialog.py` — `_reset_name_style()`  
 **Fix:** `name_edit.textChanged` ist nun mit `_reset_name_style()` verbunden, das `setStyleSheet("")` aufruft und so den roten Rahmen beim nächsten Tastendruck löscht.
 
+### B-003: OutputPanel.append_output() erbt Textfarbe vom vorherigen Text
+**Status:** Behoben (2026-06-05)  
+**Datei:** `src/gui/panels/output_panel.py` — `append_output()`  
+**Fix:** `append_output()` verwendet nun explizit `QTextCharFormat` mit Farbe `#cccccc`, sodass stdout-Ausgabe immer in der Standardtextfarbe erscheint und nicht die Farbe des vorherigen Texts (grau von info, rot von error) erbt.
+
 ---
 
 _Zuletzt aktualisiert: 2026-06-05 (Bug-Sweep Session)_
