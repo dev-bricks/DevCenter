@@ -709,11 +709,11 @@ class StorePackagerApp(tk.Tk):
         os.makedirs(icon_dir, exist_ok=True)
         
         for size in ICON_SIZES:
-            resized = img.resize((size, size), Image.LANCZOS)
+            resized = img.resize((size, size), Image.Resampling.LANCZOS)
             out_path = os.path.join(icon_dir, f"icon_{size}x{size}.png")
             resized.save(out_path)
-        
-        wide = img.resize(WIDE_ICON_SIZE, Image.LANCZOS)
+
+        wide = img.resize(WIDE_ICON_SIZE, Image.Resampling.LANCZOS)
         wide.save(os.path.join(icon_dir, "icon_310x150.png"))
 
     def write_text_file(self, path, content):
@@ -1229,7 +1229,7 @@ def patch_widgets(translator):
             ]
             
             for width, height, desc in formats:
-                resized = img.resize((width, height), Image.LANCZOS)
+                resized = img.resize((width, height), Image.Resampling.LANCZOS)
                 filename = f"screenshot_{width}x{height}.png"
                 resized.save(os.path.join(shots_dir, filename))
             

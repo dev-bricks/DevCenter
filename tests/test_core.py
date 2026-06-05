@@ -1170,6 +1170,31 @@ class TestOutputPanelRunCommandGuardCoversStartingState(unittest.TestCase):
                       "run_command() muss != NotRunning prüfen")
 
 
+class TestWinStorePublisherImageResamplingAPI(unittest.TestCase):
+    """Bug 11: WindowsStorePublisher_3.py nutzte Image.LANCZOS (in Pillow 10.0 entfernt).
+    Korrekte API: Image.Resampling.LANCZOS."""
+
+    def _get_source(self):
+        import pathlib
+        p = pathlib.Path(__file__).parent.parent / "resources" / "WinStorePackager" / "WindowsStorePublisher_3.py"
+        return p.read_text(encoding="utf-8")
+
+    def test_old_lanczos_api_not_used(self):
+        """Image.LANCZOS darf nicht mehr direkt aufgerufen werden (AttributeError auf Pillow 10+)."""
+        import re
+        source = self._get_source()
+        # Erlaubt: Image.Resampling.LANCZOS — verboten: Image.LANCZOS ohne 'Resampling.'
+        matches = re.findall(r'Image\.LANCZOS(?![\w.])', source)
+        self.assertEqual(matches, [],
+                         f"Image.LANCZOS (alte API) noch {len(matches)}× vorhanden — muss Image.Resampling.LANCZOS sein")
+
+    def test_new_lanczos_api_used(self):
+        """Image.Resampling.LANCZOS muss für alle resize()-Aufrufe genutzt werden."""
+        source = self._get_source()
+        self.assertIn('Image.Resampling.LANCZOS', source,
+                      "WindowsStorePublisher_3.py muss Image.Resampling.LANCZOS verwenden")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)
