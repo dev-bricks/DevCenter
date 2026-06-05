@@ -1073,7 +1073,21 @@ class MainWindow(QMainWindow):
         """Wendet geänderte Einstellungen an"""
         # API-Key aktualisieren
         self.ai_service.set_api_key(self.settings.get('ai.api_key', ''))
-        
+
+        # Modell aktualisieren (Anzeigename → AIModel-Enum)
+        from modules.ai_assistant.ai_service import AIModel
+        _MODEL_MAP = {
+            'Claude Sonnet': AIModel.CLAUDE_SONNET,
+            'Claude Opus': AIModel.CLAUDE_OPUS,
+            'Claude Haiku': AIModel.CLAUDE_HAIKU,
+        }
+        model_name = self.settings.get('ai.model', 'Claude Sonnet')
+        if model_name in _MODEL_MAP:
+            self.ai_service.set_model(_MODEL_MAP[model_name])
+
+        # Max Tokens aktualisieren
+        self.ai_service.max_tokens = self.settings.get('ai.max_tokens', 4096)
+
         # Editor-Einstellungen auf alle offenen Editoren anwenden
         for index in range(self.editor_tabs.count()):
             widget = self.editor_tabs.widget(index)

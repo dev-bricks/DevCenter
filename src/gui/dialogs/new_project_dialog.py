@@ -43,6 +43,7 @@ class NewProjectDialog(QDialog):
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("Mein Python Projekt")
         self.name_edit.textChanged.connect(self._update_path)
+        self.name_edit.textChanged.connect(self._reset_name_style)
         details_layout.addRow("Name:", self.name_edit)
         
         # Speicherort
@@ -184,6 +185,10 @@ class NewProjectDialog(QDialog):
             }
         """)
     
+    def _reset_name_style(self):
+        """Setzt den roten Validierungsrahmen zurück wenn der Nutzer zu tippen beginnt."""
+        self.name_edit.setStyleSheet("")
+
     def _browse_path(self):
         """Öffnet den Verzeichnis-Dialog"""
         path = QFileDialog.getExistingDirectory(

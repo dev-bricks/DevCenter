@@ -1254,6 +1254,50 @@ class TestWinStorePublisherImageResamplingAPI(unittest.TestCase):
                       "WindowsStorePublisher_3.py muss Image.Resampling.LANCZOS verwenden")
 
 
+class TestApplySettingsUpdatesModel(unittest.TestCase):
+    """Bug B-001: _apply_settings() muss set_model() aufrufen."""
+
+    def test_apply_settings_calls_set_model(self):
+        """_apply_settings() muss ai.model lesen und set_model() aufrufen — ohne Fix wird
+        die Modell-Auswahl in den Einstellungen vollständig ignoriert."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow._apply_settings)
+        self.assertIn('set_model', source,
+                      "_apply_settings() muss set_model() aufrufen")
+        self.assertIn('ai.model', source,
+                      "_apply_settings() muss ai.model aus den Einstellungen lesen")
+
+    def test_apply_settings_updates_max_tokens(self):
+        """_apply_settings() muss auch ai.max_tokens auf den Service übertragen."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow._apply_settings)
+        self.assertIn('max_tokens', source,
+                      "_apply_settings() muss ai.max_tokens auf ai_service übertragen")
+
+
+class TestNewProjectDialogBorderReset(unittest.TestCase):
+    """Bug B-002: Roter Validierungsrahmen muss bei textChanged zurückgesetzt werden."""
+
+    def test_name_edit_textchanged_resets_style(self):
+        """name_edit.textChanged muss mit _reset_name_style verbunden sein — ohne Fix
+        bleibt der rote Rahmen auch nach Korrektur des Namens sichtbar."""
+        import inspect
+        from gui.dialogs.new_project_dialog import NewProjectDialog
+        source = inspect.getsource(NewProjectDialog._setup_ui)
+        self.assertIn('_reset_name_style', source,
+                      "name_edit.textChanged muss mit _reset_name_style verbunden sein")
+
+    def test_reset_name_style_clears_stylesheet(self):
+        """_reset_name_style() muss das Stylesheet löschen (leerer String)."""
+        import inspect
+        from gui.dialogs.new_project_dialog import NewProjectDialog
+        source = inspect.getsource(NewProjectDialog._reset_name_style)
+        self.assertIn('setStyleSheet("")', source,
+                      "_reset_name_style() muss setStyleSheet('') aufrufen")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)

@@ -7,21 +7,21 @@ Format: `[Status] Titel — Kurzbeschreibung`
 
 ## Offen
 
+_(Keine offenen Bugs)_
+
+---
+
+## Behoben
+
 ### B-001: Modell-Auswahl nicht funktional
-**Status:** Offen  
+**Status:** Behoben (2026-06-05)  
 **Datei:** `src/gui/main_window.py` — `_apply_settings()`  
-**Schwere:** Mittel (Feature silent broken)  
-**Beschreibung:**  
-`_apply_settings()` liest `ai.model` aus den Einstellungen, ruft aber `ai_service.set_model()` nie auf. Der gespeicherte Wert ist zudem der Anzeigename (z. B. "Claude Haiku") statt der API-ID. Die Modell-Auswahl in den Einstellungen wird daher vollständig ignoriert.  
-**Workaround:** Keiner. Das KI-Modell bleibt beim Standardwert der `AIService`-Instanz.
+**Fix:** `_apply_settings()` liest nun `ai.model` und ruft `set_model()` mit dem korrekten `AIModel`-Enum-Wert auf. Auch `max_tokens` wird übertragen.
 
 ### B-002: Rotes Validierungs-Rahmen in NewProjectDialog wird nicht zurückgesetzt
-**Status:** Offen  
-**Datei:** `src/gui/dialogs/new_project_dialog.py` — `_validate_input()` / `name_edit`  
-**Schwere:** Gering (kosmetischer UX-Defekt)  
-**Beschreibung:**  
-Wenn der Benutzer im `NewProjectDialog` einen ungültigen Projektnamen eingibt und auf "Erstellen" klickt, setzt `_validate_input()` einen roten Rahmen auf `name_edit`. Sobald der Benutzer dann wieder zu tippen beginnt, wird dieser Rahmen nicht automatisch zurückgesetzt. Der rote Rahmen bleibt, bis das Formular neu validiert wird.  
-**Workaround:** Nutzer muss das Formular erneut absenden, um den Rahmen zu entfernen.
+**Status:** Behoben (2026-06-05)  
+**Datei:** `src/gui/dialogs/new_project_dialog.py` — `_reset_name_style()`  
+**Fix:** `name_edit.textChanged` ist nun mit `_reset_name_style()` verbunden, das `setStyleSheet("")` aufruft und so den roten Rahmen beim nächsten Tastendruck löscht.
 
 ---
 
