@@ -1170,6 +1170,26 @@ class TestOutputPanelRunCommandGuardCoversStartingState(unittest.TestCase):
                       "run_command() muss != NotRunning prüfen")
 
 
+class TestWinStorePublisherSubprocessEncoding(unittest.TestCase):
+    """Bug 12: subprocess.run mit text=True ohne encoding='utf-8' in WindowsStorePublisher_3.py.
+    makeappx/signtool-Ausgaben können UnicodeDecodeError auf cp1252-Windows auslösen."""
+
+    def _get_source(self):
+        import pathlib
+        p = pathlib.Path(__file__).parent.parent / "resources" / "WinStorePackager" / "WindowsStorePublisher_3.py"
+        return p.read_text(encoding="utf-8")
+
+    def test_text_true_always_paired_with_encoding_utf8(self):
+        """Jeder subprocess-Aufruf mit text=True muss encoding='utf-8' enthalten."""
+        import re
+        source = self._get_source()
+        calls = re.findall(r'subprocess\.(run|check_call|check_output|Popen)\([^)]+\)', source, re.DOTALL)
+        for call in calls:
+            if 'text=True' in call:
+                self.assertIn("encoding='utf-8'", call,
+                              f"subprocess-Aufruf mit text=True ohne encoding='utf-8': {call[:100]}")
+
+
 class TestWinStorePublisherImageResamplingAPI(unittest.TestCase):
     """Bug 11: WindowsStorePublisher_3.py nutzte Image.LANCZOS (in Pillow 10.0 entfernt).
     Korrekte API: Image.Resampling.LANCZOS."""

@@ -1117,7 +1117,7 @@ def patch_widgets(translator):
             try:
                 progress.update_status("Erstelle MSIX-Paket...")
                 cmd_pack = [makeappx, "pack", "/d", outdir, "/p", msix_path, "/o"]
-                result = subprocess.run(cmd_pack, capture_output=True, text=True, check=True)
+                result = subprocess.run(cmd_pack, capture_output=True, text=True, encoding='utf-8', errors='replace', check=True)
 
                 pfx = self.pfx_path.get().strip()
                 pfx_pw = self.pfx_password.get()
@@ -1139,7 +1139,7 @@ def patch_widgets(translator):
                     "/td", "SHA256",
                     "/v", msix_path
                 ]
-                subprocess.run(cmd_sign, capture_output=True, text=True, check=True)
+                subprocess.run(cmd_sign, capture_output=True, text=True, encoding='utf-8', errors='replace', check=True)
                 
                 progress.close()
                 self.after(0, lambda: messagebox.showinfo("Fertig", 
