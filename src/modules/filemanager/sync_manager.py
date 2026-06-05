@@ -291,7 +291,7 @@ class SyncManager:
                             os.remove(full_path)
                             result.files_deleted += 1
                         except Exception as e:
-                            result.errors.append(f"Löschen fehlgeschlagen: {rel_path}")
+                            result.errors.append(f"Löschen fehlgeschlagen: {rel_path}: {e}")
         
         # Abschluss
         result.duration = (datetime.now() - start_time).total_seconds()

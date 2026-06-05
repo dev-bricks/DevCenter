@@ -384,6 +384,29 @@ class TestSyncManager(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertTrue(os.path.exists(excluded_file), "Ausgeschlossene Datei wurde fälschlich gelöscht")
 
+    def test_delete_orphan_error_includes_exception_detail(self):
+        """Regression: Fehlertext beim Löschen einer Waisendatei muss die Exception enthalten.
+        Ohne Fix: f'Löschen fehlgeschlagen: {rel_path}' — Exception-Grund fehlt komplett."""
+        from unittest.mock import patch
+        from modules.filemanager import SyncConfig
+
+        # Datei im Ziel anlegen (kein Pendant in der Quelle → Waisendatei)
+        orphan_path = os.path.join(self.target_dir, "orphan.txt")
+        with open(orphan_path, "w") as f:
+            f.write("orphan")
+
+        config = SyncConfig(
+            source_path=self.source_dir,
+            target_path=self.target_dir,
+            delete_orphans=True,
+        )
+
+        with patch("os.remove", side_effect=PermissionError("Zugriff verweigert")):
+            result = self.sm.sync(config)
+
+        self.assertTrue(any("Zugriff verweigert" in e for e in result.errors),
+                        f"Fehlermeldung muss Exception-Text enthalten; errors={result.errors}")
+
 
 class TestEventBusUnsubscribeDuringEmit(unittest.TestCase):
     """EventBus: Callback darf sich während Emission selbst abmelden."""
