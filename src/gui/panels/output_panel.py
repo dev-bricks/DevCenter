@@ -107,7 +107,7 @@ class OutputPanel(QWidget):
             command: Auszuführender Befehl
             cwd: Arbeitsverzeichnis
         """
-        if self._process and self._process.state() == QProcess.ProcessState.Running:
+        if self._process and self._process.state() != QProcess.ProcessState.NotRunning:
             self.append_error("Ein Prozess läuft bereits!")
             return
         

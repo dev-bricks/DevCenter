@@ -1132,6 +1132,23 @@ class TestCodeEditorLoadFileNoSpuriousSignal(unittest.TestCase):
                         "Guard _is_modified=True muss vor setPlainText(content) stehen")
 
 
+class TestOutputPanelRunCommandGuardCoversStartingState(unittest.TestCase):
+    """Bug 9: run_command()-Guard prüfte nur == Running, nicht Starting.
+    Programmatische Doppelaufrufe konnten gleichzeitig zwei Prozesse starten."""
+
+    def test_run_command_guard_uses_not_equal_not_running(self):
+        """Die Guard muss != NotRunning prüfen, damit auch der Starting-State abgedeckt ist."""
+        import inspect
+        from gui.panels.output_panel import OutputPanel
+        source = inspect.getsource(OutputPanel.run_command)
+        self.assertIn('NotRunning', source,
+                      "run_command() muss QProcess.ProcessState.NotRunning referenzieren")
+        self.assertNotIn('== QProcess.ProcessState.Running', source,
+                         "run_command() darf nicht auf == Running prüfen (Starting-State nicht abgedeckt)")
+        self.assertIn('!= QProcess.ProcessState.NotRunning', source,
+                      "run_command() muss != NotRunning prüfen")
+
+
 if __name__ == "__main__":
     # Verbose Output
     unittest.main(verbosity=2)
