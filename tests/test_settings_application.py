@@ -72,6 +72,12 @@ class DevCenterSettingsTests(unittest.TestCase):
         self.assertFalse(editor.highlight_current_line_enabled)
         self.assertEqual(editor.extraSelections(), [])
 
+    def test_code_editor_autocomplete_initialized_without_apply_settings(self):
+        editor = CodeEditor()
+        self.assertTrue(hasattr(editor, 'autocomplete_enabled'),
+                        "autocomplete_enabled must be set in __init__, not only in apply_settings")
+        self.assertTrue(editor.autocomplete_enabled)
+
     def test_window_state_roundtrip_accepts_qbytearray(self):
         settings = self._temp_settings()
 

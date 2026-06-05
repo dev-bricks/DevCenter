@@ -205,6 +205,7 @@ class CodeEditor(QPlainTextEdit):
         self.tab_size = 4
         self.show_line_numbers = True
         self.highlight_current_line_enabled = True
+        self.autocomplete_enabled = True
         tab_width = QFontMetrics(font).horizontalAdvance(' ') * self.tab_size
         self.setTabStopDistance(tab_width)
         
