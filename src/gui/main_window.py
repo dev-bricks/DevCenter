@@ -675,29 +675,41 @@ class MainWindow(QMainWindow):
             return
         
         if editor.file_path:
-            editor.save_file()
-            self._update_tab_title(editor)
+            if not editor.save_file():
+                QMessageBox.critical(
+                    self, "Fehler beim Speichern",
+                    f"Die Datei konnte nicht gespeichert werden:\n{editor.file_path}"
+                )
+            else:
+                self._update_tab_title(editor)
         else:
             self._save_file_as()
-    
+
     def _save_file_as(self):
         """Speichert unter neuem Namen"""
         editor = self._get_current_editor()
         if not editor:
             return
-        
+
         path, _ = QFileDialog.getSaveFileName(
             self, "Speichern unter",
             filter="Python-Dateien (*.py);;Alle Dateien (*.*)"
         )
-        
+
         if path:
             old_path = editor.file_path
             if old_path and old_path in self.open_files:
                 del self.open_files[old_path]
-            editor.save_file(path)
-            self.open_files[path] = editor
-            self._update_tab_title(editor)
+            if editor.save_file(path):
+                self.open_files[path] = editor
+                self._update_tab_title(editor)
+            else:
+                if old_path:
+                    self.open_files[old_path] = editor
+                QMessageBox.critical(
+                    self, "Fehler beim Speichern",
+                    f"Die Datei konnte nicht gespeichert werden:\n{path}"
+                )
 
     def _export_workspace(self):
         """Exportiert einen redigierten Projekt-Arbeitsstand als JSON."""

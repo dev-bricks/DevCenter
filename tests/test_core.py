@@ -888,6 +888,32 @@ class TestSaveFileAsRemovesOldPath(unittest.TestCase):
         self.assertIn('del self.open_files', source,
                       "_save_file_as() muss den alten Eintrag aus open_files entfernen")
 
+    def test_save_file_as_checks_save_return_value(self):
+        """Regression: _save_file_as() muss den Rückgabewert von save_file() prüfen.
+        Bei Fehler: open_files konsistent halten und Fehler-Dialog zeigen.
+        Ohne Fix: open_files[new_path] gesetzt, old_path entfernt, obwohl Datei nicht gespeichert."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow._save_file_as)
+        self.assertIn('editor.save_file(path)', source,
+                      "_save_file_as() muss den Rückgabewert von save_file(path) prüfen")
+        # Der Rückgabewert muss ausgewertet werden — entweder via if oder Zuweisung
+        self.assertTrue(
+            'if editor.save_file(path)' in source or 'ok = editor.save_file(path)' in source,
+            "_save_file_as() muss open_files nur bei erfolgreichem Speichern aktualisieren"
+        )
+
+    def test_save_file_checks_save_return_value(self):
+        """Regression: _save_file() muss den Rückgabewert von save_file() prüfen.
+        Bei Fehler soll ein Fehler-Dialog erscheinen, kein stilles Scheitern."""
+        import inspect
+        from gui.main_window import MainWindow
+        source = inspect.getsource(MainWindow._save_file)
+        self.assertIn('editor.save_file()', source,
+                      "_save_file() muss save_file() aufrufen")
+        self.assertNotIn('editor.save_file()\n', source,
+                         "_save_file() darf den Rückgabewert nicht verwerfen (Zeile ohne Zuweisung/if)")
+
 
 class TestNewProjectDialogOptionsUsed(unittest.TestCase):
     """Bug 32: _new_project() rief get_options() auf, nutzte das Ergebnis aber nie.
