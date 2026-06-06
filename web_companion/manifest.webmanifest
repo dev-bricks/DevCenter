@@ -1,4 +1,6 @@
 {
+  "id": "./",
+  "scope": "./",
   "name": "DevCenter Companion",
   "short_name": "DevCenter",
   "description": "Liest redigierte DevCenter-Arbeitsstände lokal und offline im Browser.",

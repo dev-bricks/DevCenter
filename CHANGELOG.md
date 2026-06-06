@@ -15,6 +15,9 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `llms.txt` mit maschinenlesbarer Projektpositionierung, Datenschutzgrenzen und relevanten Suchbegriffen.
 - Redigierter Workspace-Export `devcenter-workspace-v1.json` als Desktop-Funktion unter `Datei -> Arbeitsstand exportieren...`.
 - Statischer `web_companion/`-MVP mit lokalem JSON-Import, Demo-Fixture, read-only Dashboard, `manifest.webmanifest`, Service Worker und Node-Tests.
+- `web_companion/manifest.webmanifest`: `id` und `scope` ergänzt (PWA-Installierbarkeits-Best-Practice)
+- `web_companion/sw.js`: CACHE_NAME v2, `clients.claim()` in `waitUntil`-Kette verschoben
+- `web_companion/tests/pwa.test.mjs`: auf 15 PWA-Tests erweitert (20/20 grün mit library-Tests)
 
 ### Geändert / Changed
 - README, Contribution- und Security-Dokumentation auf `dev-bricks/DevCenter` aktualisiert.
