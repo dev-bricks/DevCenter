@@ -1,0 +1,117 @@
+{
+  "schema": "devcenter-workspace-v1",
+  "schema_version": 1,
+  "app": {
+    "name": "DevCenter",
+    "version": "1.0.0",
+    "exported_at": "2026-06-06T14:00:00Z"
+  },
+  "project": {
+    "name": "InvoiceTools",
+    "version": "0.9.4",
+    "description": "Lokales Toolset für Rechnungsimport, DATEV-Abgleich und Release-Checks.",
+    "path_ref": "project-1",
+    "main_file_ref": "project-1/src/main.py",
+    "language": "python",
+    "frameworks": [
+      "PySide6",
+      "PyInstaller",
+      "Anthropic"
+    ],
+    "has_devcenter_json": true
+  },
+  "analysis": {
+    "summary": {
+      "files_indexed": 37,
+      "problems_total": 2,
+      "warnings_total": 1
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "message": "TODO im Mail-Import offen",
+        "file_ref": "project-1/src/importers/mail.py",
+        "line": 88,
+        "column": 5,
+        "source": "analyzer",
+        "code": "TODO001"
+      },
+      {
+        "severity": "error",
+        "message": "Fehlender Fallback bei leerem DATEV-Exportpfad",
+        "file_ref": "project-1/src/datev/exporter.py",
+        "line": 141,
+        "column": 9,
+        "source": "tests",
+        "code": "DATEV014"
+      }
+    ]
+  },
+  "build": {
+    "target": "windows-x64",
+    "one_file": true,
+    "console": false,
+    "output_ref": "output-dir-1",
+    "hidden_imports": [],
+    "icon_ref": "project-1/resources/app.ico"
+  },
+  "dependencies": {
+    "requirements": [
+      {
+        "name": "PySide6",
+        "specifier": ">=6.5.0"
+      },
+      {
+        "name": "pyinstaller",
+        "specifier": ">=5.0"
+      },
+      {
+        "name": "anthropic",
+        "specifier": ">=0.18.0"
+      }
+    ],
+    "licenses": []
+  },
+  "release": {
+    "targets": [
+      "github",
+      "windows_store",
+      "linux_direct",
+      "web"
+    ],
+    "checklists": [
+      {
+        "title": "Store-Screenshot-Set aktualisieren",
+        "status": "open"
+      },
+      {
+        "title": "Support-URL und Privacy-URL prüfen",
+        "status": "open"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "priority": "P1",
+      "title": "macOS-Smoke für Settings und Keyring prüfen",
+      "status": "open",
+      "section": "PORTIERUNG / PLATTFORMÜBERGREIFENDE NUTZUNG (2026-05-27)"
+    },
+    {
+      "priority": "P2",
+      "title": "Release-Checklisten für Companion-Export nachziehen",
+      "status": "open",
+      "section": "PORTIERUNG / PLATTFORMÜBERGREIFENDE NUTZUNG (2026-05-27)"
+    },
+    {
+      "title": "Lizenzgenerator für neue Dependency prüfen",
+      "status": "open",
+      "section": "Build"
+    }
+  ],
+  "redactions": {
+    "paths": true,
+    "secrets": true,
+    "source_content": true
+  }
+}

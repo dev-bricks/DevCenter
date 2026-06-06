@@ -14,13 +14,14 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - Datenschutzhinweise für lokale Einstellungen, Datei-Indizes, Build-Artefakte und optionale API-Nutzung.
 - `llms.txt` mit maschinenlesbarer Projektpositionierung, Datenschutzgrenzen und relevanten Suchbegriffen.
 - Redigierter Workspace-Export `devcenter-workspace-v1.json` als Desktop-Funktion unter `Datei -> Arbeitsstand exportieren...`.
+- Statischer `web_companion/`-MVP mit lokalem JSON-Import, Demo-Fixture, read-only Dashboard, `manifest.webmanifest`, Service Worker und Node-Tests.
 
 ### Geändert / Changed
 - README, Contribution- und Security-Dokumentation auf `dev-bricks/DevCenter` aktualisiert.
 - Beispielkonfiguration für WinStorePackager anonymisiert und neutralisiert.
 - README auf englischen GitHub-Einstieg, klarere DevCenter-Namensabgrenzung und bessere Discoverability-Keywords erweitert.
 - Community-Workflows auf aktuelle Action-Versionen gehoben.
-- `AUFGABEN.txt`, `EXPORTFORMAT.md` und `web_companion/README.md` auf den umgesetzten Exportpfad synchronisiert.
+- `AUFGABEN.txt`, `PORTIERUNGSPLAN.md`, README und `web_companion/README.md` auf den umgesetzten Companion-Stand synchronisiert.
 
 ### Behoben / Fixed
 - Persistenz unbekannter Einstellungsschlüssel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.

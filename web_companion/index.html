@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DevCenter Companion</title>
+  <meta name="description" content="Statischer PWA-Companion für redigierte DevCenter-Arbeitsstände.">
+  <meta name="theme-color" content="#0f1720">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/app.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">DevCenter Web-Companion</p>
+        <h1>Projektstatus lokal lesen, ohne Uploads.</h1>
+        <p class="lead">
+          Importiert redigierte <code>devcenter-workspace-v1.json</code>-Exporte aus der
+          Desktop-App und zeigt Analyse, Build-Stand, Release-Checks und offene Aufgaben
+          mobil und offline lesbar an.
+        </p>
+      </div>
+      <div class="hero__panel">
+        <div class="install-card">
+          <p class="install-card__label">PWA-Status</p>
+          <p id="install-status" class="install-card__status">Bereit für lokalen Import</p>
+          <button id="install-button" class="button button--ghost" hidden>Installieren</button>
+        </div>
+        <div class="install-card">
+          <p class="install-card__label">Zuletzt geladen</p>
+          <p id="last-loaded" class="install-card__status">Noch kein Arbeitsstand geladen</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel--controls">
+        <div class="controls-grid">
+          <label class="dropzone">
+            <span class="dropzone__title">JSON-Datei wählen</span>
+            <span class="dropzone__hint">Lokaler Import, keine Netzübertragung</span>
+            <input id="file-input" type="file" accept=".json,application/json">
+          </label>
+
+          <div class="stack">
+            <label for="json-input" class="field-label">Oder JSON direkt einfügen</label>
+            <textarea
+              id="json-input"
+              class="textarea"
+              rows="8"
+              spellcheck="false"
+              placeholder='{"schema":"devcenter-workspace-v1", ...}'
+            ></textarea>
+            <div class="actions">
+              <button id="paste-button" class="button">Eingabe laden</button>
+              <button id="demo-button" class="button button--ghost">Demo laden</button>
+              <button id="clear-button" class="button button--ghost">Ansicht leeren</button>
+            </div>
+          </div>
+        </div>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="workspace-shell" class="workspace-shell" hidden>
+        <section class="panel workspace-head">
+          <div>
+            <p id="project-kicker" class="eyebrow">Arbeitsstand</p>
+            <h2 id="project-name">DevCenter</h2>
+            <p id="project-meta" class="muted"></p>
+          </div>
+          <div class="chip-row" id="framework-chips"></div>
+        </section>
+
+        <section id="summary-grid" class="summary-grid"></section>
+
+        <div class="workspace-columns">
+          <section class="panel">
+            <div class="panel__header">
+              <h3>Analyse</h3>
+              <p class="muted">Befunde aus dem redigierten Desktop-Export</p>
+            </div>
+            <div id="analysis-summary" class="stack stack--tight"></div>
+            <ul id="problems-list" class="list list--problems"></ul>
+          </section>
+
+          <section class="panel">
+            <div class="panel__header">
+              <h3>Build und Release</h3>
+              <p class="muted">Nur Metadaten, keine lokalen Artefakte</p>
+            </div>
+            <dl id="build-details" class="detail-grid"></dl>
+            <ul id="release-targets" class="chip-list"></ul>
+            <ul id="release-checklists" class="list"></ul>
+          </section>
+        </div>
+
+        <div class="workspace-columns">
+          <section class="panel">
+            <div class="panel__header">
+              <h3>Offene Aufgaben</h3>
+              <p class="muted">Aus <code>AUFGABEN.txt</code> übernommen</p>
+            </div>
+            <div id="tasks-groups" class="stack"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel__header">
+              <h3>Abhängigkeiten und Redaktionen</h3>
+              <p class="muted">Welche Daten absichtlich nicht exportiert wurden</p>
+            </div>
+            <ul id="dependencies-list" class="list"></ul>
+            <ul id="redactions-list" class="list"></ul>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

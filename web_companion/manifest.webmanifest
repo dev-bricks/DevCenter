@@ -1,0 +1,23 @@
+{
+  "name": "DevCenter Companion",
+  "short_name": "DevCenter",
+  "description": "Liest redigierte DevCenter-Arbeitsstände lokal und offline im Browser.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#071118",
+  "theme_color": "#0f1720",
+  "icons": [
+    {
+      "src": "./icons/app.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/app-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
