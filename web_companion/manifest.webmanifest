@@ -6,6 +6,7 @@
   "description": "Liest redigierte DevCenter-Arbeitsstände lokal und offline im Browser.",
   "start_url": "./index.html",
   "display": "standalone",
+  "lang": "de",
   "background_color": "#071118",
   "theme_color": "#0f1720",
   "icons": [

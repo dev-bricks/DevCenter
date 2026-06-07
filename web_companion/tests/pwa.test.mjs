@@ -97,3 +97,31 @@ test("app.js: registriert Service Worker", () => {
   const src = fs.readFileSync(appJsPath, "utf8");
   assert.match(src, /serviceWorker\.register/);
 });
+
+// --- Bug-Fix-Assertions ---
+
+test("sw.js: caches.match setzt ignoreSearch:true (Offline-Fallback bei ?-Params)", () => {
+  const src = fs.readFileSync(swPath, "utf8");
+  assert.match(src, /ignoreSearch:\s*true/, "caches.match muss ignoreSearch:true setzen – offline schlägt bei ?demo=1 fehl");
+});
+
+test("index.html: apple-touch-icon vorhanden (iOS Homescreen-Icon)", () => {
+  const html = fs.readFileSync(indexPath, "utf8");
+  assert.match(html, /rel="apple-touch-icon"/, "apple-touch-icon fehlt – iOS zeigt generischen Screenshot");
+});
+
+test("manifest: lang-Feld vorhanden", () => {
+  const m = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  assert.ok(m.lang, "lang fehlt im Manifest");
+});
+
+test("app.js: fileInput-Handler fängt file.text()-Fehler ab", () => {
+  const src = fs.readFileSync(appJsPath, "utf8");
+  assert.match(src, /file\.text\(\)/, "file.text() muss vorhanden sein");
+  assert.match(src, /Datei konnte nicht gelesen werden/, "Fehlerfall für file.text() fehlt");
+});
+
+test("app.js: deferredInstallPrompt wird vor prompt() genullt", () => {
+  const src = fs.readFileSync(appJsPath, "utf8");
+  assert.match(src, /deferredInstallPrompt\s*=\s*null/, "deferredInstallPrompt muss nach prompt() genullt werden");
+});

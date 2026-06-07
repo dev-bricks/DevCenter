@@ -54,8 +54,10 @@ elements.installButton?.addEventListener("click", async () => {
   if (!deferredInstallPrompt) {
     return;
   }
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
+  const prompt = deferredInstallPrompt;
+  deferredInstallPrompt = null;
+  prompt.prompt();
+  await prompt.userChoice;
 });
 
 elements.fileInput?.addEventListener("change", async (event) => {
@@ -63,7 +65,13 @@ elements.fileInput?.addEventListener("change", async (event) => {
   if (!file) {
     return;
   }
-  const text = await file.text();
+  let text;
+  try {
+    text = await file.text();
+  } catch {
+    setMessage("Datei konnte nicht gelesen werden.", "error");
+    return;
+  }
   loadWorkspace(text, `Datei: ${file.name}`);
 });
 
