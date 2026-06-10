@@ -1,4 +1,4 @@
-# 🚀 DevCenter
+# DevCenter
 
 **Local-first Python IDE and developer toolkit for Windows.** DevCenter combines a PySide6 code editor, static analyzer, PyInstaller build helper, license collector, file index and optional Claude/Anthropic assistant in one desktop suite.
 
@@ -6,15 +6,17 @@
 ![Python](https://img.shields.io/badge/python-3.10+-green)
 ![License](https://img.shields.io/badge/license-GPL%20v3-blue)
 
-## Overview
+> **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop app.
 
-DevCenter is a local desktop development suite for Python projects that covers the practical workflow from first file to release checklist:
+## Start Here
 
-**Write -> Analyze -> Test -> Build -> Publish**
-
-It is designed for developers who want a lightweight local IDE with built-in project analysis, EXE packaging support, privacy-aware settings, and export planning for a future read-only Web/PWA companion.
-
-This repository is **not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. It is the `dev-bricks/DevCenter` open-source Python desktop app.
+| Need | Tool |
+|---|---|
+| Local Python IDE with editor, analyzer and build helper | `python main.py` |
+| One-click EXE packaging | `build_exe.bat` / Build tab |
+| Static code analysis | Analyze tab |
+| Workspace export for PWA companion | File → Export workspace |
+| Windows launcher | `START_DevCenter.bat` |
 
 ![DevCenter main window showing the local Python IDE dashboard](README/screenshots/main.png)
 
@@ -24,8 +26,8 @@ This repository is **not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter
 - **Python desktop focus:** PySide6 interface, syntax highlighting, project explorer, terminal output and settings persistence.
 - **Static analysis built in:** method/class detection, complexity checks, import analysis, TODO/FIXME detection and encoding repair helpers.
 - **Build and release helpers:** PyInstaller wrapper, icon conversion, third-party license collection, release notes and export planning.
-- **Optional AI assistant:** Claude/Anthropic integration is opt-in and should use local settings, keyring or environment variables.
-- **Companion-ready export:** `Datei -> Arbeitsstand exportieren...` writes a redacted `devcenter-workspace-v1.json` for a future static Web/PWA viewer.
+- **Optional AI assistant:** Claude/Anthropic integration is opt-in and uses local settings, keyring or environment variables.
+- **Companion-ready export:** writes a redacted `devcenter-workspace-v1.json` for the static `web_companion/` PWA viewer.
 
 ## Quick Start
 
@@ -43,26 +45,147 @@ START_DevCenter.bat
 build_exe.bat
 ```
 
-## Keywords
+## Features
 
-`Python IDE`, `PySide6 IDE`, `local-first developer tools`, `offline Python editor`, `PyInstaller GUI`, `static code analyzer`, `developer toolkit`, `Windows Python desktop app`, `AI-assisted coding`, `license collector`, `project export`, `PWA companion`.
+### Editor
+- Python syntax highlighting, line numbers, auto-indent, multi-tab
+- Comment toggle (Ctrl+/), drag-and-drop files
 
-## Deutsch: Übersicht
+### Static Analysis
+- AST-based method and class detection
+- Cyclomatic complexity, unused import detection
+- TODO/FIXME finder, encoding checker and repair
 
-DevCenter ist eine All-in-One Desktop-IDE für Python-Projekte, die den kompletten Entwicklungszyklus unterstützt:
+### Build System
+- One-click EXE via PyInstaller (one-file / one-directory)
+- ICO converter (PNG/JPG to ICO)
+- Third-party license collector for distributions
 
-**Code schreiben -> Analysieren -> Testen -> Kompilieren -> Veröffentlichen**
+### AI Assistant
+- Claude/Anthropic API integration — opt-in, key stays local
+- Code generation, review, explanation, and development loop
 
-DevCenter ist eine lokale Desktop-Anwendung und nicht mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder Devbox identisch.
+### File Management
+- SQLite file index with full-text search
+- Duplicate detection (hash-based)
+- Backup sync with automatic WAL checkpoint
 
-![DevCenter Hauptfenster mit lokalem Python-IDE-Dashboard](README/screenshots/main.png)
+### Settings and Persistence
+- Structured JSON settings for editor, build, AI, sync and appearance
+- Import/export support for reproducible setups
+- Theme and window state restored on restart
 
-### 🔧 Fusionierte Tools
+### Web Companion
+- Static `web_companion/` PWA viewer for redacted workspace exports
+- Installable, offline-capable, no backend required
 
-DevCenter vereint 11 spezialisierte Entwicklertools zu einer kohärenten Suite:
+## Installation
+
+Requirements: Python 3.10+, Windows 10/11 (primary), Linux/macOS (experimental)
+
+```bash
+git clone https://github.com/dev-bricks/DevCenter.git
+cd DevCenter
+pip install -r requirements.txt
+python main.py
+```
+
+Dependencies (see `requirements.txt`):
+
+```
+PySide6>=6.5.0        # GUI framework
+pyinstaller>=5.0      # EXE packaging
+Pillow>=9.0           # Image processing
+anthropic>=0.18.0     # Claude API (optional)
+chardet>=5.0          # Encoding detection
+keyring>=23.0         # Secure key storage
+```
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| Ctrl+N | New file |
+| Ctrl+O | Open file |
+| Ctrl+S | Save |
+| Ctrl+Shift+N | New project |
+| Ctrl+Shift+O | Open project |
+| F5 | Run |
+| F6 | Build |
+| Ctrl+/ | Toggle comment |
+| Ctrl+Shift+A | Toggle AI assistant |
+| Ctrl+, | Settings |
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -v
+python -m compileall -q main.py manage_translations.py translator.py src tests
+```
+
+GitHub Actions runs the same smoke checks on Python 3.10, 3.11 and 3.12.
+
+## Privacy
+
+DevCenter is a local desktop application. Projects, settings, file indexes and build artifacts stay on your machine by default. Network access occurs only for explicitly configured integrations such as the optional Claude/Anthropic API or package installation commands started by the user.
+
+API keys must not be committed to the repository. Use environment variables, the local keyring or the app settings.
+
+Details: [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
+
+## Roadmap
+
+### Version 1.1
+- Code folding
+- Extended search and replace
+- Git integration
+- Debugger support
+
+### Version 1.2
+- Plugin system
+- Additional themes
+- MSIX packaging
+- Auto-update
+
+## Project Structure
+
+```
+DevCenter/
+├── main.py                   # Entry point
+├── requirements.txt
+├── src/
+│   ├── core/                 # Settings, event bus, project manager
+│   ├── modules/
+│   │   ├── editor/           # Code editor with syntax highlighting
+│   │   ├── analyzer/         # AST analysis, encoding repair
+│   │   ├── builder/          # PyInstaller wrapper, icon converter, license collector
+│   │   ├── ai_assistant/     # Claude API integration
+│   │   └── filemanager/      # File index, backup sync
+│   └── gui/                  # Main window, panels, dialogs
+├── web_companion/            # Static PWA viewer for workspace exports
+└── tests/                    # Unit tests
+```
+
+## License
+
+GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL.
+
+## Liability
+
+This project is an unpaid open-source donation. Liability is limited to intent and gross negligence (§ 521 German Civil Code). Use at your own risk. No warranty, no maintenance guarantee, no fitness-for-purpose assumed.
+
+---
+
+## Deutsch / German
+
+DevCenter ist eine lokale Desktop-Entwicklungsumgebung für Python-Projekte: **Code schreiben → Analysieren → Testen → Kompilieren → Veröffentlichen**. Kombiniert 11 spezialisierte Tools in einer kohärenten Suite.
+
+Nicht identisch mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder Devbox.
+
+### Fusionierte Tools
 
 | Ursprungstool | Modul | Funktion |
-|---------------|-------|----------|
+|---|---|---|
 | PythonBox V8 | Editor | Code-Editor mit Syntax-Highlighting, Auto-Indent |
 | MethodenAnalyser V3 | Analyzer | Statische Code-Analyse, Komplexitätsberechnung |
 | EncodingFixer | Analyzer | Encoding-Erkennung und -Reparatur |
@@ -73,344 +196,29 @@ DevCenter vereint 11 spezialisierte Entwicklertools zu einer kohärenten Suite:
 | ProFiler V14 | FileManager | Datei-Indizierung und Volltext-Suche |
 | ProSync V3.1 | FileManager | Intelligente Backup-Synchronisation |
 
-## 🛠️ Installation
-
-### Voraussetzungen
-- Python 3.10 oder höher
-- Windows 10/11 (primär), Linux/macOS (experimentell)
-
-### Installation
-
-```bash
-# Repository klonen
-git clone https://github.com/dev-bricks/DevCenter.git
-cd DevCenter
-
-# Abhängigkeiten installieren
-pip install -r requirements.txt
-
-# Starten
-python main.py
-```
-
-### Windows-Launcher und EXE-Build
-
-```batch
-START_DevCenter.bat
-build_exe.bat
-```
-
-`build_exe.bat` erstellt eine lokale One-File-EXE mit PyInstaller. Die erzeugten Artefakte in `build/`, `dist/` und `releases/` werden nicht versioniert.
-
-### Abhängigkeiten
-
-```
-PySide6>=6.5.0        # GUI-Framework
-pyinstaller>=5.0      # EXE-Erstellung
-Pillow>=9.0           # Bildverarbeitung
-anthropic>=0.18.0     # Claude API
-chardet>=5.0          # Encoding-Erkennung
-keyring>=23.0         # Sichere Schlüsselspeicherung
-```
-
-## 📦 Projektstruktur
-
-```
-DevCenter/
-├── main.py                      # Haupteinstiegspunkt
-├── requirements.txt             # Abhängigkeiten
-├── README.md                    # Diese Datei
-│
-├── src/
-│   ├── __init__.py
-│   │
-│   ├── core/                    # Kernkomponenten
-│   │   ├── project_manager.py   # Projektverwaltung
-│   │   ├── settings_manager.py  # Einstellungen (Singleton)
-│   │   └── event_bus.py         # Event-System (Pub/Sub)
-│   │
-│   ├── modules/
-│   │   ├── editor/              # Code-Editor
-│   │   │   └── code_editor.py   # Editor mit Syntax-Highlighting
-│   │   │
-│   │   ├── analyzer/            # Code-Analyse
-│   │   │   ├── method_analyzer.py  # AST-basierte Analyse
-│   │   │   └── encoding_fixer.py   # Encoding-Tools
-│   │   │
-│   │   ├── builder/             # Build-System
-│   │   │   ├── kompilator.py       # PyInstaller-Wrapper
-│   │   │   ├── icon_builder.py     # ICO-Konvertierung
-│   │   │   └── license_generator.py # Lizenz-Sammlung
-│   │   │
-│   │   ├── ai_assistant/        # AI-Integration
-│   │   │   └── ai_service.py    # Claude API + DevelopmentLoop
-│   │   │
-│   │   └── filemanager/         # Datei-Management
-│   │       ├── sync_manager.py  # Backup-Synchronisation
-│   │       └── profiler_bridge.py # Datei-Index
-│   │
-│   └── gui/
-│       ├── main_window.py       # Hauptfenster
-│       │
-│       ├── panels/              # UI-Panels
-│       │   ├── explorer_panel.py   # Datei-Navigator
-│       │   ├── output_panel.py     # Terminal-Ausgabe
-│       │   ├── problems_panel.py   # Fehler/Warnungen
-│       │   └── ai_panel.py         # AI-Chat-Interface
-│       │
-│       └── dialogs/             # Dialoge
-│           ├── new_project_dialog.py
-│           ├── settings_dialog.py
-│           └── build_dialog.py
-│
-├── resources/
-│   ├── themes/                  # UI-Themes
-│   └── icons/                   # Anwendungs-Icons
-│
-└── tests/
-    └── test_core.py             # Unit-Tests
-```
-
-## ⚡ Features
-
-### Editor
-- ✅ Python Syntax-Highlighting (Keywords, Strings, Kommentare, Decorators)
-- ✅ Zeilennummern mit aktueller Zeilen-Hervorhebung
-- ✅ Auto-Indent (erhält Einrückung, fügt nach `:` hinzu)
-- ✅ Smart Backspace (springt zu Tab-Stops)
-- ✅ Kommentar-Toggle (Ctrl+/)
-- ✅ Mehrere Editor-Tabs
-- ✅ Drag & Drop Dateien
-
-### Analyse
-- ✅ Klassen- und Methoden-Erkennung
-- ✅ Import-Analyse (genutzt/ungenutzt)
-- ✅ Zyklomatische Komplexitäts-Berechnung
-- ✅ Mutable Default Argument Warnung
-- ✅ Bare Except Warnung
-- ✅ TODO/FIXME Erkennung
-- ✅ Encoding-Prüfung und -Reparatur
-
-### Build
-- ✅ One-Click EXE-Erstellung
-- ✅ One-File und One-Directory Modi
-- ✅ Icon-Konvertierung (PNG/JPG → ICO)
-- ✅ Hidden Imports Verwaltung
-- ✅ Zusätzliche Dateien einbinden
-- ✅ UPX-Komprimierung (optional)
-- ✅ Third-Party-Lizenzen sammeln
-
-### AI-Assistent
-- ✅ Claude API Integration
-- ✅ Code-Generierung aus Beschreibungen
-- ✅ Code-Review und Verbesserungsvorschläge
-- ✅ Code-Erklärungen
-- ✅ Fehler-Behebungshilfe
-- ✅ Entwicklerschleife (Plan → Code → Review)
-
-### Datei-Management
-- ✅ Projekt-Explorer mit Kontextmenü
-- ✅ SQLite-basierter Datei-Index
-- ✅ Volltext-Suche im Code
-- ✅ Duplikat-Erkennung (Hash-basiert)
-- ✅ Automatische Backups mit WAL-Checkpoint
-- ✅ Musterbasierte Ausschlüsse
-
-### Einstellungen & Persistenz
-- ✅ Strukturierte JSON-Einstellungen für Editor, Build, AI, Sync und Appearance
-- ✅ Theme- und Fensterzustand werden beim Beenden gespeichert und beim Start wiederhergestellt
-- ✅ Import/Export von Einstellungen für reproduzierbare Arbeitsumgebungen
-
-## 🎨 Benutzeroberfläche
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  Datei  Bearbeiten  Ansicht  Ausführen  Analyse  Hilfe          │
-├─────────────────────────────────────────────────────────────────┤
-│  📁 Neu  📂 Öffnen  💾 Speichern  │  ▶ Ausführen  🔨 Build  │ 🤖 │
-├────────────┬────────────────────────────────┬───────────────────┤
-│ 📁 EXPLORER│  main.py  │  utils.py  │ ●app │   🤖 AI Assistent │
-│            │─────────────────────────────────│                   │
-│ 📁 src     │  1 │ # -*- coding: utf-8 -*-    │   [Chat-Verlauf]  │
-│   📄 main  │  2 │ """                        │                   │
-│   📄 utils │  3 │ DevCenter - Main           │   ─────────────   │
-│   📁 gui   │  4 │ """                        │                   │
-│            │  5 │                            │   [Input-Feld]    │
-│            │  6 │ import sys                 │   [✨] [🔍] [📖]  │
-│            ├────────────────────────────────┤                   │
-│            │  🖥️ Terminal  │  ⚠️ Probleme   │                   │
-│            │  $ python main.py              │                   │
-│            │  Hello, World!                 │                   │
-│            │  ✓ Prozess beendet (Code: 0)   │                   │
-├────────────┴────────────────────────────────┴───────────────────┤
-│  📁 DevCenter                              Ln 5, Col 1  │ UTF-8 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## ⌨️ Tastenkürzel
-
-| Kürzel | Aktion |
-|--------|--------|
-| Ctrl+N | Neue Datei |
-| Ctrl+O | Datei öffnen |
-| Ctrl+S | Speichern |
-| Ctrl+Shift+N | Neues Projekt |
-| Ctrl+Shift+O | Projekt öffnen |
-| Ctrl+Shift+S | Speichern unter |
-| F5 | Ausführen |
-| F6 | Build erstellen |
-| Ctrl+/ | Kommentar umschalten |
-| Ctrl+Shift+A | AI-Assistent umschalten |
-| Ctrl+, | Einstellungen |
-
-## 🔧 Konfiguration
+### Konfiguration
 
 Einstellungen werden gespeichert in:
 - **Windows:** `%APPDATA%\DevCenter\settings.json`
 - **Linux/macOS:** `~/.config/DevCenter/settings.json`
 
-### Wichtige Einstellungen
+Wichtige Einstellungen:
 
 ```json
 {
-  "editor": {
-    "font_family": "Consolas",
-    "font_size": 11,
-    "tab_size": 4,
-    "line_numbers": true,
-    "auto_save": false
-  },
-  "build": {
-    "output_dir": "dist",
-    "one_file": true,
-    "console": true
-  },
-  "ai": {
-    "api_key": "",
-    "model": "claude-sonnet-4-20250514",
-    "max_tokens": 4096
-  },
-  "sync": {
-    "backup_path": "D:\\Backups\\DevCenter",
-    "auto_backup": true,
-    "excludes": ["__pycache__", ".git", "venv"]
-  }
+  "editor": { "font_family": "Consolas", "font_size": 11, "tab_size": 4 },
+  "build": { "output_dir": "dist", "one_file": true },
+  "ai": { "api_key": "", "model": "claude-sonnet-4-5", "max_tokens": 4096 },
+  "sync": { "backup_path": "D:\\Backups\\DevCenter", "auto_backup": true }
 }
 ```
 
-## 🧪 Tests
+### Datenschutz
 
-```bash
-# Alle Tests ausführen
-python -m unittest discover -s tests -v
+DevCenter ist eine lokale Desktop-Anwendung. Projekte, Einstellungen, Datei-Indizes und Build-Artefakte bleiben standardmäßig auf dem lokalen Rechner. Netzwerkzugriffe entstehen nur durch explizit konfigurierte Integrationen.
 
-# Syntaxprüfung
-python -m compileall -q main.py manage_translations.py translator.py src tests
-```
+API-Schlüssel gehören nicht in das Repository. Details: [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 
-GitHub Actions führt dieselben Smoke-Checks auf Python 3.10, 3.11 und 3.12 aus.
+### Haftung
 
-## Datenschutz / Privacy
-
-DevCenter ist eine lokale Desktop-Anwendung. Projekte, Einstellungen, Datei-Indizes und Build-Artefakte bleiben standardmäßig auf dem lokalen Rechner. Netzwerkzugriffe entstehen nur durch explizit konfigurierte Integrationen, zum Beispiel die optionale Claude/Anthropic-API im AI-Assistenten oder manuell gestartete Paketinstallationen.
-
-API-Schlüssel gehören nicht in das Repository. Verwenden Sie Umgebungsvariablen, den lokalen Schlüsselbund oder die Anwendungseinstellungen.
-
-Details stehen in [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
-
-## 📊 Statistiken
-
-| Metrik | Wert |
-|--------|------|
-| Python-Dateien | 26 |
-| Code-Zeilen | ~7.500 |
-| Module | 5 (Core, Editor, Analyzer, Builder, FileManager, AI) |
-| GUI-Panels | 4 |
-| GUI-Dialoge | 3 |
-| Unit-Tests | 20+ |
-
-## 🗺️ Roadmap
-
-### Version 1.1
-- [ ] Code-Folding
-- [ ] Erweiterte Suchen-Ersetzen
-- [ ] Git-Integration
-- [ ] Debugger-Unterstützung
-
-### Version 1.2
-- [ ] Plugin-System
-- [ ] Weitere Themes
-- [ ] MSIX-Packaging
-- [ ] Auto-Update
-
-## 📝 Lizenz
-
-GPL v3 - Siehe [LICENSE](LICENSE)
-
-Dieses Projekt verwendet PySide6 (LGPL).
-
-## 🤝 Mitwirkende
-
-Basiert auf dem Fusionskonzept der Entwickler-Suite.
-Erstellt mit PySide6 und Claude AI.
-
----
-
-**DevCenter v1.0.0** | Januar 2026
-
----
-
-## English
-
-### DevCenter — Python Development Suite
-
-An all-in-one Python IDE covering the full development cycle: **Write → Analyze → Test → Build → Publish**. DevCenter merges 11 specialized tools into one cohesive suite.
-
-![DevCenter main window](README/screenshots/main.png)
-
-### Features
-
-- **Code Editor:** Syntax highlighting, line numbers, auto-indent, comment toggle (Ctrl+/), multi-tab
-- **Static Analyzer:** AST-based method analysis, cyclomatic complexity, unused imports, bare-except detection
-- **Build System:** One-click EXE via PyInstaller (one-file / one-directory), ICO converter, license collector
-- **AI Assistant:** Claude API integration — code generation, review, explanation, development loop
-- **File Management:** SQLite file index, full-text search, duplicate detection, automatic backups
-- **Settings Persistence:** Structured JSON settings for editor, build, AI, sync, and appearance, including import/export support
-
-### Requirements
-
-- Python 3.10+
-- Windows 10/11 (primary), Linux/macOS (experimental)
-
-### Installation
-
-```bash
-git clone https://github.com/dev-bricks/DevCenter.git
-cd DevCenter
-pip install -r requirements.txt
-python main.py
-```
-
-### Key Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| F5 | Run |
-| F6 | Build |
-| Ctrl+/ | Toggle comment |
-| Ctrl+Shift+A | Toggle AI assistant |
-
-### License
-
-GPL v3 — See [LICENSE](LICENSE) for details.
-
----
-
-## Haftung / Liability
-
-Dieses Projekt ist eine **unentgeltliche Open-Source-Schenkung** im Sinne der §§ 516 ff. BGB. Die Haftung des Urhebers ist gemäß **§ 521 BGB** auf **Vorsatz und grobe Fahrlässigkeit** beschränkt. Ergänzend gelten die Haftungsausschlüsse der GPL-3.0.
-
-Nutzung auf eigenes Risiko. Keine Wartungszusage, keine Verfügbarkeitsgarantie, keine Gewähr für Fehlerfreiheit oder Eignung für einen bestimmten Zweck.
-
-This project is an unpaid open-source donation. Liability is limited to intent and gross negligence (§ 521 German Civil Code). Use at your own risk. No warranty, no maintenance guarantee, no fitness-for-purpose assumed.
-
+Dieses Projekt ist eine **unentgeltliche Open-Source-Schenkung** im Sinne der §§ 516 ff. BGB. Die Haftung des Urhebers ist gemäß **§ 521 BGB** auf **Vorsatz und grobe Fahrlässigkeit** beschränkt. Ergänzend gelten die Haftungsausschlüsse der GPL-3.0. Nutzung auf eigenes Risiko.

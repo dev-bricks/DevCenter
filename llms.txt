@@ -24,6 +24,7 @@ Important files:
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: planned redacted workspace export contract.
 - `PORTIERUNGSPLAN.md`: desktop, Web/PWA, Linux, macOS and Store strategy.
+- `web_companion/`: static read-only PWA viewer for redacted `devcenter-workspace-v1.json` exports.
 - `.github/workflows/tests.yml`: Windows smoke tests for Python 3.10, 3.11 and 3.12.
 
 Useful search phrases:
@@ -32,3 +33,8 @@ Useful search phrases:
 - Windows Python IDE with PyInstaller build helper
 - offline Python code editor and static analyzer
 - Python developer toolkit with license collector
+- Python IDE with workspace export
+- local Python IDE with PWA companion
+- dev-bricks DevCenter Python desktop suite
+
+last-checked: 2026-06-10
