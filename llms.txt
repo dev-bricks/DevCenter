@@ -4,37 +4,43 @@ Canonical repository: https://github.com/dev-bricks/DevCenter
 
 DevCenter is a local-first Python desktop IDE and developer toolkit from dev-bricks. It combines a PySide6 editor, static analysis, encoding repair, PyInstaller build helpers, icon conversion, third-party license collection, project/file indexing, backup-oriented sync helpers and an optional Claude/Anthropic AI assistant.
 
-Primary audience:
+## Audience
+
 - Python developers who want a lightweight Windows-first desktop IDE.
 - Maintainers who need local analysis, build and release helpers in one app.
 - LLM agents that need project metadata and redacted status exports without uploading full source trees.
+- Open-source contributors evaluating a PySide6 desktop application architecture.
 
 Positioning:
 - This is not Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox.
 - This is not a hosted cloud IDE.
-- The desktop app is authoritative; the Web/PWA companion is planned as a read-only viewer for redacted `devcenter-workspace-v1.json` exports.
+- The desktop app is authoritative; the Web/PWA companion is a read-only viewer for redacted `devcenter-workspace-v1.json` exports.
 
 Privacy and safety:
 - Projects, settings, file indexes and build artifacts stay local by default.
 - Network access is only expected for explicitly configured integrations such as the optional Claude/Anthropic API or package installation commands started by the user.
 - API keys, tokens, local absolute paths and full source contents must not be written into public exports.
 
-Important files:
+## Important files
+
 - `README.md`: user-facing overview, screenshots, installation and feature list.
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: planned redacted workspace export contract.
-- `PORTIERUNGSPLAN.md`: desktop, Web/PWA, Linux, macOS and Store strategy.
 - `web_companion/`: static read-only PWA viewer for redacted `devcenter-workspace-v1.json` exports.
 - `.github/workflows/tests.yml`: Windows smoke tests for Python 3.10, 3.11 and 3.12.
+- `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
 
-Useful search phrases:
-- local-first Python IDE
-- PySide6 Python development suite
-- Windows Python IDE with PyInstaller build helper
-- offline Python code editor and static analyzer
-- Python developer toolkit with license collector
-- Python IDE with workspace export
-- local Python IDE with PWA companion
-- dev-bricks DevCenter Python desktop suite
+## Search Phrases
 
-last-checked: 2026-06-10
+```
+local-first Python IDE
+PySide6 Python development suite
+Windows Python IDE with PyInstaller build helper
+offline Python code editor and static analyzer
+Python developer toolkit with license collector
+Python IDE with workspace export
+local Python IDE with PWA companion
+dev-bricks DevCenter Python desktop suite
+```
+
+## Last-checked: 2026-06-11
