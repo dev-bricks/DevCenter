@@ -5,12 +5,13 @@ Zentrale Einstellungsverwaltung
 """
 
 import json
-import os
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
 from dataclasses import dataclass, asdict, field, fields
 from PySide6.QtCore import QByteArray, QObject, Signal
+
+from core.app_paths import get_settings_path
 
 
 @dataclass
@@ -120,9 +121,8 @@ class SettingsManager(QObject):
     
     def _default_settings_path(self) -> str:
         """Standardpfad für Einstellungen"""
-        app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-        settings_dir = Path(app_data) / 'DevCenter'
-        settings_dir.mkdir(exist_ok=True)
+        settings_dir = get_settings_path().parent
+        settings_dir.mkdir(parents=True, exist_ok=True)
         return str(settings_dir / 'settings.json')
     
     def _load(self):

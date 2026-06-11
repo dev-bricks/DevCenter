@@ -7,7 +7,7 @@ Der Smoke deckt die aktuell geplante Linux-Source-Linie ab:
 - Linux-Root-Pfad im Explorer mit echten Umlauten
 - `xdg-open`-Pfad für "Im Explorer öffnen"
 - `bash -c` als Shell-Pfad im Output-Panel
-- aktueller Linux-Settings-Pfad unter `~/DevCenter/settings.json`
+- Linux-Settings-Pfad XDG-konform unter `~/.config/DevCenter/settings.json`
 """
 
 from __future__ import annotations
@@ -93,19 +93,20 @@ class _FakeQProcess:
 
 
 def _exercise_linux_settings_path() -> None:
-    print("Test 1: Linux-Settings-Pfad bleibt lokal unter HOME")
+    print("Test 1: Linux-Settings-Pfad folgt XDG_CONFIG_HOME")
     with tempfile.TemporaryDirectory(prefix="devcenter-linux-home-") as temp_home:
-        with mock.patch.dict(os.environ, {"HOME": temp_home}, clear=True), mock.patch.object(
-            settings_manager_module.os.path,
-            "expanduser",
-            return_value=temp_home,
+        temp_xdg = str(Path(temp_home) / ".xdg-config")
+        with mock.patch("core.app_paths.sys.platform", "linux"), mock.patch.dict(
+            os.environ,
+            {"HOME": temp_home, "XDG_CONFIG_HOME": temp_xdg, "QT_QPA_PLATFORM": "offscreen"},
+            clear=False,
         ):
             settings = SettingsManager()
             settings_path = Path(settings.settings_path)
-            expected = Path(temp_home) / "DevCenter" / "settings.json"
+            expected = Path(temp_xdg) / "DevCenter" / "settings.json"
             assert settings_path == expected, settings_path
             assert settings_path.exists(), settings_path
-    print("PASS: Settings landen aktuell unter ~/DevCenter/settings.json\n")
+    print("PASS: Settings landen XDG-konform unter ~/.config bzw. XDG_CONFIG_HOME\n")
 
 
 def _exercise_offscreen_window_and_explorer() -> None:

@@ -20,6 +20,8 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `web_companion/tests/pwa.test.mjs`: auf 15 PWA-Tests erweitert (20/20 grün mit library-Tests)
 
 ### Geändert / Changed
+- Gemeinsamer Pfad-Resolver `src/core/app_paths.py` für `SettingsManager`, `ProjectManager` und `ProfilerBridge`.
+- Neue Regressionstests für Settings-, Recent-Projects- und Dateiindex-Pfad plus aktualisierter Linux-Plattform-Smoke.
 - README, Contribution- und Security-Dokumentation auf `dev-bricks/DevCenter` aktualisiert.
 - Beispielkonfiguration für WinStorePackager anonymisiert und neutralisiert.
 - README auf englischen GitHub-Einstieg, klarere DevCenter-Namensabgrenzung und bessere Discoverability-Keywords erweitert.
@@ -27,6 +29,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `AUFGABEN.txt`, `PORTIERUNGSPLAN.md`, README und `web_companion/README.md` auf den umgesetzten Companion-Stand synchronisiert.
 
 ### Behoben / Fixed
+- DevCenter legt Konfigurations- und Indexdateien auf Linux/macOS jetzt XDG-konform unter `XDG_CONFIG_HOME/DevCenter` bzw. `~/.config/DevCenter` ab, statt ungeordnet unter `~/DevCenter`.
 - Persistenz unbekannter Einstellungsschlüssel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
 - Fehlende `chardet`-Abhängigkeit für frische CI-/Installationsumgebungen ergänzt.
 - Editor-Einstellungen werden nach dem Speichern auf offene Tabs angewendet; der Dialog persistiert jetzt auch „Aktuelle Zeile hervorheben” und aktualisiert Schrift, Tab-Breite, Zeilennummern und Cursor-Markierung unmittelbar.

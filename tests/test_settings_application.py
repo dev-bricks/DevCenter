@@ -16,9 +16,11 @@ from PySide6.QtCore import QByteArray
 from PySide6.QtWidgets import QApplication, QTabWidget
 
 from core.settings_manager import SettingsManager
+from core.project_manager import ProjectManager
 from gui.dialogs.settings_dialog import SettingsDialog
 from gui.main_window import MainWindow
 from modules.editor.code_editor import CodeEditor
+from modules.filemanager.profiler_bridge import ProfilerBridge
 
 
 class DevCenterSettingsTests(unittest.TestCase):
@@ -89,6 +91,42 @@ class DevCenterSettingsTests(unittest.TestCase):
 
         self.assertEqual(bytes(restored_geometry), b"geometry-state")
         self.assertEqual(bytes(restored_state), b"window-state")
+
+    def test_settings_manager_uses_xdg_config_path_on_posix(self):
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as temp_xdg:
+            with unittest.mock.patch("core.app_paths.sys.platform", "linux"), unittest.mock.patch.dict(
+                os.environ,
+                {"HOME": temp_home, "XDG_CONFIG_HOME": temp_xdg},
+                clear=False,
+            ):
+                settings = SettingsManager()
+                self.addCleanup(Path(settings.settings_path).unlink, missing_ok=True)
+                expected = Path(temp_xdg) / "DevCenter" / "settings.json"
+                self.assertEqual(Path(settings.settings_path), expected)
+                self.assertTrue(expected.exists())
+
+    def test_project_manager_uses_xdg_config_path_on_posix(self):
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as temp_xdg:
+            with unittest.mock.patch("core.app_paths.sys.platform", "linux"), unittest.mock.patch.dict(
+                os.environ,
+                {"HOME": temp_home, "XDG_CONFIG_HOME": temp_xdg},
+                clear=False,
+            ):
+                manager = ProjectManager()
+                expected = Path(temp_xdg) / "DevCenter" / "settings.json"
+                self.assertEqual(Path(manager.settings_path), expected)
+
+    def test_profiler_bridge_uses_xdg_index_path_on_posix(self):
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as temp_xdg:
+            with unittest.mock.patch("core.app_paths.sys.platform", "linux"), unittest.mock.patch.dict(
+                os.environ,
+                {"HOME": temp_home, "XDG_CONFIG_HOME": temp_xdg},
+                clear=False,
+            ):
+                bridge = ProfilerBridge()
+                expected = Path(temp_xdg) / "DevCenter" / "file_index.db"
+                self.assertEqual(Path(bridge.db_path), expected)
+                self.assertTrue(expected.exists())
 
 
 if __name__ == "__main__":

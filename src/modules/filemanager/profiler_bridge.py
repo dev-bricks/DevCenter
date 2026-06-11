@@ -5,7 +5,6 @@ Datei-Indexierung und Suche
 Basierend auf ProFiler V14
 """
 
-import os
 import sqlite3
 import hashlib
 from pathlib import Path
@@ -13,6 +12,8 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 import threading
+
+from core.app_paths import get_file_index_path
 
 
 @dataclass
@@ -53,9 +54,8 @@ class ProfilerBridge:
             db_path: Pfad zur Index-Datenbank
         """
         if db_path is None:
-            app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            db_dir = Path(app_data) / 'DevCenter'
-            db_dir.mkdir(exist_ok=True)
+            db_dir = get_file_index_path().parent
+            db_dir.mkdir(parents=True, exist_ok=True)
             db_path = str(db_dir / 'file_index.db')
         
         self.db_path = db_path
