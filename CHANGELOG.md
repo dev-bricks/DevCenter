@@ -33,6 +33,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - DevCenter legt Konfigurations- und Indexdateien auf Linux/macOS jetzt XDG-konform unter `XDG_CONFIG_HOME/DevCenter` bzw. `~/.config/DevCenter` ab, statt ungeordnet unter `~/DevCenter`.
 - Persistenz unbekannter Einstellungsschlüssel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
 - Fehlende `chardet`-Abhängigkeit für frische CI-/Installationsumgebungen ergänzt.
+- `tests/test_ai_panel_model_selection.py`: von pytest-Fixtures auf `unittest.TestCase` umgestellt, damit `python -m unittest discover` die 5 Tests im CI erkennt (108/108 Tests grün).
 - Editor-Einstellungen werden nach dem Speichern auf offene Tabs angewendet; der Dialog persistiert jetzt auch „Aktuelle Zeile hervorheben” und aktualisiert Schrift, Tab-Breite, Zeilennummern und Cursor-Markierung unmittelbar.
 - Workspace-Exporte redigieren jetzt offene Aufgaben, Projektpfade und aktuelle Analyseprobleme, ohne Secrets oder lokale Vollpfade mitzuschreiben.
 - `WinStorePackager`: subprocess-Deadlock behoben — `check_call` mit PIPE durch `subprocess.run(..., capture_output=True)` ersetzt; Exception-Handler liest jetzt immer `stderr or stdout`.
