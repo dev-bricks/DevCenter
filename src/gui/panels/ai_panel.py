@@ -12,6 +12,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, QThread, Slot
 from PySide6.QtGui import QFont, QTextCursor
 from typing import Optional
+from modules.ai_assistant.ai_service import AIModel
+
+
+_MODEL_MAP = [AIModel.CLAUDE_SONNET, AIModel.CLAUDE_OPUS, AIModel.CLAUDE_HAIKU]
 
 
 class AIWorker(QThread):
@@ -79,6 +83,7 @@ class AIAssistantPanel(QWidget):
         self.model_combo = QComboBox()
         self.model_combo.addItems(["Claude Sonnet", "Claude Opus", "Claude Haiku"])
         self.model_combo.setCurrentIndex(0)
+        self.model_combo.currentIndexChanged.connect(self._on_model_changed)
         header.addWidget(self.model_combo)
         
         layout.addLayout(header)
@@ -182,7 +187,7 @@ class AIAssistantPanel(QWidget):
     def set_ai_service(self, ai_service):
         """Setzt den AI-Service"""
         self._ai_service = ai_service
-        
+
         if ai_service and ai_service.is_available():
             self.generate_btn.setEnabled(True)
             self.review_btn.setEnabled(True)
@@ -191,6 +196,15 @@ class AIAssistantPanel(QWidget):
             self.generate_btn.setEnabled(False)
             self.review_btn.setEnabled(False)
             self.explain_btn.setEnabled(False)
+
+        # Aktuell ausgewähltes Modell sofort synchronisieren
+        self._on_model_changed(self.model_combo.currentIndex())
+
+    @Slot(int)
+    def _on_model_changed(self, index: int):
+        """Aktualisiert das AI-Modell wenn der Nutzer die Auswahl ändert."""
+        if self._ai_service and 0 <= index < len(_MODEL_MAP):
+            self._ai_service.set_model(_MODEL_MAP[index])
     
     def set_context(self, code: str, file_name: str = ""):
         """Setzt den Code-Kontext aus dem Editor"""

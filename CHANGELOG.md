@@ -20,6 +20,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `web_companion/tests/pwa.test.mjs`: auf 15 PWA-Tests erweitert (20/20 grün mit library-Tests)
 
 ### Geändert / Changed
+- `src/gui/panels/ai_panel.py`: `model_combo.currentIndexChanged` mit `_on_model_changed()` verdrahtet; `set_ai_service()` synchronisiert das Modell sofort beim ersten Aufruf; neuer Test `tests/test_ai_panel_model_selection.py` (5 Fälle).
 - Gemeinsamer Pfad-Resolver `src/core/app_paths.py` für `SettingsManager`, `ProjectManager` und `ProfilerBridge`.
 - Neue Regressionstests für Settings-, Recent-Projects- und Dateiindex-Pfad plus aktualisierter Linux-Plattform-Smoke.
 - README, Contribution- und Security-Dokumentation auf `dev-bricks/DevCenter` aktualisiert.
