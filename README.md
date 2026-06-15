@@ -1,10 +1,13 @@
+<img src="assets/banner.svg" width="100%" alt="DevCenter Banner"/>
+
 # DevCenter
 
 **Local-first Python IDE and developer toolkit for Windows.** DevCenter combines a PySide6 code editor, static analyzer, PyInstaller build helper, license collector, file index and optional Claude/Anthropic assistant in one desktop suite.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Python](https://img.shields.io/badge/python-3.10+-green)
-![License](https://img.shields.io/badge/license-GPL%20v3-blue)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
+[![Python](https://img.shields.io/badge/python-3.10%2B-green)](https://python.org)
+[![License](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
+[![Platform: Windows](https://img.shields.io/badge/Platform-Windows-lightgrey)](https://github.com/dev-bricks/DevCenter)
 
 > **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop app.
 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="100%" role="img" aria-label="DevCenter Banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1200" height="340" fill="url(#bg)"/>
+
+  <!-- Grid lines (code/tech feel) -->
+  <line x1="80" y1="60" x2="400" y2="60" stroke="#1e3a5f" stroke-width="1" opacity="0.5"/>
+  <line x1="80" y1="280" x2="400" y2="280" stroke="#1e3a5f" stroke-width="1" opacity="0.5"/>
+
+  <!-- Central command icon: hexagon with code brackets -->
+  <!-- Hexagon -->
+  <polygon points="230,85 290,90 320,170 290,250 230,255 170,250 140,170 170,90" fill="url(#hexGrad)" opacity="0.2"/>
+  <polygon points="230,85 290,90 320,170 290,250 230,255 170,250 140,170 170,90" fill="none" stroke="#3b82f6" stroke-width="3"/>
+
+  <!-- Code brackets inside hex -->
+  <text x="168" y="190" font-family="monospace" font-size="60" font-weight="bold" fill="#3b82f6" opacity="0.9">&lt;</text>
+  <text x="263" y="190" font-family="monospace" font-size="60" font-weight="bold" fill="#3b82f6" opacity="0.9">/&gt;</text>
+
+  <!-- Orbiting dots (hub/command center feel) -->
+  <circle cx="140" cy="115" r="6" fill="#60a5fa"/>
+  <circle cx="320" cy="115" r="6" fill="#60a5fa"/>
+  <circle cx="140" cy="225" r="6" fill="#3b82f6"/>
+  <circle cx="320" cy="225" r="6" fill="#3b82f6"/>
+  <circle cx="230" cy="85" r="5" fill="#93c5fd"/>
+  <circle cx="230" cy="255" r="5" fill="#93c5fd"/>
+
+  <!-- Connection lines to dots -->
+  <line x1="140" y1="115" x2="170" y2="95" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="320" y1="115" x2="290" y2="95" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="140" y1="225" x2="170" y2="245" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="320" y1="225" x2="290" y2="245" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Terminal prompt -->
+  <text x="100" y="295" font-family="monospace" font-size="14" fill="#475569">$ python main.py</text>
+
+  <!-- Divider -->
+  <line x1="420" y1="80" x2="420" y2="265" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Right: Wordmark + Tagline -->
+  <text x="460" y="168" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="68" font-weight="700" fill="#ffffff" letter-spacing="-1">DevCenter</text>
+  <text x="462" y="208" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="25" fill="#60a5fa" letter-spacing="0.5">Local-first Python IDE &amp; Developer Hub</text>
+  <text x="464" y="244" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="17" fill="#94a3b8">Editor · Analyzer · Build · AI Assistant · Python · Windows</text>
+</svg>
