@@ -1,4 +1,4 @@
-const CACHE_NAME = "devcenter-companion-v2";
+const CACHE_NAME = "devcenter-companion-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./icons/app.svg",
   "./icons/app-maskable.svg",
+  "./icons/apple-touch-icon-180.png",
   "./fixtures/demo-workspace.json",
 ];
 
