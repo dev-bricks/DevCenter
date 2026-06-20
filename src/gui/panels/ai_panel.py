@@ -231,6 +231,11 @@ class AIAssistantPanel(QWidget):
         self._set_loading(True)
         self._add_user_message(prompt[:200] + "..." if len(prompt) > 200 else prompt)
         
+        if self._worker is not None:
+            try:
+                self._worker.response_received.disconnect(self._on_response)
+            except RuntimeError:
+                pass
         self._worker = AIWorker(self._ai_service, prompt, system)
         self._worker.response_received.connect(self._on_response)
         self._worker.start()
@@ -238,6 +243,8 @@ class AIAssistantPanel(QWidget):
     @Slot(str, bool)
     def _on_response(self, content: str, success: bool):
         """Verarbeitet AI-Antwort"""
+        if self.sender() is not self._worker:
+            return
         self._set_loading(False)
         
         if success:
