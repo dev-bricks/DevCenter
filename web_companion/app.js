@@ -105,7 +105,11 @@ loadDemoFromQuery();
 function loadWorkspace(text, sourceLabel) {
   try {
     const payload = parseWorkspaceText(text);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // QuotaExceededError (Safari Private / voller Speicher) — Anzeige trotzdem fortsetzen
+    }
     renderWorkspace(payload, sourceLabel);
     setMessage(`Arbeitsstand geladen: ${sourceLabel}`, "success");
   } catch (error) {
@@ -359,5 +363,5 @@ function loadDemoFromQuery() {
   if (params.get("demo") !== "1") {
     return;
   }
-  elements.demoButton.click();
+  elements.demoButton?.click();
 }
