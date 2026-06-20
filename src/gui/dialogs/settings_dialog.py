@@ -203,22 +203,26 @@ class SettingsDialog(QDialog):
         self.pyinstaller_path = QLineEdit()
         self.pyinstaller_path.setPlaceholderText("(System-Standard)")
         pyinstaller_row.addWidget(self.pyinstaller_path)
-        
-        browse_btn = QPushButton("...")
-        browse_btn.setMaximumWidth(40)
-        browse_btn.clicked.connect(lambda: self._browse_file(self.pyinstaller_path, "PyInstaller auswählen"))
-        pyinstaller_row.addWidget(browse_btn)
+
+        self.pyinstaller_browse_btn = self._create_browse_button(
+            accessible_name="PyInstaller-Datei auswählen",
+            description="Öffnet die Dateiauswahl für den PyInstaller-Pfad.",
+            callback=lambda: self._browse_file(self.pyinstaller_path, "PyInstaller auswählen"),
+        )
+        pyinstaller_row.addWidget(self.pyinstaller_browse_btn)
         pi_layout.addRow("PyInstaller:", pyinstaller_row)
-        
+
         output_row = QHBoxLayout()
         self.output_dir = QLineEdit()
         self.output_dir.setText("dist")
         output_row.addWidget(self.output_dir)
-        
-        browse_out_btn = QPushButton("...")
-        browse_out_btn.setMaximumWidth(40)
-        browse_out_btn.clicked.connect(lambda: self._browse_folder(self.output_dir, "Ausgabeverzeichnis"))
-        output_row.addWidget(browse_out_btn)
+
+        self.output_dir_browse_btn = self._create_browse_button(
+            accessible_name="Ausgabeverzeichnis auswählen",
+            description="Öffnet die Ordnerauswahl für das Standard-Ausgabeverzeichnis.",
+            callback=lambda: self._browse_folder(self.output_dir, "Ausgabeverzeichnis"),
+        )
+        output_row.addWidget(self.output_dir_browse_btn)
         pi_layout.addRow("Ausgabe:", output_row)
         
         layout.addWidget(pi_group)
@@ -307,11 +311,13 @@ class SettingsDialog(QDialog):
         self.backup_path = QLineEdit()
         self.backup_path.setPlaceholderText("Backup-Verzeichnis")
         backup_row.addWidget(self.backup_path)
-        
-        browse_backup = QPushButton("...")
-        browse_backup.setMaximumWidth(40)
-        browse_backup.clicked.connect(lambda: self._browse_folder(self.backup_path, "Backup-Verzeichnis"))
-        backup_row.addWidget(browse_backup)
+
+        self.backup_browse_btn = self._create_browse_button(
+            accessible_name="Backup-Verzeichnis auswählen",
+            description="Öffnet die Ordnerauswahl für den Backup-Pfad.",
+            callback=lambda: self._browse_folder(self.backup_path, "Backup-Verzeichnis"),
+        )
+        backup_row.addWidget(self.backup_browse_btn)
         backup_layout.addRow("Backup-Pfad:", backup_row)
         
         self.auto_backup = QCheckBox("Automatische Backups")
@@ -373,9 +379,19 @@ class SettingsDialog(QDialog):
         
         layout.addWidget(accent_group)
         layout.addStretch()
-        
+
         return widget
-    
+
+    def _create_browse_button(self, accessible_name: str, description: str, callback) -> QPushButton:
+        """Erzeugt einen kompakten Browse-Button mit sprechendem A11y-Kontext."""
+        button = QPushButton("...")
+        button.setMaximumWidth(40)
+        button.setToolTip(accessible_name)
+        button.setAccessibleName(accessible_name)
+        button.setAccessibleDescription(description)
+        button.clicked.connect(callback)
+        return button
+
     def _browse_file(self, line_edit: QLineEdit, title: str):
         """Datei auswählen"""
         path, _ = QFileDialog.getOpenFileName(self, title)

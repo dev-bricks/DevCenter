@@ -1,17 +1,17 @@
 """
 Bugsweep Run #12 — Regressionstests (2026-06-20)
 
-Bug #12-1: ai_panel.py — Zombie-Signal-Verbindung beim Neustart des Workers.
-           _start_request() ersetzte self._worker ohne den alten response_received-
-           Signal-Slot zu trennen. Nach Worker-Beendigung (isRunning=False) liegt
-           das Signal noch in der Qt-Event-Queue; ein neuer Worker + erneutes connect()
-           erzeugt zwei aktive Verbindungen → _on_response wird doppelt aufgerufen
-           (doppelte Chat-Nachricht, falscher Loading-State).
-           Fix Teil 1: disconnect() vor dem Ersetzen des Workers (RuntimeError abfangen
-           falls kein Slot mehr verbunden) — verhindert neue doppelte Connections.
-           Fix Teil 2: Identitäts-Guard in _on_response (self.sender() is not self._worker
-           → return) — verwirft Events veralteter Worker, die bereits in der Qt-Event-Queue
-           lagen, bevor disconnect() aufgerufen werden konnte.
+Bug #12-1: ai_panel.py — Stale-Response-Race beim Neustart des Workers.
+           Jeder AIWorker besitzt ein eigenes response_received-Signal (separate QObjects,
+           keine gemeinsame Connection). Das eigentliche Problem: Worker1 hat isRunning()=False
+           zurückgegeben, aber sein emittiertes Signal liegt noch in der Qt-Event-Queue.
+           Wird danach ein neuer Worker2 gestartet, kann _on_response Worker1's verspätete
+           Antwort als Worker2-Antwort behandeln — falsche Chat-Nachricht, falscher Loading-State.
+           Fix Teil 1: disconnect() vor dem Ersetzen des Workers (RuntimeError abfangen) —
+           defensive Maßnahme, verkürzt das Race-Fenster aber eliminiert es nicht vollständig.
+           Fix Teil 2 (der robuste Teil): Identitäts-Guard in _on_response
+           (self.sender() is not self._worker → return) — verwirft Events veralteter Worker
+           die noch in der Qt-Event-Queue lagen; dieser Guard schließt die Race vollständig.
 """
 import os
 import re

@@ -45,6 +45,34 @@ class DevCenterSettingsTests(unittest.TestCase):
 
         self.assertFalse(settings.get("editor.highlight_current_line"))
 
+    def test_settings_dialog_browse_buttons_expose_accessible_context(self):
+        settings = self._temp_settings()
+        dialog = SettingsDialog(settings)
+
+        browse_buttons = [
+            (
+                dialog.pyinstaller_browse_btn,
+                "PyInstaller-Datei auswählen",
+                "Öffnet die Dateiauswahl für den PyInstaller-Pfad.",
+            ),
+            (
+                dialog.output_dir_browse_btn,
+                "Ausgabeverzeichnis auswählen",
+                "Öffnet die Ordnerauswahl für das Standard-Ausgabeverzeichnis.",
+            ),
+            (
+                dialog.backup_browse_btn,
+                "Backup-Verzeichnis auswählen",
+                "Öffnet die Ordnerauswahl für den Backup-Pfad.",
+            ),
+        ]
+
+        for button, accessible_name, description in browse_buttons:
+            self.assertEqual(button.text(), "...")
+            self.assertEqual(button.toolTip(), accessible_name)
+            self.assertEqual(button.accessibleName(), accessible_name)
+            self.assertEqual(button.accessibleDescription(), description)
+
     def test_main_window_applies_editor_settings_to_open_tabs(self):
         settings = self._temp_settings()
         settings.set("editor.font_family", "Courier New")

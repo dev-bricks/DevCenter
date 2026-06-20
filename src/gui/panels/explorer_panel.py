@@ -51,12 +51,20 @@ class ExplorerPanel(QWidget):
         
         self.refresh_btn = QPushButton("🔄")
         self.refresh_btn.setToolTip("Aktualisieren")
+        self.refresh_btn.setAccessibleName("Explorer aktualisieren")
+        self.refresh_btn.setAccessibleDescription(
+            "Lädt die aktuelle Projektstruktur im Explorer neu."
+        )
         self.refresh_btn.setMaximumWidth(30)
         self.refresh_btn.clicked.connect(self._refresh)
         header.addWidget(self.refresh_btn)
-        
+
         self.collapse_btn = QPushButton("⬆")
         self.collapse_btn.setToolTip("Alle zuklappen")
+        self.collapse_btn.setAccessibleName("Explorer zuklappen")
+        self.collapse_btn.setAccessibleDescription(
+            "Klappt alle aktuell geöffneten Ordner im Explorer zu."
+        )
         self.collapse_btn.setMaximumWidth(30)
         self.collapse_btn.clicked.connect(self._collapse_all)
         header.addWidget(self.collapse_btn)
@@ -66,6 +74,11 @@ class ExplorerPanel(QWidget):
         # Filter
         self.filter_input = QLineEdit()
         self.filter_input.setPlaceholderText("🔍 Dateien filtern...")
+        self.filter_input.setToolTip("Dateien im Explorer filtern")
+        self.filter_input.setAccessibleName("Dateifilter")
+        self.filter_input.setAccessibleDescription(
+            "Filtert die im Explorer angezeigten Projektdateien."
+        )
         self.filter_input.textChanged.connect(self._apply_filter)
         self.filter_input.setStyleSheet("""
             QLineEdit {
