@@ -11,7 +11,7 @@ PySide6>=6.5.0
 pyinstaller>=5.0.0
 
 # Icon-Erstellung
-Pillow>=9.0.0
+Pillow>=12.2.0
 
 # AI Integration
 anthropic>=0.18.0
