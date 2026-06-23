@@ -80,7 +80,7 @@ class AIService:
             import anthropic
             self._anthropic_available = True
             if self.api_key:
-                self._client = anthropic.Anthropic(api_key=self.api_key)
+                self._client = anthropic.Anthropic(api_key=self.api_key, timeout=60.0)
         except ImportError:
             pass
     
@@ -93,7 +93,7 @@ class AIService:
         self.api_key = api_key
         if self._anthropic_available and api_key:
             import anthropic
-            self._client = anthropic.Anthropic(api_key=api_key)
+            self._client = anthropic.Anthropic(api_key=api_key, timeout=60.0)
     
     def set_model(self, model: AIModel):
         """Setzt das zu verwendende Modell"""
@@ -158,7 +158,12 @@ class AIService:
                 **kwargs
             )
             
-            content = response.content[0].text if response.content else ""
+            # FIX: defensive Text-Extraktion -- response.content[0] muss kein TextBlock
+            # sein (z.B. tool_use) -> .text wuerde mit AttributeError eine sonst
+            # erfolgreiche Antwort in einen Fehler verwandeln.
+            content = "".join(
+                getattr(block, "text", "") for block in (response.content or [])
+            )
             
             # Verlauf aktualisieren
             if use_history:
@@ -169,8 +174,8 @@ class AIService:
                 content=content,
                 model=response.model,
                 usage={
-                    "input_tokens": response.usage.input_tokens,
-                    "output_tokens": response.usage.output_tokens
+                    "input_tokens": getattr(getattr(response, "usage", None), "input_tokens", 0),
+                    "output_tokens": getattr(getattr(response, "usage", None), "output_tokens", 0)
                 }
             )
             

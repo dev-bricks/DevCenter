@@ -239,6 +239,18 @@ class MethodAnalyzer:
                 'column': e.offset or 0
             })
             return result
+        except ValueError as e:
+            # FIX: ast.parse wirft ValueError (KEIN SyntaxError) bei NUL-Bytes im
+            # Fremdcode ("source code string cannot contain null bytes"). Vorher
+            # ungefangen -> Crash der GUI-Analyse (genau im Bedrohungsmodell, da
+            # beliebiger Fremdcode geparst wird).
+            result.errors.append({
+                'type': 'ParseError',
+                'message': str(e),
+                'line': 0,
+                'column': 0
+            })
+            return result
         
         # Analyse durchführen
         self._analyze_imports(tree, result)

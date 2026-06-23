@@ -160,6 +160,14 @@ class SettingsManager(QObject):
             
         except Exception as e:
             print(f"Fehler beim Laden der Einstellungen: {e}")
+            # FIX: korrupte-aber-vorhandene Datei VOR dem Reset sichern, sonst
+            # ueberschreibt der naechste _save() sie mit Defaults -> Originaldaten
+            # (auch nur teilweise beschaedigte) unwiederbringlich weg.
+            try:
+                if settings_file.exists():
+                    settings_file.replace(settings_file.with_suffix('.corrupt.bak'))
+            except (OSError, ValueError):
+                pass
             self.settings = AppSettings()
             self._extra_settings = {}
 
@@ -226,8 +234,14 @@ class SettingsManager(QObject):
                 except (json.JSONDecodeError, OSError):
                     pass
 
-            with open(settings_file, 'w', encoding='utf-8') as f:
+            # FIX: atomar schreiben (tmp + replace im selben Verzeichnis), sonst
+            # truncatet open(w) die zentrale Config sofort -> Crash/OneDrive-Lock mitten
+            # im json.dump = Totalverlust ALLER Einstellungen (beim naechsten Start
+            # faellt _load still auf Defaults zurueck).
+            tmp = settings_file.with_suffix('.tmp')
+            with open(tmp, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
+            tmp.replace(settings_file)
 
         except Exception as e:
             print(f"Fehler beim Speichern der Einstellungen: {e}")

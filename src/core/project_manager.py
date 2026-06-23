@@ -102,8 +102,13 @@ class ProjectManager(QObject):
 
             data['recent_projects'] = self.recent_projects
 
-            with open(settings_file, 'w', encoding='utf-8') as f:
+            # FIX: atomar schreiben (tmp + replace). Schreibt dieselbe settings.json wie
+            # SettingsManager; nicht-atomares open(w) korrumpierte sonst die gemeinsame
+            # Config bei Crash mitten im json.dump (gleicher Blast-Radius).
+            tmp = settings_file.with_suffix('.tmp')
+            with open(tmp, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
+            tmp.replace(settings_file)
         except Exception as e:
             print(f"Fehler beim Speichern der Recent Projects: {e}")
     

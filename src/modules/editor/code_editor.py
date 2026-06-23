@@ -582,8 +582,14 @@ class CodeEditor(QPlainTextEdit):
             True bei Erfolg
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except UnicodeDecodeError:
+                # FIX: legitime Nicht-UTF-8-Dateien (cp1252/latin-1) nicht still als
+                # "Ladefehler" (return False) abweisen -> Fallback mit Ersatzzeichen.
+                with open(file_path, 'r', encoding='cp1252', errors='replace') as f:
+                    content = f.read()
 
             self._is_modified = True  # verhindert spurious file_modified(True) durch setPlainText
             self.setPlainText(content)
@@ -612,9 +618,25 @@ class CodeEditor(QPlainTextEdit):
             return False
         
         try:
-            with open(path, 'w', encoding='utf-8') as f:
-                f.write(self.toPlainText())
-            
+            # FIX: atomar speichern (tmp im selben Verzeichnis + os.replace). Vorher
+            # truncatete open(path,'w') die Quelldatei sofort -> ein Fehler mitten im
+            # write() (Disk voll, OneDrive-Lock, Crash) = Verlust des Nutzer-Quellcodes
+            # ohne Backup. Atomar bleibt das Original bei Schreibfehler intakt.
+            import os as _os
+            import tempfile as _tempfile
+            _dirp = _os.path.dirname(_os.path.abspath(path)) or "."
+            _fd, _tmp = _tempfile.mkstemp(dir=_dirp, suffix=".tmp")
+            try:
+                with _os.fdopen(_fd, 'w', encoding='utf-8') as f:
+                    f.write(self.toPlainText())
+                _os.replace(_tmp, path)
+            except Exception:
+                try:
+                    _os.unlink(_tmp)
+                except OSError:
+                    pass
+                raise
+
             self.file_path = path
             self._is_modified = False
             self.file_modified.emit(False)
