@@ -30,6 +30,7 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `AUFGABEN.txt`, `PORTIERUNGSPLAN.md`, README und `web_companion/README.md` auf den umgesetzten Companion-Stand synchronisiert.
 
 ### Behoben / Fixed
+- `ProfilerBridge`: FTS5-Indexpflege für Re-Indexe auf dokumentiertes Delete-then-Insert umgestellt, SQLite-Verbindungen mit `busy_timeout`/WAL gehärtet und Lesezugriffe gegen parallele Index-Schreibpfade serialisiert.
 - DevCenter legt Konfigurations- und Indexdateien auf Linux/macOS jetzt XDG-konform unter `XDG_CONFIG_HOME/DevCenter` bzw. `~/.config/DevCenter` ab, statt ungeordnet unter `~/DevCenter`.
 - Persistenz unbekannter Einstellungsschlüssel abgesichert, damit UI-/Legacy-Aliase beim Speichern nicht verloren gehen.
 - Fehlende `chardet`-Abhängigkeit für frische CI-/Installationsumgebungen ergänzt.

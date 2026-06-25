@@ -65,7 +65,7 @@ class ProfilerBridge:
     def _init_database(self):
         """Initialisiert die Datenbank"""
         with self._lock:
-            conn = sqlite3.connect(self.db_path)
+            conn = self._get_connection()
             try:
                 cursor = conn.cursor()
 
@@ -112,7 +112,22 @@ class ProfilerBridge:
     
     def _get_connection(self) -> sqlite3.Connection:
         """Gibt eine Thread-sichere Verbindung zurück"""
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        conn.execute("PRAGMA busy_timeout = 30000")
+        conn.execute("PRAGMA journal_mode = WAL")
+        return conn
+
+    def _delete_fts_row(self, cursor: sqlite3.Cursor, row: tuple):
+        """Entfernt eine externe FTS5-Zeile mit dem dokumentierten delete-Befehl."""
+        if not row:
+            return
+        cursor.execute(
+            '''
+                INSERT INTO files_fts(files_fts, rowid, path, name, content)
+                VALUES('delete', ?, ?, ?, ?)
+            ''',
+            (row[0], row[1], row[2], row[3] or "")
+        )
     
     def _calculate_hash(self, file_path: str) -> str:
         """Berechnet MD5-Hash einer Datei"""
@@ -170,6 +185,13 @@ class ProfilerBridge:
                 try:
                     cursor = conn.cursor()
 
+                    cursor.execute(
+                        'SELECT id, path, name, content FROM files WHERE path = ?',
+                        (str(path),)
+                    )
+                    old_fts_row = cursor.fetchone()
+                    self._delete_fts_row(cursor, old_fts_row)
+
                     cursor.execute('''
                         INSERT INTO files
                         (path, name, extension, size, modified, hash, content, indexed_at, project_path)
@@ -196,10 +218,20 @@ class ProfilerBridge:
                     ))
 
                     # FTS aktualisieren
+                    cursor.execute(
+                        'SELECT id, path, name, content FROM files WHERE path = ?',
+                        (str(path),)
+                    )
+                    new_fts_row = cursor.fetchone()
                     cursor.execute('''
-                        INSERT OR REPLACE INTO files_fts (rowid, path, name, content)
-                        SELECT id, path, name, content FROM files WHERE path = ?
-                    ''', (str(path),))
+                        INSERT INTO files_fts (rowid, path, name, content)
+                        VALUES (?, ?, ?, ?)
+                    ''', (
+                        new_fts_row[0],
+                        new_fts_row[1],
+                        new_fts_row[2],
+                        new_fts_row[3] or ""
+                    ))
 
                     conn.commit()
                 finally:
@@ -282,74 +314,75 @@ class ProfilerBridge:
         results = []
         conn = None
         try:
-            conn = self._get_connection()
-            cursor = conn.cursor()
+            with self._lock:
+                conn = self._get_connection()
+                cursor = conn.cursor()
 
-            # Name/Pfad-Suche
-            sql = '''
-                SELECT path, name, extension, size, modified, hash
-                FROM files
-                WHERE (name LIKE ? OR path LIKE ?)
-            '''
-            params = [f'%{query}%', f'%{query}%']
-
-            if project_path:
-                sql += ' AND project_path = ?'
-                params.append(project_path)
-
-            sql += f' LIMIT {limit}'
-
-            cursor.execute(sql, params)
-
-            for row in cursor.fetchall():
-                file_info = FileInfo(
-                    path=row[0],
-                    name=row[1],
-                    extension=row[2],
-                    size=row[3],
-                    modified=datetime.fromtimestamp(row[4]) if row[4] else None,
-                    hash=row[5]
-                )
-                results.append(SearchResult(
-                    file=file_info,
-                    match_type='name' if query.lower() in row[1].lower() else 'path'
-                ))
-
-            # Volltext-Suche
-            if search_content and len(results) < limit:
-                remaining = limit - len(results)
-                found_paths = {r.file.path for r in results}
-
-                fts_sql = '''
-                    SELECT f.path, f.name, f.extension, f.size, f.modified, f.hash,
-                           snippet(files_fts, 2, '>>>', '<<<', '...', 32) as context
-                    FROM files_fts fts
-                    JOIN files f ON f.id = fts.rowid
-                    WHERE files_fts MATCH ?
+                # Name/Pfad-Suche
+                sql = '''
+                    SELECT path, name, extension, size, modified, hash
+                    FROM files
+                    WHERE (name LIKE ? OR path LIKE ?)
                 '''
-                fts_params = [query]
-                if project_path:
-                    fts_sql += ' AND f.project_path = ?'
-                    fts_params.append(project_path)
-                fts_sql += f' LIMIT {remaining}'
+                params = [f'%{query}%', f'%{query}%']
 
-                cursor.execute(fts_sql, fts_params)
+                if project_path:
+                    sql += ' AND project_path = ?'
+                    params.append(project_path)
+
+                sql += f' LIMIT {limit}'
+
+                cursor.execute(sql, params)
 
                 for row in cursor.fetchall():
-                    if row[0] not in found_paths:
-                        file_info = FileInfo(
-                            path=row[0],
-                            name=row[1],
-                            extension=row[2],
-                            size=row[3],
-                            modified=datetime.fromtimestamp(row[4]) if row[4] else None,
-                            hash=row[5]
-                        )
-                        results.append(SearchResult(
-                            file=file_info,
-                            match_type='content',
-                            match_context=row[6] if row[6] else ""
-                        ))
+                    file_info = FileInfo(
+                        path=row[0],
+                        name=row[1],
+                        extension=row[2],
+                        size=row[3],
+                        modified=datetime.fromtimestamp(row[4]) if row[4] else None,
+                        hash=row[5]
+                    )
+                    results.append(SearchResult(
+                        file=file_info,
+                        match_type='name' if query.lower() in row[1].lower() else 'path'
+                    ))
+
+                # Volltext-Suche
+                if search_content and len(results) < limit:
+                    remaining = limit - len(results)
+                    found_paths = {r.file.path for r in results}
+
+                    fts_sql = '''
+                        SELECT f.path, f.name, f.extension, f.size, f.modified, f.hash,
+                               snippet(files_fts, 2, '>>>', '<<<', '...', 32) as context
+                        FROM files_fts fts
+                        JOIN files f ON f.id = fts.rowid
+                        WHERE files_fts MATCH ?
+                    '''
+                    fts_params = [query]
+                    if project_path:
+                        fts_sql += ' AND f.project_path = ?'
+                        fts_params.append(project_path)
+                    fts_sql += f' LIMIT {remaining}'
+
+                    cursor.execute(fts_sql, fts_params)
+
+                    for row in cursor.fetchall():
+                        if row[0] not in found_paths:
+                            file_info = FileInfo(
+                                path=row[0],
+                                name=row[1],
+                                extension=row[2],
+                                size=row[3],
+                                modified=datetime.fromtimestamp(row[4]) if row[4] else None,
+                                hash=row[5]
+                            )
+                            results.append(SearchResult(
+                                file=file_info,
+                                match_type='content',
+                                match_context=row[6] if row[6] else ""
+                            ))
 
         except Exception as e:
             print(f"Such-Fehler: {e}")
@@ -372,26 +405,27 @@ class ProfilerBridge:
         duplicates = {}
         conn = None
         try:
-            conn = self._get_connection()
-            cursor = conn.cursor()
+            with self._lock:
+                conn = self._get_connection()
+                cursor = conn.cursor()
 
-            sql = '''
-                SELECT hash, GROUP_CONCAT(path, '|||') as paths
-                FROM files
-                WHERE hash IS NOT NULL AND hash != ''
-            '''
-            params = []
+                sql = '''
+                    SELECT hash, GROUP_CONCAT(path, '|||') as paths
+                    FROM files
+                    WHERE hash IS NOT NULL AND hash != ''
+                '''
+                params = []
 
-            if project_path:
-                sql += ' AND project_path = ?'
-                params.append(project_path)
+                if project_path:
+                    sql += ' AND project_path = ?'
+                    params.append(project_path)
 
-            sql += ' GROUP BY hash HAVING COUNT(*) > 1'
+                sql += ' GROUP BY hash HAVING COUNT(*) > 1'
 
-            cursor.execute(sql, params)
+                cursor.execute(sql, params)
 
-            for row in cursor.fetchall():
-                duplicates[row[0]] = row[1].split('|||')
+                for row in cursor.fetchall():
+                    duplicates[row[0]] = row[1].split('|||')
 
         except Exception as e:
             print(f"Duplikat-Suche Fehler: {e}")
@@ -419,37 +453,38 @@ class ProfilerBridge:
         }
         conn = None
         try:
-            conn = self._get_connection()
-            cursor = conn.cursor()
+            with self._lock:
+                conn = self._get_connection()
+                cursor = conn.cursor()
 
-            where = 'WHERE project_path = ?' if project_path else ''
-            params = [project_path] if project_path else []
+                where = 'WHERE project_path = ?' if project_path else ''
+                params = [project_path] if project_path else []
 
-            # Gesamt
-            cursor.execute(f'SELECT COUNT(*), SUM(size) FROM files {where}', params)
-            row = cursor.fetchone()
-            stats['total_files'] = row[0] or 0
-            stats['total_size'] = row[1] or 0
+                # Gesamt
+                cursor.execute(f'SELECT COUNT(*), SUM(size) FROM files {where}', params)
+                row = cursor.fetchone()
+                stats['total_files'] = row[0] or 0
+                stats['total_size'] = row[1] or 0
 
-            # Nach Extension
-            cursor.execute(f'''
-                SELECT extension, COUNT(*), SUM(size)
-                FROM files {where}
-                GROUP BY extension
-                ORDER BY COUNT(*) DESC
-            ''', params)
+                # Nach Extension
+                cursor.execute(f'''
+                    SELECT extension, COUNT(*), SUM(size)
+                    FROM files {where}
+                    GROUP BY extension
+                    ORDER BY COUNT(*) DESC
+                ''', params)
 
-            for row in cursor.fetchall():
-                stats['by_extension'][row[0] or '(keine)'] = {
-                    'count': row[1],
-                    'size': row[2] or 0
-                }
+                for row in cursor.fetchall():
+                    stats['by_extension'][row[0] or '(keine)'] = {
+                        'count': row[1],
+                        'size': row[2] or 0
+                    }
 
-            # Letzter Index
-            cursor.execute(f'SELECT MAX(indexed_at) FROM files {where}', params)
-            row = cursor.fetchone()
-            if row[0]:
-                stats['last_indexed'] = datetime.fromtimestamp(row[0])
+                # Letzter Index
+                cursor.execute(f'SELECT MAX(indexed_at) FROM files {where}', params)
+                row = cursor.fetchone()
+                if row[0]:
+                    stats['last_indexed'] = datetime.fromtimestamp(row[0])
 
         except Exception as e:
             print(f"Statistik-Fehler: {e}")
