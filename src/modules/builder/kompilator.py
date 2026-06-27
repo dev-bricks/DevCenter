@@ -9,6 +9,7 @@ import os
 import sys
 import subprocess
 import shutil
+import threading
 from pathlib import Path
 from typing import Optional, List, Callable
 from dataclasses import dataclass
@@ -93,6 +94,10 @@ class Kompilator:
         self.pyinstaller_path = pyinstaller_path
         self._progress_callback: Optional[Callable] = None
         self._log: List[str] = []
+        # Watchdog/Cancel-Infrastruktur
+        self._cancelled = threading.Event()
+        self._active_process: Optional[subprocess.Popen] = None
+        self._build_timeout: int = 600  # Sekunden; nach Ablauf killt der Watchdog
     
     def set_progress_callback(self, callback: Callable[[int, str], None]):
         """Setzt eine Callback-Funktion für Fortschrittsupdates"""
@@ -116,7 +121,8 @@ class Kompilator:
                 [sys.executable, '-m', 'PyInstaller', '--version'],
                 capture_output=True,
                 text=True,
-                encoding='utf-8'
+                encoding='utf-8',
+                timeout=30
             )
             return result.returncode == 0
         except Exception:
@@ -129,7 +135,8 @@ class Kompilator:
                 [sys.executable, '-m', 'PyInstaller', '--version'],
                 capture_output=True,
                 text=True,
-                encoding='utf-8'
+                encoding='utf-8',
+                timeout=30
             )
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -149,6 +156,7 @@ class Kompilator:
         """
         start_time = datetime.now()
         self._log = []
+        self._cancelled.clear()
         
         # Prüfungen
         if not os.path.exists(config.script_path):
@@ -185,6 +193,16 @@ class Kompilator:
         self._log.append(f"Kommando: {' '.join(cmd)}")
         
         # PyInstaller ausführen
+        _timed_out = threading.Event()
+
+        def _watchdog_kill(proc: subprocess.Popen) -> None:
+            """Externer Watchdog: killt PyInstaller nach _build_timeout Sekunden."""
+            _timed_out.set()
+            try:
+                proc.kill()
+            except OSError:
+                pass
+
         try:
             with subprocess.Popen(
                 cmd,
@@ -195,33 +213,53 @@ class Kompilator:
                 errors='replace',
                 cwd=os.path.dirname(config.script_path) or '.'
             ) as process:
+                self._active_process = process
+                watchdog = threading.Timer(
+                    self._build_timeout, _watchdog_kill, args=[process]
+                )
+                watchdog.start()
                 progress = 20
                 warnings = []
 
-                while True:
-                    line = process.stdout.readline()
-                    if not line and process.poll() is not None:
-                        break
+                try:
+                    while True:
+                        line = process.stdout.readline()
+                        if not line and process.poll() is not None:
+                            break
 
-                    line = line.strip()
-                    if line:
-                        self._log.append(line)
+                        # Cancel-Check nach jedem readline (readline kehrt zurück,
+                        # sobald cancel() den Prozess extern gekillt hat)
+                        if self._cancelled.is_set():
+                            process.kill()
+                            process.wait()
+                            return BuildResult(
+                                success=False,
+                                error_message="Build abgebrochen",
+                                log=self._log
+                            )
 
-                        # Fortschritt schätzen
-                        if "Analyzing" in line:
-                            progress = min(progress + 5, 40)
-                        elif "Processing" in line:
-                            progress = min(progress + 2, 60)
-                        elif "Building" in line:
-                            progress = min(progress + 10, 80)
-                        elif "Copying" in line:
-                            progress = min(progress + 5, 90)
+                        line = line.strip()
+                        if line:
+                            self._log.append(line)
 
-                        # Warnungen sammeln
-                        if "WARNING" in line:
-                            warnings.append(line)
+                            # Fortschritt schätzen
+                            if "Analyzing" in line:
+                                progress = min(progress + 5, 40)
+                            elif "Processing" in line:
+                                progress = min(progress + 2, 60)
+                            elif "Building" in line:
+                                progress = min(progress + 10, 80)
+                            elif "Copying" in line:
+                                progress = min(progress + 5, 90)
 
-                        self._emit_progress(progress, line[:100])
+                            # Warnungen sammeln
+                            if "WARNING" in line:
+                                warnings.append(line)
+
+                            self._emit_progress(progress, line[:100])
+                finally:
+                    watchdog.cancel()
+                    self._active_process = None
 
                 return_code = process.returncode
 
@@ -229,6 +267,15 @@ class Kompilator:
             return BuildResult(
                 success=False,
                 error_message=f"Fehler beim Ausführen von PyInstaller: {e}",
+                log=self._log
+            )
+
+        if _timed_out.is_set():
+            duration = (datetime.now() - start_time).total_seconds()
+            return BuildResult(
+                success=False,
+                error_message=f"Build-Timeout nach {self._build_timeout} s — PyInstaller beendet",
+                duration=duration,
                 log=self._log
             )
         
@@ -269,6 +316,22 @@ class Kompilator:
                 warnings=warnings
             )
     
+    def cancel(self) -> None:
+        """Bricht den laufenden Build ab und beendet den PyInstaller-Child-Prozess.
+
+        Setzt _cancelled, damit die readline-Schleife in build() beim nächsten
+        Zyklus sauber zurückkehrt. Killt zusätzlich den Prozess direkt, damit
+        ein blockierendes readline() sofort aufgeweckt wird.
+        """
+        self._cancelled.set()
+        proc = self._active_process
+        if proc is not None:
+            try:
+                proc.kill()
+                proc.wait()
+            except OSError:
+                pass
+
     def _build_command(self, config: BuildConfig) -> List[str]:
         """Erstellt das PyInstaller-Kommando"""
         cmd = [sys.executable, '-m', 'PyInstaller']

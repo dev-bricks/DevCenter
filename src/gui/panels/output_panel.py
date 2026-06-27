@@ -245,3 +245,13 @@ class OutputPanel(QWidget):
     def is_running(self) -> bool:
         """Prüft ob ein Prozess läuft"""
         return self._process and self._process.state() == QProcess.ProcessState.Running
+
+    def stop(self):
+        """Beendet einen laufenden Prozess sauber (für closeEvent).
+
+        QProcess.kill() sendet SIGKILL/TerminateProcess — sicherer als terminate(),
+        das auf Windows ohnehin zum gleichen Ergebnis führt.
+        """
+        if self._process is not None and self._process.state() != QProcess.ProcessState.NotRunning:
+            self._process.kill()
+            self._process.waitForFinished(3000)

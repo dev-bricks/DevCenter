@@ -1175,9 +1175,13 @@ class MainWindow(QMainWindow):
                 event.ignore()
                 return
         
+        # Laufende Worker und Prozesse vor dem Schließen beenden
+        self.ai_panel.stop()
+        self.output_panel.stop()
+
         # Fenster-Status speichern
         self.settings.save_window_state(self.saveGeometry(), self.saveState())
-        
+
         event.accept()
 
 

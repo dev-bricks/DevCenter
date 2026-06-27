@@ -384,3 +384,16 @@ class AIAssistantPanel(QWidget):
         self.chat_display.setHtml(self._get_welcome_html())
         if self._ai_service:
             self._ai_service.clear_history()
+
+    def stop(self):
+        """Beendet einen laufenden Worker-Thread sauber (für closeEvent).
+
+        AIWorker.run() blockiert in asyncio.run_until_complete() und hat keinen
+        Qt-Event-Loop — quit() ist daher wirkungslos. Wir warten bounded (3 s) und
+        nutzen terminate() als Fallback, damit das Fenster nicht hängt.
+        """
+        if self._worker is not None and self._worker.isRunning():
+            self._worker.quit()  # No-op ohne Event-Loop, aber schadet nicht
+            if not self._worker.wait(3000):
+                self._worker.terminate()
+                self._worker.wait()

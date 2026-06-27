@@ -60,6 +60,7 @@ class BuildDialog(QDialog):
         self.script_path = script_path
         self.project_path = project_path or os.path.dirname(script_path)
         self._worker: Optional[BuildWorker] = None
+        self._kompilator = None  # Referenz für cancel() in reject()
         
         self.setWindowTitle("Build erstellen")
         self.setMinimumSize(550, 600)
@@ -445,9 +446,9 @@ class BuildDialog(QDialog):
         self.log_output.clear()
         self.status_label.setText("Build läuft...")
         
-        # Worker starten
-        kompilator = Kompilator()
-        self._worker = BuildWorker(kompilator, config)
+        # Worker starten (Referenz auf Kompilator speichern, damit reject() cancel() rufen kann)
+        self._kompilator = Kompilator()
+        self._worker = BuildWorker(self._kompilator, config)
         self._worker.progress.connect(self._on_progress)
         self._worker.finished.connect(self._on_finished)
         self._worker.start()
@@ -481,6 +482,9 @@ class BuildDialog(QDialog):
                 self._worker.progress.disconnect(self._on_progress)
             except RuntimeError:
                 pass
+            # Zuerst PyInstaller-Child beenden, dann den QThread-Wrapper
+            if self._kompilator is not None:
+                self._kompilator.cancel()
             self._worker.terminate()  # quit() hat keinen Effekt ohne Event-Loop
             self._worker.wait(3000)
         super().reject()
