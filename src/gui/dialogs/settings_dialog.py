@@ -440,6 +440,8 @@ class SettingsDialog(QDialog):
         # Appearance
         theme_map = {'dark': 0, 'light': 1, 'system': 2}
         self.theme.setCurrentIndex(theme_map.get(self.settings.get('appearance.theme', 'dark'), 0))
+        self.editor_theme.setCurrentText(self.settings.get('appearance.editor_theme', 'VS Code Dark'))
+        self.accent_color.setCurrentText(self.settings.get('appearance.accent_color', 'Blau (#007acc)'))
     
     def _save_settings(self):
         """Speichert Einstellungen"""
@@ -477,7 +479,9 @@ class SettingsDialog(QDialog):
         # Appearance
         themes = ['dark', 'light', 'system']
         self.settings.set('appearance.theme', themes[self.theme.currentIndex()])
-        
+        self.settings.set('appearance.editor_theme', self.editor_theme.currentText())
+        self.settings.set('appearance.accent_color', self.accent_color.currentText())
+
         self.accept()
     
     def _reset_settings(self):

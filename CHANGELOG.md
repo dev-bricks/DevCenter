@@ -5,6 +5,9 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Behoben / Fixed
+- `settings_dialog`: `editor_theme` und `accent_color` wurden beim Speichern verworfen (nur `appearance.theme` wurde persistiert). `_save_settings()` setzt jetzt alle drei Appearance-Felder; `_load_settings()` lädt sie vollständig. Regressionstests: `test_settings_dialog_saves_editor_theme`, `test_settings_dialog_saves_accent_color`, `test_settings_dialog_loads_appearance_fields` (142/142 grün).
+
 ### Build / Release
 - EXE neu gebaut 2026-06-01 (PyInstaller `--onefile`, `DevCenter.exe`); 25/25 Tests grün, Smoke-Test bestanden. Vorherige EXE: 2026-04-29. Anlass: workspace_export.py neu hinzugefügt.
 

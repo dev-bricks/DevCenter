@@ -36,6 +36,37 @@ class DevCenterSettingsTests(unittest.TestCase):
         settings_path = Path(temp_dir.name) / "settings.json"
         return SettingsManager(str(settings_path))
 
+    def test_settings_dialog_saves_editor_theme(self):
+        """editor_theme wird beim Speichern persistiert (vorheriger Bug: wurde verworfen)."""
+        settings = self._temp_settings()
+        dialog = SettingsDialog(settings)
+
+        dialog.editor_theme.setCurrentText("Monokai")
+        dialog._save_settings()
+
+        self.assertEqual(settings.get("appearance.editor_theme"), "Monokai")
+
+    def test_settings_dialog_saves_accent_color(self):
+        """accent_color wird beim Speichern persistiert (vorheriger Bug: wurde verworfen)."""
+        settings = self._temp_settings()
+        dialog = SettingsDialog(settings)
+
+        dialog.accent_color.setCurrentText("Grün (#4ec9b0)")
+        dialog._save_settings()
+
+        self.assertEqual(settings.get("appearance.accent_color"), "Grün (#4ec9b0)")
+
+    def test_settings_dialog_loads_appearance_fields(self):
+        """Gespeicherte editor_theme und accent_color werden beim Öffnen korrekt geladen."""
+        settings = self._temp_settings()
+        settings.set("appearance.editor_theme", "Dracula")
+        settings.set("appearance.accent_color", "Lila (#c586c0)")
+
+        dialog = SettingsDialog(settings)
+
+        self.assertEqual(dialog.editor_theme.currentText(), "Dracula")
+        self.assertEqual(dialog.accent_color.currentText(), "Lila (#c586c0)")
+
     def test_settings_dialog_saves_highlight_current_line(self):
         settings = self._temp_settings()
         dialog = SettingsDialog(settings)
