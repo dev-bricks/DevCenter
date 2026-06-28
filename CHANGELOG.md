@@ -9,6 +9,14 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - EXE neu gebaut 2026-06-01 (PyInstaller `--onefile`, `DevCenter.exe`); 25/25 Tests grün, Smoke-Test bestanden. Vorherige EXE: 2026-04-29. Anlass: workspace_export.py neu hinzugefügt.
 
 ### Hinzugefügt / Added
+- `web_companion/library.js`: `countChecklistProgress(checklists)` — berechnet Erledigungsfortschritt einer Release-Checkliste (`{done, total, percent}`).
+- `web_companion/library.js`: `groupProblemsBySeverity(problems)` — gruppiert Analysebefunde nach Schweregrad, sortiert nach error → warning → info.
+- `web_companion/app.js`: Analyse-Panel zeigt Befunde jetzt nach Schweregrad gruppiert an; Release-Panel enthält eine Fortschrittsleiste für Checklisten.
+- `web_companion/manifest.webmanifest`: SVG-Icons (`app.svg` mit `purpose=any`, `app-maskable.svg` mit `purpose=maskable`) eingetragen — behebt vorherige Manifest-Regressionsfehler.
+- `web_companion/styles.css`: Klassen `.problem-group-header`, `.checklist-progress`, `.progress-track`, `.progress-fill` für die neuen UI-Elemente.
+- `web_companion/tests/library.test.mjs`: 12 neue Tests für `countChecklistProgress` und `groupProblemsBySeverity` (52/52 grün, alle Dateien).
+
+### Behoben / Fixed
 - GitHub Actions Smoke-Checks für Python 3.10, 3.11 und 3.12.
 - Lokales `build_exe.bat` für den PyInstaller-Build mit `DevCenter.ico`.
 - Datenschutzhinweise für lokale Einstellungen, Datei-Indizes, Build-Artefakte und optionale API-Nutzung.

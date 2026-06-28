@@ -405,3 +405,49 @@ textarea {
     flex-direction: column;
   }
 }
+
+/* ── Problem-Gruppen nach Schweregrad ── */
+
+.problem-group-header {
+  list-style: none;
+  padding: 0.35rem 0 0.15rem;
+  margin-top: 0.6rem;
+}
+
+.problem-group-header:first-child {
+  margin-top: 0;
+}
+
+.problem-group-header strong {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* ── Checklisten-Fortschrittsleiste ── */
+
+.checklist-progress {
+  list-style: none;
+  padding: 0 0 0.8rem;
+}
+
+.checklist-progress .muted {
+  font-size: 0.88rem;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--good);
+  transition: width 0.35s ease;
+}

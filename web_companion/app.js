@@ -1,5 +1,7 @@
 import {
+  countChecklistProgress,
   formatExportDate,
+  groupProblemsBySeverity,
   groupTasksByPriority,
   parseWorkspaceText,
   summarizeWorkspace,
@@ -121,6 +123,8 @@ function renderWorkspace(payload, sourceLabel) {
   const summaryCards = summarizeWorkspace(payload);
   const frameworks = toArray(payload.project.frameworks);
   const problems = toArray(payload.analysis?.problems);
+  const problemGroups = groupProblemsBySeverity(problems);
+  const checklistProgress = countChecklistProgress(toArray(payload.release?.checklists));
   const tasks = groupTasksByPriority(payload.tasks);
   const requirements = toArray(payload.dependencies?.requirements);
   const releaseTargets = toArray(payload.release?.targets);
@@ -172,25 +176,35 @@ function renderWorkspace(payload, sourceLabel) {
 
   replaceChildren(
     elements.problemsList,
-    problems.length
-      ? problems.map((problem) => {
-          const item = document.createElement("li");
-          item.className = "problem-item";
+    problemGroups.length
+      ? problemGroups.flatMap(({ severity, items }) => {
+          const groupHeader = document.createElement("li");
+          groupHeader.className = "problem-group-header";
+          const groupLabel = document.createElement("strong");
+          groupLabel.textContent = severity.charAt(0).toUpperCase() + severity.slice(1);
+          groupHeader.append(groupLabel);
 
-          const title = document.createElement("strong");
-          title.textContent = `${problem.severity || "info"} • ${problem.code || "Befund"}`;
+          const problemItems = items.map((problem) => {
+            const item = document.createElement("li");
+            item.className = "problem-item";
 
-          const text = document.createElement("p");
-          text.textContent = problem.message || "Ohne Text";
+            const title = document.createElement("strong");
+            title.textContent = `${problem.code || "Befund"}`;
 
-          const meta = document.createElement("p");
-          meta.className = "muted";
-          meta.textContent = [problem.file_ref, positionLabel(problem.line, problem.column), problem.source]
-            .filter(Boolean)
-            .join(" • ");
+            const text = document.createElement("p");
+            text.textContent = problem.message || "Ohne Text";
 
-          item.append(title, text, meta);
-          return item;
+            const meta = document.createElement("p");
+            meta.className = "muted";
+            meta.textContent = [problem.file_ref, positionLabel(problem.line, problem.column), problem.source]
+              .filter(Boolean)
+              .join(" • ");
+
+            item.append(title, text, meta);
+            return item;
+          });
+
+          return [groupHeader, ...problemItems];
         })
       : [createEmptyItem("Keine exportierten Analyseprobleme vorhanden.")],
   );
@@ -216,7 +230,10 @@ function renderWorkspace(payload, sourceLabel) {
   replaceChildren(
     elements.releaseChecklists,
     releaseChecklists.length
-      ? releaseChecklists.map((entry) => createListItem(entry.title, entry.status || "open"))
+      ? [
+          createChecklistProgressBar(checklistProgress),
+          ...releaseChecklists.map((entry) => createListItem(entry.title, entry.status || "open")),
+        ]
       : [createEmptyItem("Keine Release-Checklisten im Export enthalten.")],
   );
 
@@ -299,6 +316,30 @@ function createEmptyItem(message) {
   item.className = "list__item list__item--empty";
   item.textContent = message;
   return item;
+}
+
+function createChecklistProgressBar({ done, total, percent }) {
+  const wrapper = document.createElement("li");
+  wrapper.className = "checklist-progress";
+
+  const label = document.createElement("p");
+  label.className = "muted";
+  label.textContent = `${done} von ${total} erledigt`;
+
+  const track = document.createElement("div");
+  track.className = "progress-track";
+
+  const fill = document.createElement("div");
+  fill.className = "progress-fill";
+  fill.style.width = `${percent}%`;
+  fill.setAttribute("role", "progressbar");
+  fill.setAttribute("aria-valuenow", String(percent));
+  fill.setAttribute("aria-valuemin", "0");
+  fill.setAttribute("aria-valuemax", "100");
+
+  track.append(fill);
+  wrapper.append(label, track);
+  return wrapper;
 }
 
 function createMetaLine(label, value) {

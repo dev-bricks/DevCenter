@@ -103,6 +103,51 @@ export function toArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+/**
+ * Berechnet den Erledigungsfortschritt einer Checkliste.
+ * Gibt die Anzahl erledigter Einträge, die Gesamtzahl und den Prozentwert (0–100) zurück.
+ * @param {Array} checklists
+ * @returns {{ done: number, total: number, percent: number }}
+ */
+export function countChecklistProgress(checklists) {
+  const items = toArray(checklists);
+  const done = items.filter((item) => item.status === "done" || item.status === "closed").length;
+  return {
+    done,
+    total: items.length,
+    percent: items.length > 0 ? Math.round((done / items.length) * 100) : 0,
+  };
+}
+
+const SEVERITY_RANK = { error: 0, warning: 1, info: 2 };
+
+/**
+ * Gruppiert Analysebefunde nach Schweregrad.
+ * Rückgabe: Array von { severity, items }, sortiert nach Rank (error → warning → info → sonstige).
+ * @param {Array} problems
+ * @returns {Array<{ severity: string, items: Array }>}
+ */
+export function groupProblemsBySeverity(problems) {
+  const groups = new Map();
+  for (const problem of toArray(problems)) {
+    const key = problem.severity || "info";
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(problem);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => {
+      const rankA = SEVERITY_RANK[a] ?? 99;
+      const rankB = SEVERITY_RANK[b] ?? 99;
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      return a.localeCompare(b, "de");
+    })
+    .map(([severity, items]) => ({ severity, items }));
+}
+
 function numberValue(value) {
   return Number.isFinite(Number(value)) ? Number(value) : 0;
 }

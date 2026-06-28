@@ -208,6 +208,19 @@ test("Bug #2 regression: localStorage.setItem in try/catch (QuotaExceededError S
   assert.match(src, /localStorage\.setItem/, "localStorage.setItem muss vorhanden bleiben");
 });
 
+// BUG-W1 regression: fetch(event.request) ohne .catch() → Offline-Seite zeigt SW-Fehler
+// Fix: .catch(() => new Response('Offline', {status:503})) nach dem .then()-Block
+// Red-on-Revert: ohne .catch() fehlt der Pattern im Quelltext → Test schlägt fehl
+test("BUG-W1 regression: sw.js fetch hat .catch() Offline-Fallback", () => {
+  const src = fs.readFileSync(swPath, "utf8");
+  assert.match(
+    src,
+    /\.catch\(/,
+    "sw.js fetch muss .catch() für Offline-Fallback haben — BUG-W1",
+  );
+  assert.match(src, /503/, "Offline-Fallback muss HTTP 503 zurückgeben");
+});
+
 test("Bug #3 regression: loadDemoFromQuery nutzt optionales Chaining (elements.demoButton?.click)", () => {
   const src = fs.readFileSync(appJsPath, "utf8");
   assert.doesNotMatch(
