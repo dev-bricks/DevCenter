@@ -4,8 +4,10 @@
 import importlib.util
 import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -43,6 +45,48 @@ class ExplorerPanelAccessibilityTests(unittest.TestCase):
         self.assertEqual(panel.filter_input.toolTip(), "Dateien im Explorer filtern")
         self.assertEqual(panel.filter_input.accessibleName(), "Dateifilter")
         self.assertIn("Projektdateien", panel.filter_input.accessibleDescription())
+
+    def test_new_file_without_loaded_project_does_not_use_cwd(self):
+        panel = ExplorerPanel()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with (
+                    patch.object(EXPLORER_PANEL_MODULE.QInputDialog, "getText") as get_text,
+                    patch.object(EXPLORER_PANEL_MODULE.QMessageBox, "warning") as warning,
+                ):
+                    get_text.return_value = ("leak.txt", True)
+                    panel._new_file("")
+            finally:
+                os.chdir(original_cwd)
+
+            self.assertFalse((cwd / "leak.txt").exists())
+            get_text.assert_not_called()
+            warning.assert_called_once()
+
+    def test_new_folder_without_loaded_project_does_not_use_cwd(self):
+        panel = ExplorerPanel()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with (
+                    patch.object(EXPLORER_PANEL_MODULE.QInputDialog, "getText") as get_text,
+                    patch.object(EXPLORER_PANEL_MODULE.QMessageBox, "warning") as warning,
+                ):
+                    get_text.return_value = ("leak", True)
+                    panel._new_folder("")
+            finally:
+                os.chdir(original_cwd)
+
+            self.assertFalse((cwd / "leak").exists())
+            get_text.assert_not_called()
+            warning.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -151,13 +151,29 @@ class ExplorerPanel(QWidget):
     def set_root_path(self, path: str):
         """Setzt das Wurzelverzeichnis"""
         if os.path.exists(path):
-            self._root_path = path
-            self.model.setRootPath(path)
-            self.tree.setRootIndex(self.model.index(path))
+            self._root_path = os.path.abspath(path)
+            self.model.setRootPath(self._root_path)
+            self.tree.setRootIndex(self.model.index(self._root_path))
             
             # Titel aktualisieren
-            project_name = os.path.basename(path)
+            project_name = os.path.basename(self._root_path)
             self.title_label.setText(f"📁 {project_name.upper()}")
+
+    def _resolve_folder_target(self, folder: str) -> str:
+        """Gibt ein gültiges Zielverzeichnis unter dem geladenen Projekt zurück."""
+        if not self._root_path:
+            return ""
+
+        root = os.path.abspath(self._root_path)
+        candidate = os.path.abspath(folder or root)
+        try:
+            is_inside_project = os.path.commonpath([root, candidate]) == root
+        except ValueError:
+            is_inside_project = False
+
+        if is_inside_project and os.path.isdir(candidate):
+            return candidate
+        return ""
     
     def get_selected_path(self) -> str:
         """Gibt den ausgewählten Pfad zurück"""
@@ -213,6 +229,12 @@ class ExplorerPanel(QWidget):
                 background-color: #094771;
             }
         """)
+
+        if not self._root_path:
+            empty_action = menu.addAction("Kein Projekt geöffnet")
+            empty_action.setEnabled(False)
+            menu.exec(self.tree.viewport().mapToGlobal(position))
+            return
         
         if os.path.isfile(path):
             # Datei-Menü
@@ -290,6 +312,11 @@ class ExplorerPanel(QWidget):
     
     def _new_file(self, folder: str):
         """Neue Datei erstellen"""
+        folder = self._resolve_folder_target(folder)
+        if not folder:
+            QMessageBox.warning(self, "Fehler", "Bitte zuerst ein Projekt öffnen.")
+            return
+
         name, ok = QInputDialog.getText(
             self, "Neue Datei", "Dateiname:"
         )
@@ -306,6 +333,11 @@ class ExplorerPanel(QWidget):
     
     def _new_folder(self, parent: str):
         """Neuen Ordner erstellen"""
+        parent = self._resolve_folder_target(parent)
+        if not parent:
+            QMessageBox.warning(self, "Fehler", "Bitte zuerst ein Projekt öffnen.")
+            return
+
         name, ok = QInputDialog.getText(
             self, "Neuer Ordner", "Ordnername:"
         )

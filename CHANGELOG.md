@@ -6,6 +6,11 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 ## [Unreleased]
 
 ### Behoben / Fixed
+- `explorer_panel`: Neue Datei/Neuer Ordner ohne geladenes Projekt schreibt nicht mehr
+  relativ ins Prozess-CWD. Der Explorer verlangt jetzt ein gültiges Zielverzeichnis
+  unter dem geladenen Projekt-Root und zeigt sonst eine Warnung. Regressionstests:
+  `test_new_file_without_loaded_project_does_not_use_cwd`,
+  `test_new_folder_without_loaded_project_does_not_use_cwd`.
 - `settings_dialog`: `editor_theme` und `accent_color` wurden beim Speichern verworfen (nur `appearance.theme` wurde persistiert). `_save_settings()` setzt jetzt alle drei Appearance-Felder; `_load_settings()` lädt sie vollständig. Regressionstests: `test_settings_dialog_saves_editor_theme`, `test_settings_dialog_saves_accent_color`, `test_settings_dialog_loads_appearance_fields` (142/142 grün).
 
 ### Build / Release
