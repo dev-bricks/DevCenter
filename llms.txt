@@ -43,4 +43,4 @@ local Python IDE with PWA companion
 dev-bricks DevCenter Python desktop suite
 ```
 
-## Last-checked: 2026-06-11
+## Last-checked: 2026-07-06

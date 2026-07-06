@@ -21,6 +21,20 @@
 | Workspace export for PWA companion | File → Export workspace |
 | Windows launcher | `START_DevCenter.bat` |
 
+### Product Family & Edition Comparison
+
+DevCenter consists of a highly capable local Desktop Application and a lightweight, offline-ready Web Companion. Their features are compared below:
+
+| Feature | Desktop Application (Authoritative IDE) | Web Companion (Static PWA) |
+| :--- | :--- | :--- |
+| **Primary Purpose** | Full offline local-first Python development, analysis, and build suite | Read-only dashboard for reviewing projects, task lists, and build status |
+| **Data Flow** | Authors and builds everything locally; generates redacted workspace exports | Imports redacted `devcenter-workspace-v1.json` completely client-side |
+| **Code Editor** | PySide6-based editor with syntax highlighting and auto-indent | None (Read-only status overview) |
+| **Static Code Analysis** | Local AST analysis, complexity checks, and encoding repair | View analysis summaries and detected issue statistics |
+| **Build & Release** | PyInstaller wrapper, PNG to ICO converter, license collector | View configuration metadata and target platform checklist |
+| **Task Management** | Directly parses and updates your local `AUFGABEN.txt` | Visually groups open tasks by priority |
+| **Privacy Boundary** | Authoritative data store; strictly local unless optional cloud APIs are used | Offline-first PWA, no cloud uploads, completely secure client-side sandbox |
+
 ![DevCenter main window showing the local Python IDE dashboard](README/screenshots/main.png)
 
 ## Why DevCenter
@@ -198,6 +212,19 @@ Nicht identisch mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder D
 | Entwicklerschleife V3 | AI Assistant | Claude API Integration für Code-Generierung |
 | ProFiler V14 | FileManager | Datei-Indizierung und Volltext-Suche |
 | ProSync V3.1 | FileManager | Intelligente Backup-Synchronisation |
+### Produkt-Edition & Funktionsvergleich
+
+DevCenter besteht aus einer voll ausgestatteten lokalen Desktop-Anwendung und einem leichtgewichtigen, offline-fähigen Web-Companion.
+
+| Funktion | Desktop-Anwendung (Lokale IDE) | Web-Companion (Statische PWA) |
+| :--- | :--- | :--- |
+| **Hauptzweck** | Lokale Offline-Entwicklung, statische Code-Analyse und EXE-Kompilierung | Read-only Status-Dashboard für Projektmetriken, Aufgaben und Build-Stand |
+| **Datenfluss** | Erzeugt den Code und exportiert redigierten Status | Liest redigierte `devcenter-workspace-v1.json` rein clientseitig ein |
+| **Code-Editor** | PySide6-Editor mit Syntax-Highlighting und Auto-Einrückung | Keine Bearbeitung (rein lesender Zugriff) |
+| **Statische Analyse** | AST-Befunde, Komplexitätsberechnung, Encoding-Reparatur | Anzeige von Fehlerstatistiken und Warnungsübersichten |
+| **Kompilierung** | PyInstaller-Wrapper, Bild-zu-ICO-Konverter, Lizenz-Sammler | Anzeige der konfigurierten Build-Historie und Zielplattformen |
+| **Aufgaben** | Direktes Editieren der lokalen `AUFGABEN.txt` | Visuelle Gruppierung offener Tasks nach Priorität |
+| **Datenschutz** | Alle Daten verbleiben lokal auf dem System | Rein lokales Laden im Browser-Sandkasten, kein Cloud-Upload |
 
 ### Konfiguration
 

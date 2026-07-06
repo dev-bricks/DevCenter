@@ -5,6 +5,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Dokumentation / Documentation
+- README.md: Produktvergleichstabelle (Product Family & Edition Comparison) in Englisch und Deutsch hinzugefügt.
+- llms.txt: Prüfdatum (Last-checked) auf 2026-07-06 aktualisiert.
+
 ### Build / Release
 - EXE neu gebaut 2026-06-01 (PyInstaller `--onefile`, `DevCenter.exe`); 25/25 Tests grün, Smoke-Test bestanden. Vorherige EXE: 2026-04-29. Anlass: workspace_export.py neu hinzugefügt.
 
