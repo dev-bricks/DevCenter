@@ -45,17 +45,35 @@ class OutputPanel(QWidget):
         
         self.run_button = QPushButton("▶ Ausführen")
         self.run_button.clicked.connect(self._on_run_clicked)
+        self._set_accessible_context(
+            self.run_button,
+            "Ausführen",
+            "Startet die aktuelle Datei oder den zuletzt übergebenen Shell-Befehl im Output-Panel.",
+            "Aktuelle Datei oder Befehl ausführen",
+        )
         toolbar.addWidget(self.run_button)
-        
+
         self.stop_button = QPushButton("⬛ Stopp")
         self.stop_button.setEnabled(False)
         self.stop_button.clicked.connect(self._on_stop_clicked)
+        self._set_accessible_context(
+            self.stop_button,
+            "Prozess stoppen",
+            "Beendet den aktuell laufenden Prozess im Output-Panel.",
+            "Laufenden Prozess stoppen",
+        )
         toolbar.addWidget(self.stop_button)
         
         toolbar.addSpacing(20)
         
         self.clear_button = QPushButton("🗑 Leeren")
         self.clear_button.clicked.connect(self.clear)
+        self._set_accessible_context(
+            self.clear_button,
+            "Ausgabe leeren",
+            "Entfernt den bisherigen Text aus dem Output-Panel und setzt den Status zurück.",
+            "Ausgabe leeren",
+        )
         toolbar.addWidget(self.clear_button)
         
         toolbar.addStretch()
@@ -64,8 +82,10 @@ class OutputPanel(QWidget):
         self.auto_scroll_btn.setCheckable(True)
         self.auto_scroll_btn.setChecked(True)
         self.auto_scroll_btn.clicked.connect(self._toggle_auto_scroll)
+        self.auto_scroll_btn.setAccessibleName("Auto-Scroll")
         toolbar.addWidget(self.auto_scroll_btn)
-        
+        self._sync_auto_scroll_accessibility()
+
         layout.addLayout(toolbar)
         
         # Output Text
@@ -81,15 +101,41 @@ class OutputPanel(QWidget):
             }
         """)
         self.output.setMaximumBlockCount(10000)  # Max Zeilen
+        self._set_accessible_context(
+            self.output,
+            "Konsolen-Ausgabe",
+            "Zeigt laufende Konsolen-Ausgaben, Build-Protokolle und Fehlermeldungen schreibgeschützt an.",
+            "Konsolen-Ausgabe und Build-Protokolle",
+        )
         layout.addWidget(self.output)
         
         # Status
         self.status_label = QLabel("Bereit")
         self.status_label.setStyleSheet("padding: 2px 4px; color: #888;")
+        self.status_label.setAccessibleName("Prozessstatus")
+        self.status_label.setAccessibleDescription(
+            "Zeigt an, ob der zuletzt gestartete Prozess läuft, erfolgreich beendet wurde oder mit Fehler endete."
+        )
         layout.addWidget(self.status_label)
-    
+
+    def _set_accessible_context(self, widget, name: str, description: str, tooltip: str):
+        widget.setToolTip(tooltip)
+        widget.setAccessibleName(name)
+        widget.setAccessibleDescription(description)
+
+    def _sync_auto_scroll_accessibility(self):
+        if self._auto_scroll:
+            tooltip = "Auto-Scroll deaktivieren"
+            description = "Automatisches Mitscrollen der Ausgabe ist aktiviert."
+        else:
+            tooltip = "Auto-Scroll aktivieren"
+            description = "Automatisches Mitscrollen der Ausgabe ist deaktiviert."
+        self.auto_scroll_btn.setToolTip(tooltip)
+        self.auto_scroll_btn.setAccessibleDescription(description)
+
     def _toggle_auto_scroll(self):
         self._auto_scroll = self.auto_scroll_btn.isChecked()
+        self._sync_auto_scroll_accessibility()
     
     def _on_run_clicked(self):
         """Wird vom MainWindow überschrieben/verbunden"""
