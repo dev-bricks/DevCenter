@@ -131,28 +131,34 @@ class PythonHighlighter(QSyntaxHighlighter):
                 match = iterator.next()
                 self.setFormat(match.capturedStart(), match.capturedLength(), format)
         
-        # Multi-line Strings (docstrings)
+        # Multi-line Strings (docstrings) — state 1 = """, state 2 = '''
         self._highlight_multiline(text, '"""', 1, self.multiline_string_format)
         self._highlight_multiline(text, "'''", 2, self.multiline_string_format)
-    
+
     def _highlight_multiline(self, text, delimiter, state, format):
         """Highlightet Multi-line Strings"""
-        if self.previousBlockState() == state:
+        other_state = 2 if state == 1 else 1
+        prev = self.previousBlockState()
+
+        if prev == other_state or self.currentBlockState() == other_state:
+            return
+
+        if prev == state:
             start_index = 0
             add = 0
         else:
             start_index = text.find(delimiter)
             add = len(delimiter)
-        
+
         while start_index >= 0:
             end_index = text.find(delimiter, start_index + add)
-            
+
             if end_index == -1:
                 self.setCurrentBlockState(state)
                 comment_length = len(text) - start_index
             else:
                 comment_length = end_index - start_index + len(delimiter)
-            
+
             self.setFormat(start_index, comment_length, format)
             start_index = text.find(delimiter, start_index + comment_length)
 
