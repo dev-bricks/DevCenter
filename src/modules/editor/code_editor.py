@@ -197,6 +197,7 @@ class CodeEditor(QPlainTextEdit):
         super().__init__(parent)
         
         self.file_path: Optional[str] = None
+        self.file_encoding = 'utf-8'
         self._is_modified = False
         
         # Font
@@ -588,18 +589,26 @@ class CodeEditor(QPlainTextEdit):
             True bei Erfolg
         """
         try:
+            with open(file_path, 'rb') as f:
+                raw_content = f.read()
+
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                content = raw_content.decode('utf-8')
+                source_encoding = 'utf-8'
             except UnicodeDecodeError:
-                # FIX: legitime Nicht-UTF-8-Dateien (cp1252/latin-1) nicht still als
-                # "Ladefehler" (return False) abweisen -> Fallback mit Ersatzzeichen.
-                with open(file_path, 'r', encoding='cp1252', errors='replace') as f:
-                    content = f.read()
+                try:
+                    content = raw_content.decode('cp1252')
+                    source_encoding = 'cp1252'
+                except UnicodeDecodeError:
+                    # cp1252 definiert nicht alle Bytewerte. Latin-1 bildet jedes Byte
+                    # eindeutig ab und verhindert dadurch stille U+FFFD-Datenverluste.
+                    content = raw_content.decode('latin-1')
+                    source_encoding = 'latin-1'
 
             self._is_modified = True  # verhindert spurious file_modified(True) durch setPlainText
             self.setPlainText(content)
             self.file_path = file_path
+            self.file_encoding = source_encoding
             self._is_modified = False
             self.file_modified.emit(False)
             return True
@@ -644,6 +653,7 @@ class CodeEditor(QPlainTextEdit):
                 raise
 
             self.file_path = path
+            self.file_encoding = 'utf-8'
             self._is_modified = False
             self.file_modified.emit(False)
             return True
