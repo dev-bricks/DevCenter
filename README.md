@@ -44,7 +44,7 @@ DevCenter consists of a highly capable local Desktop Application and a lightweig
 - **Static analysis built in:** method/class detection, complexity checks, import analysis, TODO/FIXME detection and encoding repair helpers.
 - **Build and release helpers:** PyInstaller wrapper, icon conversion, third-party license collection, release notes and export planning.
 - **Optional AI assistant:** Claude/Anthropic integration is opt-in and uses local settings, keyring or environment variables.
-- **Companion-ready export:** writes a redacted `devcenter-workspace-v1.json` for the static `web_companion/` PWA viewer.
+- **Redacted workspace export:** writes a redacted `devcenter-workspace-v1.json` (see `EXPORTFORMAT.md`).
 
 ## Quick Start
 
@@ -91,10 +91,6 @@ build_exe.bat
 - Structured JSON settings for editor, build, AI, sync and appearance
 - Import/export support for reproducible setups
 - Theme and window state restored on restart
-
-### Web Companion
-- Static `web_companion/` PWA viewer for redacted workspace exports
-- Installable, offline-capable, no backend required
 
 ## Installation
 
@@ -179,7 +175,6 @@ DevCenter/
 │   │   ├── ai_assistant/     # Claude API integration
 │   │   └── filemanager/      # File index, backup sync
 │   └── gui/                  # Main window, panels, dialogs
-├── web_companion/            # Static PWA viewer for workspace exports
 └── tests/                    # Unit tests
 ```
 

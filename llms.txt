@@ -26,7 +26,6 @@ Privacy and safety:
 - `README.md`: user-facing overview, screenshots, installation and feature list.
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: planned redacted workspace export contract.
-- `web_companion/`: static read-only PWA viewer for redacted `devcenter-workspace-v1.json` exports.
 - `.github/workflows/tests.yml`: Windows smoke tests for Python 3.10, 3.11 and 3.12.
 - `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
 
