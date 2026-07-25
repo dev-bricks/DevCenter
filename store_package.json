@@ -1,0 +1,16 @@
+{
+  "app_name": "DevCenter Suite",
+  "publisher": "CN=52596601-BAB4-4F3F-B182-E8F3F273B202",
+  "publisher_display": "Geiger",
+  "identity_name": "Geiger.DevCenterSuite",
+  "version": "1.0.0.0",
+  "description": "Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Repository-Sync und KI-Assistenz.",
+  "executable": "DevCenter.exe",
+  "capabilities": "runFullTrust",
+  "category": "Developer Tools",
+  "age_rating": "3+",
+  "privacy_url": "https://github.com/file-bricks/DevCenter/blob/main/PRIVACY_POLICY.md",
+  "support_url": "https://github.com/file-bricks/DevCenter/blob/main/SUPPORT.md",
+  "license": "MIT",
+  "pricing": "Free"
+}

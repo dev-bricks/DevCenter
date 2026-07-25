@@ -6,6 +6,17 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 ## [Unreleased]
 
 ### Behoben / Fixed
+- `EventBus`: QObject-gebundene Subscriber werden bei Emission aus Worker-Threads
+  über eine Qt-QueuedConnection im EventBus-Thread zugestellt, statt GUI-Callbacks
+  direkt im Worker auszuführen. Regression:
+  `tests/test_core.py::TestEventBusQueuedQObjectSubscribers`.
+- `build_dialog`: Die kompakten Symbolbuttons `...`, `+` und `-` im
+  Build-Wizard exponieren jetzt sprechende Tooltips sowie Accessible Names und
+  Descriptions statt sich fast nur auf Symbolik zu verlassen. Regression:
+  `tests/test_build_dialog_accessibility.py`.
+- Optionale Dev-Testabhängigkeit `pytest` in `pyproject.toml` auf `>=9.0.3`
+  angehoben; OSV meldet für `pytest 8.x` `GHSA-6w46-j5rx-g56g` /
+  `CVE-2025-71176`, für `9.0.3` keinen Treffer.
 - `explorer_panel`: Neue Datei/Neuer Ordner ohne geladenes Projekt schreibt nicht mehr
   relativ ins Prozess-CWD. Der Explorer verlangt jetzt ein gültiges Zielverzeichnis
   unter dem geladenen Projekt-Root und zeigt sonst eine Warnung. Regressionstests:
@@ -14,9 +25,30 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `settings_dialog`: `editor_theme` und `accent_color` wurden beim Speichern verworfen (nur `appearance.theme` wurde persistiert). `_save_settings()` setzt jetzt alle drei Appearance-Felder; `_load_settings()` lädt sie vollständig. Regressionstests: `test_settings_dialog_saves_editor_theme`, `test_settings_dialog_saves_accent_color`, `test_settings_dialog_loads_appearance_fields` (142/142 grün).
 
 ### Build / Release
-- EXE neu gebaut 2026-06-01 (PyInstaller `--onefile`, `DevCenter.exe`); 25/25 Tests grün, Smoke-Test bestanden. Vorherige EXE: 2026-04-29. Anlass: workspace_export.py neu hinzugefügt.
+- Das vorhandene EXE-Artefakt von 2026-06-01 bleibt ein historisches Artefakt;
+  ohne dokumentierten Commit, SHA-256 und Start-Smoke gilt es nicht als aktuelles
+  Release.
+- `build_exe.bat` baut ab jetzt ausschließlich unter
+  `C:\_Local_DEV\codex_build\DevCenter`, nutzt den zentralen Exclude-Scanner,
+  führt vor einer möglichen Kopie einen EXE-Start-Smoke aus und schreibt SHA-256
+  sowie Revision nach `BUILD-METADATA.txt`. Es erfolgt keine automatische
+  Rückkopie nach `releases/`; diese braucht eine manuelle Versions-/Tag-Prüfung.
 
 ### Hinzugefügt / Added
+- Windows-Store-Readiness: Canonical `store_package.json` angelegt (App: "DevCenter Suite", Identity: "Geiger.DevCenterSuite", Executable: "DevCenter.exe", Capabilities: "runFullTrust", Category: "Developer Tools", Pricing: "Free").
+- `WINDOWS_STORE_PREP.md`, `STORE_LISTING.md` (DE+EN) und `SUPPORT.md` verfasst.
+- `tests/test_store_materials.py` angelegt (7/7 Store-Tests grün).
+- Versionierter Workspace-Exportvertrag: Die Desktop-Version kommt aus
+  `pyproject.toml`, der Companion validiert Pflichtfelder und Redaktionsgrenzen,
+  und die Fixture weist aktive (`github`, `web`) gegenüber geplanten
+  (`windows_store`, `linux_direct`, `macos_direct`) Kanälen aus.
+- Früher Standard-Logger unter `%LOCALAPPDATA%\DevCenter\logs\app.log` mit
+  Rotation und Crash-Hooks sowie `debug.bat` und `update.bat`. Der produktive
+  `START_DevCenter.bat` startet fensterlos; Fehler bleiben im lokalen Log und im
+  sichtbaren Debug-Start nachvollziehbar.
+- `THIRD_PARTY_LICENSES.txt` inventarisiert die direkten Python-Projektabhängigkeiten
+  aus `pyproject.toml`, das Qt-for-Python-Wheel-Set und den dependency-freien
+  Web-Companion. Regression: `tests/test_third_party_licenses.py`.
 - `web_companion/library.js`: `countChecklistProgress(checklists)` — berechnet Erledigungsfortschritt einer Release-Checkliste (`{done, total, percent}`).
 - `web_companion/library.js`: `groupProblemsBySeverity(problems)` — gruppiert Analysebefunde nach Schweregrad, sortiert nach error → warning → info.
 - `web_companion/app.js`: Analyse-Panel zeigt Befunde jetzt nach Schweregrad gruppiert an; Release-Panel enthält eine Fortschrittsleiste für Checklisten.
