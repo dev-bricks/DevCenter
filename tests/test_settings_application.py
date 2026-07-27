@@ -187,6 +187,26 @@ class DevCenterSettingsTests(unittest.TestCase):
                 self.assertEqual(Path(bridge.db_path), expected)
                 self.assertTrue(expected.exists())
 
+    def test_reset_to_defaults_clears_extra_settings_for_category(self):
+        settings = self._temp_settings()
+        settings.set("editor.custom_plugin_flag", True)
+        self.assertTrue(settings.get("editor.custom_plugin_flag"))
+
+        settings.reset_to_defaults("editor")
+        self.assertIsNone(settings.get("editor.custom_plugin_flag"))
+
+    def test_sync_manager_should_exclude_handles_forward_and_backward_slashes(self):
+        from modules.filemanager.sync_manager import SyncManager
+        sm = SyncManager()
+
+        excludes = ["build/*", "temp_dir", "*.tmp"]
+        self.assertTrue(sm._should_exclude("build/output.exe", excludes))
+        self.assertTrue(sm._should_exclude("build\\output.exe", excludes))
+        self.assertTrue(sm._should_exclude("project/temp_dir/file.txt", excludes))
+        self.assertTrue(sm._should_exclude("project\\temp_dir\\file.txt", excludes))
+        self.assertFalse(sm._should_exclude("src/main.py", excludes))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

@@ -99,16 +99,22 @@ class SyncManager:
     def _should_exclude(self, path: str, excludes: List[str]) -> bool:
         """Prüft ob ein Pfad ausgeschlossen werden soll"""
         name = os.path.basename(path)
+        norm_path = path.replace('\\', '/')
+        norm_parts = norm_path.split('/')
         
         for pattern in excludes:
-            # Direkter Match
-            if fnmatch.fnmatch(name, pattern):
+            norm_pattern = pattern.replace('\\', '/')
+            # Direkter Match auf Dateiname
+            if fnmatch.fnmatch(name, norm_pattern):
                 return True
             # Pfad-Match
-            if fnmatch.fnmatch(path, pattern):
+            if fnmatch.fnmatch(norm_path, norm_pattern) or fnmatch.fnmatch(path, pattern):
+                return True
+            # Subpfad-Match (z.B. 'build/*' -> 'project/build/output.exe')
+            if fnmatch.fnmatch(norm_path, f"*/{norm_pattern}") or fnmatch.fnmatch(norm_path, f"*/{norm_pattern}/*"):
                 return True
             # Verzeichnis im Pfad
-            if pattern in path.split(os.sep):
+            if norm_pattern in norm_parts or pattern in path.split(os.sep):
                 return True
         
         return False

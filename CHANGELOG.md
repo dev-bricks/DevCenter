@@ -6,6 +6,8 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 ## [Unreleased]
 
 ### Behoben / Fixed
+- `settings_manager`: `reset_to_defaults()` löscht jetzt auch extra/benutzerdefinierte Einstellungen (`_extra_settings`) für die gewählte Kategorie bzw. bei vollständigem Reset, statt sie beim Speichern erneut einzumischen.
+- `sync_manager`: `_should_exclude()` normalisiert Pfadtrennzeichen (`/` vs `\`) und unterstützt relative Glob-Muster (z.B. `build/*`) in Unterverzeichnissen. Regressionstests: `test_reset_to_defaults_clears_extra_settings_for_category`, `test_sync_manager_should_exclude_handles_forward_and_backward_slashes` (178/178 grün).
 - `EventBus`: QObject-gebundene Subscriber werden bei Emission aus Worker-Threads
   über eine Qt-QueuedConnection im EventBus-Thread zugestellt, statt GUI-Callbacks
   direkt im Worker auszuführen. Regression:

@@ -374,18 +374,25 @@ class SettingsManager(QObject):
         """
         if category is None:
             self.settings = AppSettings()
+            self._extra_settings = {}
         elif category == 'editor':
             self.settings.editor = EditorSettings()
+            self._extra_settings.pop('editor', None)
         elif category == 'build':
             self.settings.build = BuildSettings()
+            self._extra_settings.pop('build', None)
         elif category == 'ai':
             self.settings.ai = AISettings()
+            self._extra_settings.pop('ai', None)
         elif category == 'sync':
             self.settings.sync = SyncSettings()
+            self._extra_settings.pop('sync', None)
         elif category == 'appearance':
             self.settings.appearance = AppearanceSettings()
+            self._extra_settings.pop('appearance', None)
         elif category == 'general':
             self.settings.general = GeneralSettings()
+            self._extra_settings.pop('general', None)
 
         self._save()
         self.settings_changed.emit('*', None)
