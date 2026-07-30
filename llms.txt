@@ -14,7 +14,7 @@ DevCenter is a local-first Python desktop IDE and developer toolkit from dev-bri
 Positioning:
 - This is not Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox.
 - This is not a hosted cloud IDE.
-- The desktop app is authoritative; the Web/PWA companion is a read-only viewer for redacted `devcenter-workspace-v1.json` exports.
+- The desktop app is authoritative for local Python development and workspace export.
 
 Privacy and safety:
 - Projects, settings, file indexes and build artifacts stay local by default.
@@ -38,8 +38,7 @@ Windows Python IDE with PyInstaller build helper
 offline Python code editor and static analyzer
 Python developer toolkit with license collector
 Python IDE with workspace export
-local Python IDE with PWA companion
 dev-bricks DevCenter Python desktop suite
 ```
 
-## Last-checked: 2026-07-06
+## Last-checked: 2026-07-30

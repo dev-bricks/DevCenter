@@ -5,6 +5,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Technische Hygiene & Doku-Wartung / Maintenance (Pfad A) [G 2026-07-30]
+- **LLM Context**: `llms.txt` Last-checked Datum auf `2026-07-30` aktualisiert und veraltete `web_companion/`-Referenzen bereinigt.
+- **Changelog**: Wartungseintrag für den 30.07.2026 hinzugefügt.
+
 ### Dokumentation / Documentation
 - README.md: Produktvergleichstabelle (Product Family & Edition Comparison) in Englisch und Deutsch hinzugefügt.
 - llms.txt: Prüfdatum (Last-checked) auf 2026-07-06 aktualisiert.
