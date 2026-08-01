@@ -5,7 +5,7 @@ Zentrale Ereignisverwaltung für Modul-Kommunikation
 """
 
 from typing import Callable, Dict, List, Any
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, QThread, Qt
 from enum import Enum, auto
 
 
@@ -82,6 +82,7 @@ class EventBus(QObject):
     """
     
     event_emitted = Signal(object)  # Event
+    _callback_requested = Signal(object, object)  # callback, Event
     
     def __init__(self):
         super().__init__()
@@ -89,6 +90,10 @@ class EventBus(QObject):
         self._global_subscribers: List[Callable] = []
         self._event_history: List[Event] = []
         self._max_history = 100
+        self._callback_requested.connect(
+            self._dispatch_queued_callback,
+            Qt.ConnectionType.QueuedConnection,
+        )
     
     def subscribe(self, event_type: EventType, callback: Callable):
         """
@@ -155,20 +160,39 @@ class EventBus(QObject):
         # Spezifische Subscriber benachrichtigen (Kopie, falls Callback unsubscribed)
         if event_type in self._subscribers:
             for callback in list(self._subscribers[event_type]):
-                try:
-                    callback(event)
-                except Exception as e:
-                    print(f"Event Handler Error: {e}")
+                self._call_callback(callback, event, "Event Handler Error")
 
         # Globale Subscriber benachrichtigen (Kopie, falls Callback unsubscribed)
         for callback in list(self._global_subscribers):
-            try:
-                callback(event)
-            except Exception as e:
-                print(f"Global Event Handler Error: {e}")
+            self._call_callback(callback, event, "Global Event Handler Error")
         
         # Qt Signal emittieren
         self.event_emitted.emit(event)
+
+    def _call_callback(self, callback: Callable, event: Event, error_label: str):
+        """Ruft Subscriber direkt oder, für GUI-QObjects aus Worker-Threads, queued auf."""
+        if self._should_queue_callback(callback):
+            self._callback_requested.emit(callback, event)
+            return
+
+        try:
+            callback(event)
+        except Exception as e:
+            print(f"{error_label}: {e}")
+
+    def _should_queue_callback(self, callback: Callable) -> bool:
+        receiver = getattr(callback, "__self__", None)
+        if not isinstance(receiver, QObject):
+            return False
+
+        bus_thread = self.thread()
+        return receiver.thread() == bus_thread and QThread.currentThread() != bus_thread
+
+    def _dispatch_queued_callback(self, callback: Callable, event: Event):
+        try:
+            callback(event)
+        except Exception as e:
+            print(f"Queued Event Handler Error: {e}")
     
     def emit_file_opened(self, file_path: str, source: str = None):
         """Convenience: Datei geöffnet"""

@@ -19,7 +19,8 @@
 | One-click EXE packaging | `build_exe.bat` / Build tab |
 | Static code analysis | Analyze tab |
 | Workspace export for PWA companion | File → Export workspace |
-| Windows launcher | `START_DevCenter.bat` |
+| Fensterloser Windows-Start | `START_DevCenter.bat` |
+| Sichtbare Diagnose | `debug.bat` |
 
 ![DevCenter main window showing the local Python IDE dashboard](README/screenshots/main.png)
 
@@ -45,6 +46,8 @@ Windows helpers:
 
 ```batch
 START_DevCenter.bat
+debug.bat
+update.bat
 build_exe.bat
 ```
 
@@ -81,6 +84,11 @@ build_exe.bat
 ### Web Companion
 - Static `web_companion/` PWA viewer for redacted workspace exports
 - Installable, offline-capable, no backend required
+
+The companion is strictly read-only: it validates a local UTF-8-without-BOM
+`devcenter-workspace-v1` export and never uploads it. `EXPORTFORMAT.md` records
+the versioned fields, supported versus planned release channels, and redaction
+boundaries.
 
 ## Installation
 
@@ -171,7 +179,8 @@ DevCenter/
 
 ## License
 
-GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL.
+GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL. Direct project dependency
+license metadata is summarized in [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
 
 ## Liability
 

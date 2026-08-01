@@ -1,27 +1,19 @@
 @echo off
-chcp 65001 >nul
+setlocal
 cd /d "%~dp0"
+chcp 65001 >nul
+set "PYTHONIOENCODING=utf-8"
 
-echo ========================================
-echo        DevCenter starten
-echo ========================================
-echo.
-
-python --version >nul 2>&1
-if errorlevel 1 (
-    echo [FEHLER] Python nicht gefunden!
-    echo Bitte Python 3.10+ installieren.
-    echo.
-    pause
-    exit /b 1
+REM Produktivstart: kein Konsolenfenster. Fehler stehen in
+REM %LOCALAPPDATA%\DevCenter\logs\app.log; debug.bat zeigt sie sichtbar.
+if exist "%~dp0dist\DevCenter.exe" (
+    start "" "%~dp0dist\DevCenter.exe" %*
+    exit /b %ERRORLEVEL%
 )
-
-echo Starte Anwendung...
-echo.
-python main.py
-
-if errorlevel 1 (
-    echo.
-    echo [FEHLER] Anwendung mit Fehler beendet.
-    pause
+if exist "%~dp0DevCenter.exe" (
+    start "" "%~dp0DevCenter.exe" %*
+    exit /b %ERRORLEVEL%
 )
+where pythonw.exe >nul 2>&1 || exit /b 9009
+start "" /B pythonw.exe "%~dp0main.py" %*
+exit /b %ERRORLEVEL%

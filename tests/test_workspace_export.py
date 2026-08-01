@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import tempfile
+import tomllib
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from core.project_manager import ProjectConfig
 from core.settings_manager import SettingsManager
-from core.workspace_export import build_workspace_export, export_workspace
+from core.workspace_export import _app_version, build_workspace_export, export_workspace
 
 
 class WorkspaceExportTests(unittest.TestCase):
@@ -83,7 +84,7 @@ class WorkspaceExportTests(unittest.TestCase):
         self.problems = [
             SimpleNamespace(
                 severity=SimpleNamespace(value="warning"),
-                message="TODO im Projekt gefunden",
+                message=r"TODO: token=super-secret-token in C:\Users\User\DemoProject\src\main.py",
                 file_path=str(self.project_root / "src" / "main.py"),
                 line=1,
                 column=1,
@@ -103,6 +104,8 @@ class WorkspaceExportTests(unittest.TestCase):
         dump = json.dumps(payload, ensure_ascii=False)
 
         self.assertEqual(payload["schema"], "devcenter-workspace-v1")
+        self.assertEqual(payload["schema_version"], 1)
+        self.assertEqual(payload["app"]["version"], _app_version())
         self.assertEqual(payload["project"]["path_ref"], "project-1")
         self.assertEqual(payload["project"]["main_file_ref"], "project-1/src/main.py")
         self.assertIn("PySide6", payload["project"]["frameworks"])
@@ -112,8 +115,12 @@ class WorkspaceExportTests(unittest.TestCase):
         self.assertEqual(payload["build"]["icon_ref"], "project-1/resources/app.ico")
         self.assertEqual(payload["tasks"][0]["priority"], "P0")
         self.assertEqual(payload["release"]["checklists"][0]["title"], "Exportvertrag finalisieren")
+        self.assertEqual(payload["release"]["target_status"]["github"], "supported")
+        self.assertEqual(payload["release"]["target_status"]["windows_store"], "planned")
         self.assertNotIn("super-secret-token", dump)
         self.assertNotIn(r"C:\Users\User", dump)
+        self.assertIn("token=[redacted]", payload["analysis"]["problems"][0]["message"])
+        self.assertIn("text-path-1", payload["analysis"]["problems"][0]["message"])
 
     def test_count_project_files_ignores_ignored_dirs(self):
         """_count_project_files darf keine Dateien in build/, dist/ usw. zählen."""
@@ -157,6 +164,11 @@ class WorkspaceExportTests(unittest.TestCase):
         self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
         self.assertEqual(payload["schema"], "devcenter-workspace-v1")
         self.assertEqual(payload["build"]["output_ref"], "output-dir-1")
+
+    def test_app_version_comes_from_pyproject(self):
+        pyproject = Path(__file__).parent.parent / "pyproject.toml"
+        expected = tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]["version"]
+        self.assertEqual(_app_version(), expected)
 
 
 if __name__ == "__main__":

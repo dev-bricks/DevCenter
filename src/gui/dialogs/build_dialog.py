@@ -200,11 +200,14 @@ class BuildDialog(QDialog):
         self.output_input = QLineEdit()
         self.output_input.setText(os.path.join(self.project_path, "dist"))
         output_row.addWidget(self.output_input)
-        
-        browse_btn = QPushButton("...")
-        browse_btn.setMaximumWidth(40)
-        browse_btn.clicked.connect(self._browse_output)
-        output_row.addWidget(browse_btn)
+
+        self.output_browse_btn = self._create_symbol_button(
+            "...",
+            accessible_name="Ausgabeverzeichnis auswählen",
+            description="Öffnet die Ordnerauswahl für das Build-Ausgabeverzeichnis.",
+            callback=self._browse_output,
+        )
+        output_row.addWidget(self.output_browse_btn)
         output_layout.addRow("Verzeichnis:", output_row)
         
         layout.addWidget(output_group)
@@ -234,11 +237,14 @@ class BuildDialog(QDialog):
         self.icon_input = QLineEdit()
         self.icon_input.setPlaceholderText("(Standard-Icon)")
         icon_layout.addWidget(self.icon_input)
-        
-        browse_icon_btn = QPushButton("...")
-        browse_icon_btn.setMaximumWidth(40)
-        browse_icon_btn.clicked.connect(self._browse_icon)
-        icon_layout.addWidget(browse_icon_btn)
+
+        self.icon_browse_btn = self._create_symbol_button(
+            "...",
+            accessible_name="Icon-Datei auswählen",
+            description="Öffnet die Dateiauswahl für das Build-Icon.",
+            callback=self._browse_icon,
+        )
+        icon_layout.addWidget(self.icon_browse_btn)
         
         layout.addWidget(icon_group)
         layout.addStretch()
@@ -305,16 +311,22 @@ class BuildDialog(QDialog):
         self.import_input = QLineEdit()
         self.import_input.setPlaceholderText("Modul-Name")
         imports_btn_layout.addWidget(self.import_input)
-        
-        add_import_btn = QPushButton("+")
-        add_import_btn.setMaximumWidth(40)
-        add_import_btn.clicked.connect(self._add_import)
-        imports_btn_layout.addWidget(add_import_btn)
-        
-        remove_import_btn = QPushButton("-")
-        remove_import_btn.setMaximumWidth(40)
-        remove_import_btn.clicked.connect(self._remove_import)
-        imports_btn_layout.addWidget(remove_import_btn)
+
+        self.add_import_btn = self._create_symbol_button(
+            "+",
+            accessible_name="Hidden Import hinzufügen",
+            description="Fügt den eingetragenen Modulnamen zur Hidden-Import-Liste hinzu.",
+            callback=self._add_import,
+        )
+        imports_btn_layout.addWidget(self.add_import_btn)
+
+        self.remove_import_btn = self._create_symbol_button(
+            "-",
+            accessible_name="Hidden Import entfernen",
+            description="Entfernt den aktuell ausgewählten Hidden Import aus der Liste.",
+            callback=self._remove_import,
+        )
+        imports_btn_layout.addWidget(self.remove_import_btn)
         
         imports_layout.addLayout(imports_btn_layout)
         
@@ -361,7 +373,17 @@ class BuildDialog(QDialog):
                             self.imports_list.addItem(pkg)
             except (OSError, UnicodeDecodeError):
                 pass
-    
+
+    def _create_symbol_button(self, text: str, *, accessible_name: str, description: str, callback):
+        """Erzeugt kompakte Symbolbuttons mit Screenreader-Kontext."""
+        button = QPushButton(text)
+        button.setMaximumWidth(40)
+        button.setToolTip(accessible_name)
+        button.setAccessibleName(accessible_name)
+        button.setAccessibleDescription(description)
+        button.clicked.connect(callback)
+        return button
+
     def _browse_output(self):
         """Ausgabeverzeichnis wählen"""
         path = QFileDialog.getExistingDirectory(self, "Ausgabeverzeichnis")

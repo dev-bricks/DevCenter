@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+import tomllib
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,12 +18,15 @@ from core.settings_manager import SettingsManager
 
 SCHEMA_NAME = "devcenter-workspace-v1"
 APP_NAME = "DevCenter"
-APP_VERSION = "1.0.0"
 TASK_LINE_PATTERN = re.compile(r"^\s*\[\s\]\s*(.+?)\s*$")
 PRIORITY_PATTERN = re.compile(r"^(P\d+):\s*(.+)$")
 REQUIREMENT_PATTERN = re.compile(r"^([A-Za-z0-9_.-]+)\s*([<>=!~].+)?$")
 WINDOWS_ABS_PATTERN = re.compile(r"^[A-Za-z]:[\\/]")
 PATH_HINT_PATTERN = re.compile(r"[\\/]|^[A-Za-z]:")
+EMBEDDED_WINDOWS_PATH_PATTERN = re.compile(r"(?<!\w)[A-Za-z]:[\\/][^\s\"'<>]+")
+SECRET_ASSIGNMENT_PATTERN = re.compile(
+    r"\b(api[_-]?key|token|secret|password)\s*[:=]\s*\S+", re.IGNORECASE
+)
 FRAMEWORK_MAP = {
     "pyside6": "PySide6",
     "pyqt6": "PyQt6",
@@ -30,6 +34,22 @@ FRAMEWORK_MAP = {
     "keyring": "Keyring",
     "pyinstaller": "PyInstaller",
 }
+
+
+def _app_version() -> str:
+    """Liest die Desktop-Version aus der kanonischen Paketmetadatei.
+
+    Der Export darf keine zweite, von ``pyproject.toml`` entkoppelte Version
+    pflegen. Bei einem unvollständigen Quellbaum bleibt der Export nutzbar,
+    kennzeichnet die Version dann aber ausdrücklich als unbekannt.
+    """
+    pyproject = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    try:
+        data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+        version = data.get("project", {}).get("version")
+        return version if isinstance(version, str) and version else "0+unknown"
+    except (OSError, tomllib.TOMLDecodeError):
+        return "0+unknown"
 
 
 class PathRedactor:
@@ -107,7 +127,7 @@ def build_workspace_export(
     redactor = PathRedactor(project_root)
     project_settings = _load_project_settings(project_root / ProjectManager.PROJECT_FILE)
     requirements = _parse_requirements(project_root / "requirements.txt")
-    tasks = _parse_open_tasks(project_root / "AUFGABEN.txt")
+    tasks = _parse_open_tasks(project_root / "AUFGABEN.txt", redactor)
     release_checklists = [
         {"title": task["title"], "status": task["status"]}
         for task in tasks
@@ -121,7 +141,7 @@ def build_workspace_export(
         "schema_version": 1,
         "app": {
             "name": APP_NAME,
-            "version": APP_VERSION,
+            "version": _app_version(),
             "exported_at": exported_at.isoformat().replace("+00:00", "Z"),
         },
         "project": _build_project_payload(project, project_settings, requirements, redactor),
@@ -133,6 +153,13 @@ def build_workspace_export(
         },
         "release": {
             "targets": ["github", "windows_store", "linux_direct", "web"],
+            "target_status": {
+                "github": "supported",
+                "web": "supported",
+                "windows_store": "planned",
+                "linux_direct": "planned",
+                "macos_direct": "planned",
+            },
             "checklists": release_checklists,
         },
         "tasks": tasks,
@@ -143,6 +170,16 @@ def build_workspace_export(
         },
     }
     return payload
+
+
+def _sanitize_text(value: Any, redactor: PathRedactor, preferred_prefix: str = "text-path") -> Any:
+    """Entfernt Secrets und eingebettete Windows-Vollpfade aus Freitextfeldern."""
+    if not isinstance(value, str):
+        return value
+    safe_value = SECRET_ASSIGNMENT_PATTERN.sub(lambda match: f"{match.group(1)}=[redacted]", value)
+    return EMBEDDED_WINDOWS_PATH_PATTERN.sub(
+        lambda match: str(redactor.redact(match.group(0), preferred_prefix)), safe_value
+    )
 
 
 def _load_project_settings(project_file: Path) -> Dict[str, Any]:
@@ -170,7 +207,7 @@ def _build_project_payload(
         "has_devcenter_json": bool(project_settings),
     }
     if project.description:
-        payload["description"] = project.description
+        payload["description"] = _sanitize_text(project.description, redactor)
     if project.main_file:
         payload["main_file_ref"] = redactor.redact(str(Path(project.path) / project.main_file))
     return payload
@@ -190,12 +227,12 @@ def _build_analysis_payload(
         serialized_problems.append(
             {
                 "severity": severity or "info",
-                "message": getattr(problem, "message", ""),
+                "message": _sanitize_text(getattr(problem, "message", ""), redactor),
                 "file_ref": redactor.redact(getattr(problem, "file_path", ""), "file"),
                 "line": getattr(problem, "line", 0),
                 "column": getattr(problem, "column", 0),
-                "source": getattr(problem, "source", ""),
-                "code": getattr(problem, "code", ""),
+                "source": _sanitize_text(getattr(problem, "source", ""), redactor),
+                "code": _sanitize_text(getattr(problem, "code", ""), redactor),
             }
         )
 
@@ -261,7 +298,7 @@ def _infer_frameworks(requirements: List[Dict[str, str]]) -> List[str]:
     return detected
 
 
-def _parse_open_tasks(tasks_path: Path) -> List[Dict[str, Any]]:
+def _parse_open_tasks(tasks_path: Path, redactor: PathRedactor) -> List[Dict[str, Any]]:
     if not tasks_path.exists():
         return []
 
@@ -275,10 +312,10 @@ def _parse_open_tasks(tasks_path: Path) -> List[Dict[str, Any]]:
         match = TASK_LINE_PATTERN.match(raw_line)
         if not match:
             continue
-        text = match.group(1).strip()
+        text = _sanitize_text(match.group(1).strip(), redactor, "task-path")
         task: Dict[str, Any] = {"title": text, "status": "open"}
         if current_section:
-            task["section"] = current_section
+            task["section"] = _sanitize_text(current_section, redactor, "task-path")
         priority_match = PRIORITY_PATTERN.match(text)
         if priority_match:
             task["priority"], task["title"] = priority_match.groups()

@@ -83,6 +83,9 @@ class AIAssistantPanel(QWidget):
         self.model_combo = QComboBox()
         self.model_combo.addItems(["Claude Sonnet", "Claude Opus", "Claude Haiku"])
         self.model_combo.setCurrentIndex(0)
+        self.model_combo.setAccessibleName("Modellauswahl für KI")
+        self.model_combo.setAccessibleDescription("Wählt das KI-Modell für Code-Generierung und Erklärungen")
+        self.model_combo.setToolTip("KI-Modell auswählen")
         self.model_combo.currentIndexChanged.connect(self._on_model_changed)
         header.addWidget(self.model_combo)
         
@@ -95,6 +98,9 @@ class AIAssistantPanel(QWidget):
         self.chat_display = QTextEdit()
         self.chat_display.setReadOnly(True)
         self.chat_display.setFont(QFont("Segoe UI", 10))
+        self.chat_display.setAccessibleName("KI-Chatverlauf")
+        self.chat_display.setAccessibleDescription("Zeigt Antworten und generierten Code des KI-Assistenten an")
+        self.chat_display.setToolTip("Verlauf der KI-Interaktion")
         self.chat_display.setStyleSheet("""
             QTextEdit {
                 background-color: #1e1e1e;
@@ -113,6 +119,9 @@ class AIAssistantPanel(QWidget):
         
         self.input_text = QPlainTextEdit()
         self.input_text.setPlaceholderText("Beschreibe was du brauchst...")
+        self.input_text.setAccessibleName("Eingabefeld für KI-Prompt")
+        self.input_text.setAccessibleDescription("Gib hier deine Anfragen, Prompts oder Aufgaben für den KI-Assistenten ein")
+        self.input_text.setToolTip("Prompt eingeben")
         self.input_text.setFont(QFont("Consolas", 10))
         self.input_text.setMaximumHeight(100)
         self.input_text.setStyleSheet("""
@@ -129,20 +138,31 @@ class AIAssistantPanel(QWidget):
         btn_layout = QHBoxLayout()
         
         self.context_label = QLabel("Kein Kontext")
+        self.context_label.setAccessibleName("Kontext-Status")
+        self.context_label.setAccessibleDescription("Zeigt an, ob aktuell Code-Kontext aus dem Editor geladen ist")
         self.context_label.setStyleSheet("color: #888; font-size: 11px;")
         btn_layout.addWidget(self.context_label)
         
         btn_layout.addStretch()
         
         self.generate_btn = QPushButton("✨ Generieren")
+        self.generate_btn.setAccessibleName("Code generieren")
+        self.generate_btn.setAccessibleDescription("Generiert neuen Code basierend auf der Eingabe")
+        self.generate_btn.setToolTip("Code basierend auf der Eingabe generieren")
         self.generate_btn.clicked.connect(self._on_generate)
         btn_layout.addWidget(self.generate_btn)
         
         self.review_btn = QPushButton("🔍 Review")
+        self.review_btn.setAccessibleName("Code-Review durchführen")
+        self.review_btn.setAccessibleDescription("Analysiert den aktuellen Editor-Code auf Fehler und Optimierungspotenzial")
+        self.review_btn.setToolTip("Code im aktuellen Editor überprüfen")
         self.review_btn.clicked.connect(self._on_review)
         btn_layout.addWidget(self.review_btn)
         
         self.explain_btn = QPushButton("📖 Erklären")
+        self.explain_btn.setAccessibleName("Code erklären")
+        self.explain_btn.setAccessibleDescription("Erklärt die Funktionsweise des ausgewählten oder aktuellen Codes")
+        self.explain_btn.setToolTip("Funktionsweise des Codes erklären lassen")
         self.explain_btn.clicked.connect(self._on_explain)
         btn_layout.addWidget(self.explain_btn)
         

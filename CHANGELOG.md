@@ -5,6 +5,11 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Barrierefreiheit / Accessibility & UX (2026-07-27)
+- `problems_panel`: `QTreeWidget` sowie Toolbar-Steuerelemente (`filter_combo`, `search_input`, `clear_button`, `error_count`, `warning_count`) wurden mit barrierefreien Metadaten (`accessibleName`, `accessibleDescription`, `toolTip`) gehärtet. Tastaturbedienung für die Problemliste durch `itemActivated`-Signal (Enterprise-Springen zur Codezeile via Enter-Taste) ergänzt.
+- `ai_panel`: KI-Modellauswahl (`model_combo`), Chatverlauf (`chat_display`), Eingabefeld (`input_text`) sowie Aktions-Buttons (`generate_btn`, `review_btn`, `explain_btn`) mit barrierefreien Metadaten und erklärenden Tooltips für Screenreader und Tastaturnavigation ausgestattet.
+- Regressionstests: Neue Testsuite `tests/test_problems_panel_accessibility.py` hinzugefügt (9/9 A11y-Tests, 56/56 Gesamtsuite grün).
+
 ### Behoben / Fixed
 - `settings_manager`: `reset_to_defaults()` löscht jetzt auch extra/benutzerdefinierte Einstellungen (`_extra_settings`) für die gewählte Kategorie bzw. bei vollständigem Reset, statt sie beim Speichern erneut einzumischen.
 - `sync_manager`: `_should_exclude()` normalisiert Pfadtrennzeichen (`/` vs `\`) und unterstützt relative Glob-Muster (z.B. `build/*`) in Unterverzeichnissen. Regressionstests: `test_reset_to_defaults_clears_extra_settings_for_category`, `test_sync_manager_should_exclude_handles_forward_and_backward_slashes` (178/178 grün).
@@ -27,6 +32,8 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - `settings_dialog`: `editor_theme` und `accent_color` wurden beim Speichern verworfen (nur `appearance.theme` wurde persistiert). `_save_settings()` setzt jetzt alle drei Appearance-Felder; `_load_settings()` lädt sie vollständig. Regressionstests: `test_settings_dialog_saves_editor_theme`, `test_settings_dialog_saves_accent_color`, `test_settings_dialog_loads_appearance_fields` (142/142 grün).
 
 ### Build / Release
+- `START_DevCenter.bat` bevorzugt jetzt aktuelle lokale EXE-Artefakte (`dist\DevCenter.exe`, dann `DevCenter.exe`) und fällt erst danach auf den Python-Start zurück.
+- `build_exe.bat` synchronisiert nach erfolgreichem PyInstaller-Build und Start-Smoke die aktuelle EXE wieder nach `dist\DevCenter.exe` und `DevCenter.exe` im Projekt, ohne automatisch einen neuen Release-Ordner zu befüllen.
 - Das vorhandene EXE-Artefakt von 2026-06-01 bleibt ein historisches Artefakt;
   ohne dokumentierten Commit, SHA-256 und Start-Smoke gilt es nicht als aktuelles
   Release.

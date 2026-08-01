@@ -41,7 +41,7 @@ class ProblemsPanel(QWidget):
     Features:
     - Gruppierung nach Datei oder Schweregrad
     - Filter nach Schweregrad
-    - Klick zum Navigieren
+    - Klick/Enter-Taste zum Navigieren
     - Live-Updates
     """
     
@@ -64,6 +64,9 @@ class ProblemsPanel(QWidget):
         # Filter
         self.filter_combo = QComboBox()
         self.filter_combo.addItems(["Alle", "Fehler", "Warnungen", "Info"])
+        self.filter_combo.setAccessibleName("Filter für Schweregrad")
+        self.filter_combo.setAccessibleDescription("Filtert angezeigte Probleme nach Fehler, Warnungen oder Info")
+        self.filter_combo.setToolTip("Probleme nach Schweregrad filtern")
         self.filter_combo.currentIndexChanged.connect(self._apply_filter)
         toolbar.addWidget(QLabel("Filter:"))
         toolbar.addWidget(self.filter_combo)
@@ -73,6 +76,9 @@ class ProblemsPanel(QWidget):
         # Suche
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Suchen...")
+        self.search_input.setAccessibleName("Suchfeld für Probleme")
+        self.search_input.setAccessibleDescription("Durchsucht Problemmeldungen und Dateipfade")
+        self.search_input.setToolTip("Suchbegriff eingeben")
         self.search_input.textChanged.connect(self._apply_filter)
         self.search_input.setMaximumWidth(200)
         toolbar.addWidget(self.search_input)
@@ -81,16 +87,23 @@ class ProblemsPanel(QWidget):
         
         # Zähler
         self.error_count = QLabel("0 Fehler")
+        self.error_count.setAccessibleName("Fehleranzahl")
+        self.error_count.setAccessibleDescription("Anzahl der gefundenen Fehler")
         self.error_count.setStyleSheet("color: #f44747;")
         toolbar.addWidget(self.error_count)
         
         self.warning_count = QLabel("0 Warnungen")
+        self.warning_count.setAccessibleName("Warnungsanzahl")
+        self.warning_count.setAccessibleDescription("Anzahl der gefundenen Warnungen")
         self.warning_count.setStyleSheet("color: #cca700;")
         toolbar.addWidget(self.warning_count)
         
         toolbar.addSpacing(10)
         
         self.clear_button = QPushButton("Leeren")
+        self.clear_button.setAccessibleName("Problemliste leeren")
+        self.clear_button.setAccessibleDescription("Entfernt alle aktuell aufgelisteten Probleme")
+        self.clear_button.setToolTip("Alle gemeldeten Probleme löschen")
         self.clear_button.clicked.connect(self.clear)
         toolbar.addWidget(self.clear_button)
         
@@ -98,6 +111,8 @@ class ProblemsPanel(QWidget):
         
         # Tree
         self.tree = QTreeWidget()
+        self.tree.setAccessibleName("Problemliste")
+        self.tree.setAccessibleDescription("Übersicht aller gefundenen Fehler, Warnungen und Hinweise. Mit Enter oder Doppelklick zur Zeile springen.")
         self.tree.setHeaderLabels(["Problem", "Datei", "Zeile"])
         self.tree.setColumnWidth(0, 400)
         self.tree.setColumnWidth(1, 200)
@@ -105,6 +120,7 @@ class ProblemsPanel(QWidget):
         self.tree.setRootIsDecorated(False)
         self.tree.setAlternatingRowColors(True)
         self.tree.itemDoubleClicked.connect(self._on_item_clicked)
+        self.tree.itemActivated.connect(self._on_item_clicked)
         
         self.tree.setStyleSheet("""
             QTreeWidget {
@@ -188,6 +204,7 @@ class ProblemsPanel(QWidget):
             item.setText(0, message)
             item.setText(1, problem.file_path.split('\\')[-1] if '\\' in problem.file_path else problem.file_path.split('/')[-1])
             item.setText(2, str(problem.line) if problem.line else "")
+            item.setToolTip(0, f"{problem.message} ({problem.file_path}:{problem.line})")
             
             # Farbe
             colors = {
@@ -228,7 +245,7 @@ class ProblemsPanel(QWidget):
         self._update_display()
     
     def _on_item_clicked(self, item: QTreeWidgetItem, column: int):
-        """Behandelt Doppelklick auf Problem"""
+        """Behandelt Doppelklick/Enter auf Problem"""
         problem = item.data(0, Qt.ItemDataRole.UserRole)
         if problem:
             self.problem_clicked.emit(problem.file_path, problem.line, problem.column)

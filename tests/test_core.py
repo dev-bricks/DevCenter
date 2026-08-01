@@ -443,6 +443,58 @@ class TestEventBusUnsubscribeDuringEmit(unittest.TestCase):
         self.assertIn('B', results, "cb_b darf nicht übersprungen werden wenn cb_a sich abmeldet")
 
 
+class TestEventBusQueuedQObjectSubscribers(unittest.TestCase):
+    """EventBus: QObject-Subscriber dürfen bei Worker-Emission nicht im Worker-Thread laufen."""
+
+    def test_qobject_subscriber_from_worker_thread_is_delivered_on_bus_thread(self):
+        import sys
+        import threading
+        from PySide6.QtCore import QObject, QEventLoop, QThread, QTimer
+        from PySide6.QtWidgets import QApplication
+        from core.event_bus import EventBus, EventType
+
+        QApplication.instance() or QApplication(sys.argv)
+        bus = EventBus()
+        loop = QEventLoop()
+        worker_qthreads = []
+
+        class Receiver(QObject):
+            def __init__(self):
+                super().__init__()
+                self.events = []
+                self.called_on_bus_thread = False
+                self.called_on_worker_thread = False
+
+            def handle(self, event):
+                current_thread = QThread.currentThread()
+                self.events.append(event)
+                self.called_on_bus_thread = current_thread == bus.thread()
+                self.called_on_worker_thread = (
+                    bool(worker_qthreads) and current_thread == worker_qthreads[0]
+                )
+                loop.quit()
+
+        receiver = Receiver()
+        bus.subscribe(EventType.STATUS_MESSAGE, receiver.handle)
+
+        def fire_from_worker():
+            worker_qthreads.append(QThread.currentThread())
+            bus.emit(EventType.STATUS_MESSAGE, {"message": "aus Worker"})
+
+        thread = threading.Thread(target=fire_from_worker)
+        thread.start()
+        thread.join(timeout=2)
+        self.assertFalse(thread.is_alive())
+
+        if not receiver.events:
+            QTimer.singleShot(1500, loop.quit)
+            loop.exec()
+
+        self.assertEqual(len(receiver.events), 1)
+        self.assertTrue(receiver.called_on_bus_thread)
+        self.assertFalse(receiver.called_on_worker_thread)
+
+
 class TestEncodingFixer(unittest.TestCase):
     """Tests für EncodingFixer"""
     
