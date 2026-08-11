@@ -1,5 +1,9 @@
 # DevCenter - Architektur-Dokumentation
 
+> **Aktueller Architekturvertrag — Stand 2026-08-11.** Die Beschreibung wird
+> gegen `src/`, `pyproject.toml` und `tests/` gelesen. Historische Fusions- und
+> Template-Dokumente sind nicht automatisch Bestandteil dieser Architektur.
+
 ## Übersicht
 
 DevCenter ist eine modulare Python-IDE, die nach dem Prinzip der losen Kopplung entwickelt wurde.
@@ -184,4 +188,8 @@ GUI Update
 
 ---
 
-**Version**: 1.0.0 | **Stand**: Januar 2026
+**Version**: 1.0.0 | **Stand**: 2026-08-11 | **Quelle**: `src/`, `pyproject.toml`, `tests/`
+
+Der frühere Web/PWA-Companion gehört nicht zur aktuellen Laufzeit. Der
+redigierte Workspace-Export bleibt eine lokale Desktop-Funktion; siehe
+`EXPORTFORMAT.md`.

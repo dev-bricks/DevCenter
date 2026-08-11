@@ -15,6 +15,7 @@ Positioning:
 - This is not Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox.
 - This is not a hosted cloud IDE.
 - The desktop app is authoritative for local Python development and workspace export.
+- The former Web/PWA companion is removed; no `web_companion/` directory or hosted importer ships.
 
 Privacy and safety:
 - Projects, settings, file indexes and build artifacts stay local by default.
@@ -25,8 +26,9 @@ Privacy and safety:
 
 - `README.md`: user-facing overview, screenshots, installation and feature list.
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
-- `EXPORTFORMAT.md`: planned redacted workspace export contract.
-- `.github/workflows/tests.yml`: Windows smoke tests for Python 3.10, 3.11 and 3.12.
+- `EXPORTFORMAT.md`: implemented redacted desktop-export contract (`devcenter-workspace-v1`).
+- `DOCUMENTATION_STATUS.md`: current-source hierarchy and historical/external-document boundary.
+- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12; package metadata requires Python 3.11+.
 - `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
 
 ## Search Phrases
@@ -41,4 +43,4 @@ Python IDE with workspace export
 dev-bricks DevCenter Python desktop suite
 ```
 
-## Last-checked: 2026-07-30
+## Last-checked: 2026-08-11

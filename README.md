@@ -5,7 +5,7 @@
 **Local-first Python IDE and developer toolkit for Windows.** DevCenter combines a PySide6 code editor, static analyzer, PyInstaller build helper, license collector, file index and optional Claude/Anthropic assistant in one desktop suite.
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.10%2B-green)](https://python.org)
+[![Python](https://img.shields.io/badge/python-3.11%2B-green)](https://python.org)
 [![License](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-lightgrey)](https://github.com/dev-bricks/DevCenter)
 
@@ -18,22 +18,16 @@
 | Local Python IDE with editor, analyzer and build helper | `python main.py` |
 | One-click EXE packaging | `build_exe.bat` / Build tab |
 | Static code analysis | Analyze tab |
-| Workspace export for PWA companion | File → Export workspace |
+| Redacted workspace export for local handoff | File → Export workspace |
 | Windows launcher | `START_DevCenter.bat` |
 
-### Product Family & Edition Comparison
+### Product boundary
 
-DevCenter consists of a highly capable local Desktop Application and a lightweight, offline-ready Web Companion. Their features are compared below:
-
-| Feature | Desktop Application (Authoritative IDE) | Web Companion (Static PWA) |
-| :--- | :--- | :--- |
-| **Primary Purpose** | Full offline local-first Python development, analysis, and build suite | Read-only dashboard for reviewing projects, task lists, and build status |
-| **Data Flow** | Authors and builds everything locally; generates redacted workspace exports | Imports redacted `devcenter-workspace-v1.json` completely client-side |
-| **Code Editor** | PySide6-based editor with syntax highlighting and auto-indent | None (Read-only status overview) |
-| **Static Code Analysis** | Local AST analysis, complexity checks, and encoding repair | View analysis summaries and detected issue statistics |
-| **Build & Release** | PyInstaller wrapper, PNG to ICO converter, license collector | View configuration metadata and target platform checklist |
-| **Task Management** | Directly parses and updates your local `AUFGABEN.txt` | Visually groups open tasks by priority |
-| **Privacy Boundary** | Authoritative data store; strictly local unless optional cloud APIs are used | Offline-first PWA, no cloud uploads, completely secure client-side sandbox |
+The PySide6 desktop application is the only shipped product and the authoritative
+runtime. `devcenter-workspace-v1.json` is a redacted local export for storage or
+explicit handoff; the repository contains no Web/PWA companion or hosted importer.
+See [DOCUMENTATION_STATUS.md](DOCUMENTATION_STATUS.md) for the documentation
+hierarchy and historical-source boundary.
 
 ![DevCenter main window showing the local Python IDE dashboard](README/screenshots/main.png)
 
@@ -94,7 +88,7 @@ build_exe.bat
 
 ## Installation
 
-Requirements: Python 3.10+, Windows 10/11 (primary), Linux/macOS (experimental)
+Requirements: Python 3.11+, Windows 10/11 (primary), Linux/macOS source-smoke only
 
 ```bash
 git clone https://github.com/dev-bricks/DevCenter.git
@@ -106,13 +100,20 @@ python main.py
 Dependencies (see `requirements.txt`):
 
 ```
-PySide6>=6.5.0        # GUI framework
-pyinstaller>=5.0      # EXE packaging
-Pillow>=9.0           # Image processing
-anthropic>=0.18.0     # Claude API (optional)
-chardet>=5.0          # Encoding detection
-keyring>=23.0         # Secure key storage
+PySide6>=6.5.0
+pyinstaller>=5.0.0
+Pillow>=12.2.0
+anthropic>=0.18.0
+keyring>=23.0.0
+chardet>=5.0.0
+ftfy>=6.1.0
+pip-licenses>=4.0.0
+watchdog>=3.0.0
 ```
+
+`pyproject.toml` is the canonical package metadata and adds upper bounds plus
+the optional `pytest`/`ruff` development tools. `requirements.txt` is the
+convenience install list.
 
 ## Keyboard Shortcuts
 
@@ -136,7 +137,10 @@ python -m unittest discover -s tests -v
 python -m compileall -q main.py manage_translations.py translator.py src tests
 ```
 
-GitHub Actions runs the same smoke checks on Python 3.10, 3.11 and 3.12.
+GitHub Actions still runs smoke checks on Python 3.10, 3.11 and 3.12. The
+supported package floor is the canonical `requires-python >=3.11` declaration;
+the 3.10 job is a compatibility signal, not a promise that the package can be
+installed on Python 3.10.
 
 ## Privacy
 
@@ -178,6 +182,20 @@ DevCenter/
 └── tests/                    # Unit tests
 ```
 
+## Documentation hierarchy
+
+- Current user and agent contract: `README.md`, `llms.txt`,
+  `ARCHITEKTUR_DevCenter.md`, `pyproject.toml`, `src/` and `tests/`.
+- Release and platform boundaries: `CHANGELOG.md`, `EXPORTFORMAT.md`,
+  `.github/workflows/tests.yml` and `PRIVACY_POLICY.md`.
+- `SUITE_DEVCENTER_TEMPLATE.md` and `SUITE_ENTWICKLER_Fusionskonzept.md` are
+  retained historical planning documents. They are not feature, dependency,
+  version or license contracts.
+- Host-specific `README-Mac Studio.md`, `AUFGABEN.txt`, `PORTIERUNGSPLAN.md`,
+  `*-WORKSTATION-LG.*`, store notes and license inventories that exist only in
+  an external OneDrive projection require an owner review before they can be
+  treated as current repository documentation.
+
 ## License
 
 GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL.
@@ -190,7 +208,7 @@ This project is an unpaid open-source donation. Liability is limited to intent a
 
 ## Deutsch / German
 
-DevCenter ist eine lokale Desktop-Entwicklungsumgebung für Python-Projekte: **Code schreiben → Analysieren → Testen → Kompilieren → Veröffentlichen**. Kombiniert 11 spezialisierte Tools in einer kohärenten Suite.
+DevCenter ist eine lokale Desktop-Entwicklungsumgebung für Python-Projekte: **Code schreiben → Analysieren → Testen → Kompilieren → Veröffentlichen**. Kombiniert 11 spezialisierte Tools in einer kohärenten Suite. Die Desktop-App ist das einzige ausgelieferte Produkt; der redigierte Workspace-Export ist kein Web-/PWA-Produkt.
 
 Nicht identisch mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder Devbox.
 
@@ -207,19 +225,11 @@ Nicht identisch mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder D
 | Entwicklerschleife V3 | AI Assistant | Claude API Integration für Code-Generierung |
 | ProFiler V14 | FileManager | Datei-Indizierung und Volltext-Suche |
 | ProSync V3.1 | FileManager | Intelligente Backup-Synchronisation |
-### Produkt-Edition & Funktionsvergleich
+### Produktgrenze
 
-DevCenter besteht aus einer voll ausgestatteten lokalen Desktop-Anwendung und einem leichtgewichtigen, offline-fähigen Web-Companion.
-
-| Funktion | Desktop-Anwendung (Lokale IDE) | Web-Companion (Statische PWA) |
-| :--- | :--- | :--- |
-| **Hauptzweck** | Lokale Offline-Entwicklung, statische Code-Analyse und EXE-Kompilierung | Read-only Status-Dashboard für Projektmetriken, Aufgaben und Build-Stand |
-| **Datenfluss** | Erzeugt den Code und exportiert redigierten Status | Liest redigierte `devcenter-workspace-v1.json` rein clientseitig ein |
-| **Code-Editor** | PySide6-Editor mit Syntax-Highlighting und Auto-Einrückung | Keine Bearbeitung (rein lesender Zugriff) |
-| **Statische Analyse** | AST-Befunde, Komplexitätsberechnung, Encoding-Reparatur | Anzeige von Fehlerstatistiken und Warnungsübersichten |
-| **Kompilierung** | PyInstaller-Wrapper, Bild-zu-ICO-Konverter, Lizenz-Sammler | Anzeige der konfigurierten Build-Historie und Zielplattformen |
-| **Aufgaben** | Direktes Editieren der lokalen `AUFGABEN.txt` | Visuelle Gruppierung offener Tasks nach Priorität |
-| **Datenschutz** | Alle Daten verbleiben lokal auf dem System | Rein lokales Laden im Browser-Sandkasten, kein Cloud-Upload |
+Die Desktop-Anwendung bleibt autoritativ. Der Workspace-Export redigiert lokale
+Pfade und Geheimnisse für eine ausdrücklich freigegebene Übergabe; ein Web-/PWA-
+Companion oder ein Browser-Importer gehört nicht zum aktuellen Produktstand.
 
 ### Konfiguration
 

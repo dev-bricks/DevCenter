@@ -1,5 +1,11 @@
 # 🛠️ SUITE ENTWICKLER - Fusionskonzept
 
+> **HISTORISCHES FUSIONSKONZEPT — nicht der aktuelle Produktvertrag.** Dieses
+> Dokument enthält frühe Architektur-, Reifegrad- und Umsetzungsskizzen. Alte
+> Feature-Checklisten und Schätzungen sind keine Abnahme. Für den aktuellen
+> Stand gelten `README.md`, `ARCHITEKTUR_DevCenter.md`, `pyproject.toml`,
+> `src/` und `tests/`.
+
 ## Übersicht
 
 **Ziel:** Bündelung aller Entwickler-Tools in eine integrierte Entwicklungsumgebung für Python-Projekte.

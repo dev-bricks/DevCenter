@@ -1,23 +1,27 @@
 # Exportformat DevCenter
 
-Stand: 2026-06-01
+Stand: 2026-08-11
+Status: implementierter Desktop-Export, Schema `devcenter-workspace-v1`
 
-## Zweck
+## Zweck und Produktgrenze
 
-`devcenter-workspace-v1.json` ist das Austauschformat zwischen der DevCenter-Desktop-App und einem späteren Web-/PWA-Companion. Es transportiert Projektstatus, Analyseberichte, Build-Checklisten und redigierte Konfigurationen, ohne vollständige Quelltexte, API-Schlüssel, lokale Datenbanken oder Build-Artefakte weiterzugeben.
-
-Seit 2026-06-01 erzeugt die Desktop-App diesen Export direkt über `Datei -> Arbeitsstand exportieren...`.
+`devcenter-workspace-v1.json` ist ein redigierter lokaler Arbeitsstand für
+Speicherung oder eine ausdrücklich freigegebene Übergabe. Die Desktop-App
+erzeugt ihn über `Datei -> Arbeitsstand exportieren...`. Der frühere Web/PWA-
+Companion wurde entfernt; dieses Repository enthält keinen Browser-Importer,
+keinen Upload-Dienst und keine `web_companion/`-Laufzeit.
 
 ## Grundregeln
 
 - UTF-8 ohne BOM.
 - JSON-Objekt als Wurzel.
-- `schema` ist exakt `devcenter-workspace-v1`.
-- Export ist redigiert: Secrets, Tokens, Keyring-Werte und lokale Vollpfade werden nicht übernommen.
-- Projektinhalte werden nur als Metadaten, Hashes oder ausdrücklich freigegebene Snippets exportiert.
-- Import in den Companion ist read-only; er verändert keine lokalen Desktop-Projekte.
+- `schema` ist exakt `devcenter-workspace-v1` und `schema_version` ist `1`.
+- Secrets, Tokens, Keyring-Werte und lokale Vollpfade werden redigiert.
+- Projektinhalte werden nur als Metadaten, Hashes oder ausdrücklich freigegebene
+  Snippets exportiert.
+- Der Export ist ein read-only Artefakt; er verändert kein Projekt.
 
-## Geplante Struktur
+## Schema v1
 
 ```json
 {
@@ -55,13 +59,7 @@ Seit 2026-06-01 erzeugt die Desktop-App diesen Export direkt über `Datei -> Arb
     "licenses": []
   },
   "release": {
-    "targets": [
-      "github",
-      "windows_store",
-      "macos_direct",
-      "linux_direct",
-      "web"
-    ],
+    "targets": ["github", "windows_store", "linux_direct", "web"],
     "checklists": []
   },
   "tasks": [],
@@ -72,6 +70,9 @@ Seit 2026-06-01 erzeugt die Desktop-App diesen Export direkt über `Datei -> Arb
   }
 }
 ```
+
+The `web` value remains in schema-v1 payloads for compatibility with existing
+exports. It is a legacy field, not an implemented release channel.
 
 ## Redaktionsregeln
 
@@ -85,17 +86,23 @@ Seit 2026-06-01 erzeugt die Desktop-App diesen Export direkt über `Datei -> Arb
 | Lizenzdaten | Paketname, Version, Lizenz und Quelle exportieren. |
 | Aufgaben | Nur offene technische Aufgaben exportieren, keine internen Agenten-Notizen. |
 
-## Akzeptanzkriterien für P0/P1
+## Verifizierte Prüfungen
 
-- Exportfunktion erzeugt valides JSON nach obigem Schema.
-- Tests decken Secret- und Pfadredaktion ab.
-- Companion kann eine Beispieldatei lokal importieren und anzeigen.
-- Kein Export enthält `api_key`, `token`, `secret`, `%APPDATA%`, `C:\Users\` oder unredigierte Projekt-Vollpfade.
+- `tests/test_workspace_export.py` deckt Schema, Secret- und Pfadredaktion,
+  Aufgaben und Release-Felder ab.
+- Der Exportcode liegt in `src/core/workspace_export.py`; die Desktop-Version
+  stammt aus `pyproject.toml`.
+- Kein Export darf `api_key`, `token`, `secret`, `%APPDATA%`, `C:\Users\` oder
+  unredigierte Projekt-Vollpfade enthalten.
 
-## Implementierter Desktop-Export (2026-06-01)
+## Implementierter Desktop-Export
 
-- Liest Projektmetadaten aus `devcenter.json` und der aktuell geöffneten Projektkonfiguration.
-- Exportiert Analysezusammenfassung und die aktuelle Problem-Liste in redigierter Form.
-- Wandelt Projektpfade in `project-1/...` und externe lokale Pfade in stabile Referenzen wie `output-dir-1` um.
-- Übernimmt nur offene Aufgaben aus `AUFGABEN.txt`; erledigte Punkte bleiben außen vor.
+- Liest Projektmetadaten aus `devcenter.json` und der aktuell geöffneten
+  Projektkonfiguration.
+- Exportiert Analysezusammenfassung und die aktuelle Problemliste in
+  redigierter Form.
+- Wandelt Projektpfade in `project-1/...` und externe lokale Pfade in stabile
+  Referenzen wie `output-dir-1` um.
+- Übernimmt nur offene Aufgaben aus `AUFGABEN.txt`; erledigte Punkte bleiben
+  außen vor.
 - Exportiert bewusst keine AI- oder Keyring-Daten.

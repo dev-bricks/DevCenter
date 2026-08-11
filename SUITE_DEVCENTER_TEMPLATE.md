@@ -1,5 +1,11 @@
 # 📦 DevCenter Suite – Final Documentation
 
+> **HISTORISCHER ENTWURF — nicht der aktuelle Produktvertrag.** Stand
+> 2026-01-09. Die Angaben zu Reifegrad, Python-Version, Abhängigkeiten,
+> offenen Features und MIT-Lizenz bleiben als Planungsarchiv erhalten. Für den
+> aktuellen Stand gelten `README.md`, `ARCHITEKTUR_DevCenter.md`,
+> `pyproject.toml`, `src/` und `tests/`.
+
 ## 1. Überblick
 
 **Kurzbeschreibung:**  
