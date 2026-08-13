@@ -7,16 +7,17 @@ Hauptfenster der Anwendung mit vollständiger Panel-Integration
 import subprocess
 import sys
 import os
+import re
 from pathlib import Path
 from typing import Optional, Dict
 
 from PySide6.QtWidgets import (
     QMainWindow, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QToolBar, QStatusBar, QSplitter,
-    QLabel, QPushButton, QMessageBox, QFileDialog, QInputDialog
+    QLabel, QPushButton, QMessageBox, QFileDialog
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction, QKeySequence, QIcon, QTextCursor
+from PySide6.QtGui import QAction, QKeySequence, QIcon
 
 # Lokale Imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -36,6 +37,7 @@ from gui.panels.ai_panel import AIAssistantPanel
 from gui.dialogs.new_project_dialog import NewProjectDialog
 from gui.dialogs.settings_dialog import SettingsDialog
 from gui.dialogs.build_dialog import BuildDialog
+from gui.dialogs.search_replace_dialog import SearchReplaceDialog
 
 
 class MainWindow(QMainWindow):
@@ -73,6 +75,7 @@ class MainWindow(QMainWindow):
         self.current_project: Optional[ProjectConfig] = None
         self.open_files: Dict[str, CodeEditor] = {}
         self._search_term = ""
+        self._search_dialog: Optional[SearchReplaceDialog] = None
         
         # UI Setup
         self.setWindowTitle("DevCenter")
@@ -446,6 +449,23 @@ class MainWindow(QMainWindow):
         self.toggle_ai_action.setShortcut(QKeySequence("Ctrl+Shift+A"))
         self.toggle_ai_action.triggered.connect(self._toggle_ai_panel)
         view_menu.addAction(self.toggle_ai_action)
+
+        view_menu.addSeparator()
+
+        self.fold_current_action = QAction("Aktuellen Block falten", self)
+        self.fold_current_action.setShortcut(QKeySequence("Ctrl+Alt+["))
+        self.fold_current_action.triggered.connect(self._toggle_fold)
+        view_menu.addAction(self.fold_current_action)
+
+        self.unfold_current_action = QAction("Aktuellen Block entfalten", self)
+        self.unfold_current_action.setShortcut(QKeySequence("Ctrl+Alt+]"))
+        self.unfold_current_action.triggered.connect(self._unfold_current)
+        view_menu.addAction(self.unfold_current_action)
+
+        self.unfold_all_action = QAction("Alle Blöcke entfalten", self)
+        self.unfold_all_action.setShortcut(QKeySequence("Ctrl+Alt+0"))
+        self.unfold_all_action.triggered.connect(self._unfold_all)
+        view_menu.addAction(self.unfold_all_action)
         
         # === Ausführen-Menü ===
         run_menu = menubar.addMenu("&Ausführen")
@@ -863,64 +883,150 @@ class MainWindow(QMainWindow):
         editor = self._get_current_editor()
         if editor:
             editor.paste()
-    
+
     def _find(self):
-        """Öffnet einfachen Suchdialog."""
-        editor = self._get_current_editor()
-        if not editor:
-            self.statusbar.showMessage("Kein aktiver Editor vorhanden", 2000)
-            return
+        """Öffnet den nicht-modalen Suchdialog."""
+        self._show_search_dialog(focus_replace=False)
 
-        default = editor.textCursor().selectedText() or self._search_term
-        pattern, ok = QInputDialog.getText(
-            self, "Suchen", "Suchbegriff:", text=default
-        )
-        if not ok or not pattern:
-            return
-
-        self._search_term = pattern
-
-        if not editor.find(pattern):
-            cursor = editor.textCursor()
-            cursor.movePosition(QTextCursor.MoveOperation.Start)
-            editor.setTextCursor(cursor)
-            if not editor.find(pattern):
-                self.statusbar.showMessage(f"\"{pattern}\" nicht gefunden", 2500)
-                return
-
-        self.statusbar.showMessage(f"Gefunden: {pattern}", 2500)
-    
     def _replace(self):
-        """Öffnet einfachen Ersetzen-Dialog."""
+        """Öffnet den Suchdialog mit Fokus auf das Ersetzungsfeld."""
+        self._show_search_dialog(focus_replace=True)
+
+    def _show_search_dialog(self, focus_replace: bool = False):
         editor = self._get_current_editor()
         if not editor:
             self.statusbar.showMessage("Kein aktiver Editor vorhanden", 2000)
             return
 
-        search_text, ok = QInputDialog.getText(
-            self, "Ersetzen", "Zu ersetzen:", text=editor.textCursor().selectedText()
-        )
-        if not ok or not search_text:
-            return
+        if self._search_dialog is None:
+            self._search_dialog = SearchReplaceDialog(self)
+            self._search_dialog.find_next_requested.connect(self._search_next)
+            self._search_dialog.find_previous_requested.connect(self._search_previous)
+            self._search_dialog.replace_requested.connect(self._replace_current)
+            self._search_dialog.replace_all_requested.connect(self._replace_all)
+            self._search_dialog.cancelled.connect(self._cancel_search)
 
-        replace_text, ok = QInputDialog.getText(
-            self, "Ersetzen", "Durch diesen Text ersetzen:"
-        )
-        if not ok:
-            return
+        selected = editor.textCursor().selectedText()
+        if selected and not self._search_dialog.search_input.text():
+            self._search_dialog.search_input.setText(selected)
+        self._search_dialog.show()
+        self._search_dialog.raise_()
+        self._search_dialog.activateWindow()
+        if focus_replace:
+            self._search_dialog.focus_replace()
+        else:
+            self._search_dialog.search_input.setFocus()
+            self._search_dialog.search_input.selectAll()
 
-        text = editor.toPlainText()
-        matches = text.count(search_text)
-        if matches == 0:
-            self.statusbar.showMessage(f'"{search_text}" nicht gefunden', 2500)
-            return
+    def _search_feedback(self, editor: CodeEditor, query: str) -> str:
+        count = editor.search_match_count()
+        index = editor.search_match_index()
+        if not count:
+            return f'"{query}" nicht gefunden'
+        return f'Treffer {index}/{count}: {query}'
 
-        cursor_pos = editor.textCursor().position()
-        editor.setPlainText(text.replace(search_text, replace_text))
-        cursor = editor.textCursor()
-        cursor.setPosition(min(cursor_pos, len(editor.toPlainText())))
-        editor.setTextCursor(cursor)
-        self.statusbar.showMessage(f"{matches} Ersetzung(en) durchgeführt", 2500)
+    def _search_next(self, query: str, case_sensitive: bool, whole_word: bool,
+                     regex: bool, scope: str):
+        editor = self._get_current_editor()
+        if not editor:
+            return
+        try:
+            found = editor.find_next(
+                query, case_sensitive=case_sensitive, whole_word=whole_word,
+                regex=regex, scope=scope
+            )
+        except (re.error, ValueError) as error:
+            found = False
+            if self._search_dialog:
+                self._search_dialog.set_status(f"Ungültiger Suchausdruck: {error}")
+        message = self._search_feedback(editor, query) if found else f'"{query}" nicht gefunden'
+        self.statusbar.showMessage(message, 2500)
+        if self._search_dialog:
+            self._search_dialog.set_status(message)
+
+    def _search_previous(self, query: str, case_sensitive: bool, whole_word: bool,
+                         regex: bool, scope: str):
+        editor = self._get_current_editor()
+        if not editor:
+            return
+        try:
+            found = editor.find_previous(
+                query, case_sensitive=case_sensitive, whole_word=whole_word,
+                regex=regex, scope=scope
+            )
+        except (re.error, ValueError) as error:
+            found = False
+            if self._search_dialog:
+                self._search_dialog.set_status(f"Ungültiger Suchausdruck: {error}")
+        message = self._search_feedback(editor, query) if found else f'"{query}" nicht gefunden'
+        self.statusbar.showMessage(message, 2500)
+        if self._search_dialog:
+            self._search_dialog.set_status(message)
+
+    def _replace_current(self, query: str, replacement: str, case_sensitive: bool,
+                         whole_word: bool, regex: bool, scope: str):
+        editor = self._get_current_editor()
+        if not editor:
+            return
+        try:
+            replaced = editor.replace_current(
+                replacement, query, case_sensitive=case_sensitive,
+                whole_word=whole_word, regex=regex, scope=scope
+            )
+        except (re.error, ValueError) as error:
+            replaced = False
+            if self._search_dialog:
+                self._search_dialog.set_status(f"Ungültiger Suchausdruck: {error}")
+        message = "Treffer ersetzt" if replaced else f'"{query}" nicht gefunden'
+        self.statusbar.showMessage(message, 2500)
+        if self._search_dialog:
+            self._search_dialog.set_status(message)
+
+    def _replace_all(self, query: str, replacement: str, case_sensitive: bool,
+                     whole_word: bool, regex: bool, scope: str):
+        editor = self._get_current_editor()
+        if not editor:
+            return
+        try:
+            count = editor.replace_all(
+                replacement, query, case_sensitive=case_sensitive,
+                whole_word=whole_word, regex=regex, scope=scope
+            )
+        except (re.error, ValueError) as error:
+            count = 0
+            if self._search_dialog:
+                self._search_dialog.set_status(f"Ungültiger Suchausdruck: {error}")
+        message = f"{count} Ersetzung(en) durchgeführt" if count else f'"{query}" nicht gefunden'
+        self.statusbar.showMessage(message, 2500)
+        if self._search_dialog:
+            self._search_dialog.set_status(message)
+
+    def _cancel_search(self):
+        editor = self._get_current_editor()
+        if editor:
+            editor.cancel_search()
+        if self._search_dialog:
+            self._search_dialog.set_status("")
+
+    def _toggle_fold(self):
+        editor = self._get_current_editor()
+        if not editor:
+            return
+        if editor.toggle_fold():
+            self.statusbar.showMessage("Block-Faltung umgeschaltet", 2000)
+        else:
+            self.statusbar.showMessage("Aktuelle Zeile ist nicht faltbar", 2000)
+
+    def _unfold_current(self):
+        editor = self._get_current_editor()
+        if editor and editor.unfold_block():
+            self.statusbar.showMessage("Block entfaltet", 2000)
+
+    def _unfold_all(self):
+        editor = self._get_current_editor()
+        if editor:
+            editor.unfold_all()
+            self.statusbar.showMessage("Alle Blöcke entfaltet", 2000)
     
     # === Ansicht-Operationen ===
     

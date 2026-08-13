@@ -61,6 +61,8 @@ build_exe.bat
 ### Editor
 - Python syntax highlighting, line numbers, auto-indent, multi-tab
 - Comment toggle (Ctrl+/), drag-and-drop files
+- Code-Folding über den aktuellen Block (Ctrl+Alt+[ / Ctrl+Alt+] / Ctrl+Alt+0)
+- Nicht-modale Suche mit Treffer-Navigation sowie Ersetzen/Alle ersetzen
 
 ### Static Analysis
 - AST-based method and class detection
@@ -153,10 +155,28 @@ Details: [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 ## Roadmap
 
 ### Version 1.1
-- Code folding
-- Extended search and replace
+- **Implementiert:** Code folding für eingerückte Blöcke
+- **Implementiert:** Erweiterte Suche und Ersetzen (Dokument/Auswahl, Groß-/Kleinschreibung, ganze Wörter, Regex)
 - Git integration
 - Debugger support
+
+#### Editor-Vertrag (Version 1.1)
+
+- **Falten/Entfalten:** Der aktuelle eingerückte Block wird über das Menü
+  „Ansicht” oder `Ctrl+Alt+[` gefaltet; `Ctrl+Alt+]` entfaltet ihn und
+  `Ctrl+Alt+0` stellt alle Blöcke wieder her. Folding verändert keinen Text
+  und ist daher unabhängig vom Undo-Verlauf.
+- **Suchbereich:** `Ctrl+F` öffnet den nicht-modalen Dialog. Der Bereich ist
+  standardmäßig das Dokument oder ausdrücklich die aktuelle Auswahl.
+- **Treffer-Navigation:** „Nächster Treffer” und „Vorheriger Treffer” markieren
+  Treffer zyklisch und zeigen Position und Anzahl an. Keine Treffer werden
+  eindeutig gemeldet.
+- **Ersetzen:** „Ersetzen” arbeitet am markierten Treffer, „Alle ersetzen”
+  fasst den Lauf als eine Undo-Einheit zusammen. Abbrechen/Schließen beendet
+  nur die Suchsitzung und schreibt nichts.
+- **Inhalt/Zustand:** Änderungen laufen über `QTextCursor`; offene Tabs,
+  Dateipfad, UTF-8-Inhalte und der Editorzustand bleiben erhalten. Es gibt
+  keinen automatischen Dateischreibvorgang.
 
 ### Version 1.2
 - Plugin system

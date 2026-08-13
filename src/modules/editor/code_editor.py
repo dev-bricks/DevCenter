@@ -4,8 +4,9 @@ DevCenter - Code Editor
 Syntax-highlighted Python Editor basierend auf PythonBox
 """
 
+import re
 import sys
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 from PySide6.QtWidgets import (
     QPlainTextEdit, QWidget, QTextEdit, QApplication
@@ -192,6 +193,19 @@ class CodeEditor(QPlainTextEdit):
         
         self.file_path: Optional[str] = None
         self._is_modified = False
+        self._search_query = ""
+        self._search_options: Tuple[bool, bool, bool, str] = (
+            False,
+            False,
+            False,
+            "document",
+        )
+        self._search_matches: List[Tuple[int, int]] = []
+        self._search_python_matches: List[Tuple[int, int, re.Match]] = []
+        self._search_match_index = -1
+        self._search_snapshot = ""
+        self._search_scope_python_bounds: Tuple[int, int] = (0, 0)
+        self._folded_regions: Dict[int, Tuple[int, ...]] = {}
         
         # Font
         font = QFont("Consolas", 11)
@@ -388,6 +402,15 @@ class CodeEditor(QPlainTextEdit):
     
     def _on_text_changed(self):
         """Text wurde geändert"""
+        # Folding positions and cached search ranges refer to the previous
+        # document.  They are rebuilt lazily after the edit so that a normal
+        # typing operation never leaves stale hidden blocks or selections.
+        if self._folded_regions:
+            self.unfold_all()
+        self._folded_regions.clear()
+        self._search_matches = []
+        self._search_python_matches = []
+        self._search_snapshot = ""
         if not self._is_modified:
             self._is_modified = True
             self.file_modified.emit(True)
@@ -570,7 +593,532 @@ class CodeEditor(QPlainTextEdit):
             cursor.movePosition(QTextCursor.MoveOperation.NextBlock)
         
         cursor.endEditBlock()
-    
+
+    # === Suche und Ersetzen ===
+
+    @staticmethod
+    def _utf16_length(value: str) -> int:
+        """Gibt die Qt-Positionseinheiten für einen Python-String zurück."""
+        return len(value.encode("utf-16-le", "surrogatepass")) // 2
+
+    @classmethod
+    def _qt_position_for_python_index(cls, text: str, index: int) -> int:
+        """Wandelt einen Python-Stringindex in eine QTextCursor-Position um."""
+        return cls._utf16_length(text[:max(0, min(index, len(text)))])
+
+    @classmethod
+    def _python_index_for_qt_position(cls, text: str, position: int) -> int:
+        """Wandelt eine QTextCursor-Position in einen Python-Stringindex um."""
+        if position <= 0:
+            return 0
+        units = 0
+        for index, character in enumerate(text):
+            if units >= position:
+                return index
+            units += cls._utf16_length(character)
+            if units >= position:
+                return index + 1
+        return len(text)
+
+    @staticmethod
+    def _search_pattern(query: str, case_sensitive: bool, whole_word: bool,
+                        regex: bool) -> re.Pattern:
+        flags = 0 if case_sensitive else re.IGNORECASE
+        if regex:
+            expression = query
+            if whole_word:
+                expression = rf"(?<!\w)(?:{expression})(?!\w)"
+        else:
+            expression = re.escape(query)
+            if whole_word:
+                expression = rf"(?<!\w){expression}(?!\w)"
+        return re.compile(expression, flags)
+
+    def _scope_bounds(self, scope: str, text: str) -> Tuple[int, int]:
+        """Ermittelt Suchgrenzen in Python-Stringindizes."""
+        if scope == "selection":
+            cursor = self.textCursor()
+            if not cursor.hasSelection():
+                return (0, 0)
+            return (
+                self._python_index_for_qt_position(text, cursor.selectionStart()),
+                self._python_index_for_qt_position(text, cursor.selectionEnd()),
+            )
+        return (0, len(text))
+
+    def _build_search_matches(
+        self,
+        query: str,
+        case_sensitive: bool,
+        whole_word: bool,
+        regex: bool,
+        scope: str,
+        bounds: Optional[Tuple[int, int]] = None,
+    ) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int, re.Match]], Tuple[int, int]]:
+        """Berechnet Treffer, ohne den Editor-Cursor zu verändern."""
+        text = self.toPlainText()
+        bounds = bounds if bounds is not None else self._scope_bounds(scope, text)
+        start, end = max(0, bounds[0]), min(len(text), bounds[1])
+        if not query or start >= end:
+            return [], [], (start, end)
+
+        pattern = self._search_pattern(query, case_sensitive, whole_word, regex)
+        qt_matches: List[Tuple[int, int]] = []
+        python_matches: List[Tuple[int, int, re.Match]] = []
+        segment = text[start:end]
+        for match in pattern.finditer(segment):
+            # Zero-width matches cannot be selected or replaced meaningfully.
+            if match.start() == match.end():
+                continue
+            py_start = start + match.start()
+            py_end = start + match.end()
+            qt_matches.append((
+                self._qt_position_for_python_index(text, py_start),
+                self._qt_position_for_python_index(text, py_end),
+            ))
+            python_matches.append((py_start, py_end, match))
+        return qt_matches, python_matches, (start, end)
+
+    def _resolve_search_options(
+        self,
+        query: Optional[str],
+        case_sensitive: Optional[bool],
+        whole_word: Optional[bool],
+        regex: Optional[bool],
+        scope: Optional[str],
+    ) -> Tuple[str, bool, bool, bool, str]:
+        if query is None:
+            query = self._search_query
+        if case_sensitive is None:
+            case_sensitive = self._search_options[0]
+        if whole_word is None:
+            whole_word = self._search_options[1]
+        if regex is None:
+            regex = self._search_options[2]
+        if scope is None:
+            scope = self._search_options[3]
+        scope = "selection" if str(scope).lower() == "selection" else "document"
+        return str(query), bool(case_sensitive), bool(whole_word), bool(regex), scope
+
+    def _prepare_search(
+        self,
+        query: str,
+        case_sensitive: bool,
+        whole_word: bool,
+        regex: bool,
+        scope: str,
+    ) -> None:
+        options = (case_sensitive, whole_word, regex, scope)
+        text = self.toPlainText()
+        if (
+            query != self._search_query
+            or options != self._search_options
+            or text != self._search_snapshot
+        ):
+            bounds = self._scope_bounds(scope, text)
+            matches, python_matches, bounds = self._build_search_matches(
+                query, case_sensitive, whole_word, regex, scope, bounds
+            )
+            self._search_query = query
+            self._search_options = options
+            self._search_matches = matches
+            self._search_python_matches = python_matches
+            self._search_scope_python_bounds = bounds
+            self._search_snapshot = text
+            self._search_match_index = -1
+
+    def find_matches(
+        self,
+        query: str,
+        *,
+        case_sensitive: bool = False,
+        whole_word: bool = False,
+        regex: bool = False,
+        scope: str = "document",
+    ) -> List[Tuple[int, int]]:
+        """Gibt alle Treffer als ``(Start, Ende)``-Positionen zurück."""
+        matches, _, _ = self._build_search_matches(
+            query, case_sensitive, whole_word, regex,
+            "selection" if str(scope).lower() == "selection" else "document",
+        )
+        return matches
+
+    # Alias für Integrationen, die die Aktion semantisch als Suche benennen.
+    search_all = find_matches
+
+    def _select_search_match(self, index: int) -> bool:
+        if index < 0 or index >= len(self._search_matches):
+            return False
+        start, end = self._search_matches[index]
+        cursor = self.textCursor()
+        cursor.setPosition(start)
+        cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        self.setTextCursor(cursor)
+        self.ensureCursorVisible()
+        self._search_match_index = index
+        return True
+
+    def find_next(
+        self,
+        query: Optional[str] = None,
+        *,
+        case_sensitive: Optional[bool] = None,
+        whole_word: Optional[bool] = None,
+        regex: Optional[bool] = None,
+        scope: Optional[str] = None,
+        wrap: bool = True,
+    ) -> bool:
+        """Wählt den nächsten Treffer und navigiert zyklisch durch das Dokument."""
+        query, case_sensitive, whole_word, regex, scope = self._resolve_search_options(
+            query, case_sensitive, whole_word, regex, scope
+        )
+        self._prepare_search(query, case_sensitive, whole_word, regex, scope)
+        if not self._search_matches:
+            return False
+
+        cursor = self.textCursor()
+        position = cursor.selectionEnd() if cursor.hasSelection() else cursor.position()
+        index = next(
+            (i for i, (start, _) in enumerate(self._search_matches) if start >= position),
+            None,
+        )
+        if index is None:
+            if not wrap:
+                return False
+            index = 0
+        return self._select_search_match(index)
+
+    def find_previous(
+        self,
+        query: Optional[str] = None,
+        *,
+        case_sensitive: Optional[bool] = None,
+        whole_word: Optional[bool] = None,
+        regex: Optional[bool] = None,
+        scope: Optional[str] = None,
+        wrap: bool = True,
+    ) -> bool:
+        """Wählt den vorherigen Treffer und navigiert zyklisch durch das Dokument."""
+        query, case_sensitive, whole_word, regex, scope = self._resolve_search_options(
+            query, case_sensitive, whole_word, regex, scope
+        )
+        self._prepare_search(query, case_sensitive, whole_word, regex, scope)
+        if not self._search_matches:
+            return False
+
+        cursor = self.textCursor()
+        position = cursor.selectionStart() if cursor.hasSelection() else cursor.position()
+        index = next(
+            (
+                i
+                for i in range(len(self._search_matches) - 1, -1, -1)
+                if self._search_matches[i][1] <= position
+            ),
+            None,
+        )
+        if index is None:
+            if not wrap:
+                return False
+            index = len(self._search_matches) - 1
+        return self._select_search_match(index)
+
+    # Semantischer Alias für GUI-Integrationen.
+    search = find_next
+
+    def search_match_count(self) -> int:
+        """Anzahl der Treffer der aktuellen Suchsitzung."""
+        return len(self._search_matches)
+
+    def search_match_index(self) -> int:
+        """1-basierter Index des aktuellen Treffers, 0 wenn keiner gewählt ist."""
+        return self._search_match_index + 1 if self._search_match_index >= 0 else 0
+
+    def _replacement_for_match(self, replacement: str, match: re.Match) -> str:
+        if self._search_options[2]:
+            return match.expand(replacement)
+        return replacement
+
+    def _set_cursor_position_preserving_selection(self, anchor: int, position: int) -> None:
+        cursor = self.textCursor()
+        cursor.setPosition(max(0, anchor))
+        if anchor != position:
+            cursor.setPosition(max(0, position), QTextCursor.MoveMode.KeepAnchor)
+        else:
+            cursor.setPosition(max(0, position))
+        self.setTextCursor(cursor)
+
+    def replace_current(
+        self,
+        replacement: str,
+        query: Optional[str] = None,
+        *,
+        case_sensitive: Optional[bool] = None,
+        whole_word: Optional[bool] = None,
+        regex: Optional[bool] = None,
+        scope: Optional[str] = None,
+    ) -> bool:
+        """Ersetzt den aktuell markierten Treffer als eine Undo-Einheit."""
+        query, case_sensitive, whole_word, regex, scope = self._resolve_search_options(
+            query, case_sensitive, whole_word, regex, scope
+        )
+        self._prepare_search(query, case_sensitive, whole_word, regex, scope)
+        if not self._search_matches:
+            return False
+
+        selected = self.textCursor()
+        selection = (selected.selectionStart(), selected.selectionEnd())
+        try:
+            index = self._search_matches.index(selection)
+        except ValueError:
+            if not self.find_next(query, case_sensitive=case_sensitive,
+                                  whole_word=whole_word, regex=regex, scope=scope):
+                return False
+            index = self._search_match_index
+
+        start, end = self._search_matches[index]
+        match = self._search_python_matches[index][2]
+        old_match = self._search_python_matches[index]
+        try:
+            replacement_text = self._replacement_for_match(replacement, match)
+        except re.error:
+            return False
+
+        cursor = QTextCursor(self.document())
+        cursor.setPosition(start)
+        cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        cursor.beginEditBlock()
+        cursor.removeSelectedText()
+        cursor.insertText(replacement_text)
+        cursor.endEditBlock()
+        cursor.setPosition(start + self._utf16_length(replacement_text))
+        self.setTextCursor(cursor)
+
+        old_bounds = self._search_scope_python_bounds
+        delta = len(replacement_text) - (old_match[1] - old_match[0])
+        if scope == "selection":
+            bounds = (
+                old_bounds[0],
+                old_bounds[1] + delta if old_match[0] < old_bounds[1] else old_bounds[1],
+            )
+        else:
+            bounds = (0, len(self.toPlainText()))
+        self._search_snapshot = self.toPlainText()
+        self._search_scope_python_bounds = bounds
+        self._search_matches, self._search_python_matches, _ = self._build_search_matches(
+            query, case_sensitive, whole_word, regex, scope, bounds
+        )
+        self._search_match_index = -1
+        return True
+
+    def replace_all(
+        self,
+        replacement: str,
+        query: Optional[str] = None,
+        *,
+        case_sensitive: Optional[bool] = None,
+        whole_word: Optional[bool] = None,
+        regex: Optional[bool] = None,
+        scope: Optional[str] = None,
+    ) -> int:
+        """Ersetzt alle Treffer in einem einzelnen, rückgängig machbaren Edit."""
+        query, case_sensitive, whole_word, regex, scope = self._resolve_search_options(
+            query, case_sensitive, whole_word, regex, scope
+        )
+        self._prepare_search(query, case_sensitive, whole_word, regex, scope)
+        if not self._search_matches:
+            return 0
+
+        search_matches = list(self._search_matches)
+        python_matches = list(self._search_python_matches)
+        old_bounds = self._search_scope_python_bounds
+        replacements: List[Tuple[int, int, str]] = []
+        try:
+            for (qt_start, qt_end), (py_start, py_end, match) in zip(
+                search_matches, python_matches
+            ):
+                replacements.append((
+                    qt_start,
+                    qt_end,
+                    self._replacement_for_match(replacement, match),
+                ))
+        except re.error:
+            return 0
+
+        old_text = self.toPlainText()
+        original_cursor = self.textCursor()
+        original_anchor_py = self._python_index_for_qt_position(old_text, original_cursor.anchor())
+        original_position_py = self._python_index_for_qt_position(old_text, original_cursor.position())
+
+        cursor = QTextCursor(self.document())
+        cursor.beginEditBlock()
+        for start, end, replacement_text in reversed(replacements):
+            cursor.setPosition(start)
+            cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+            cursor.removeSelectedText()
+            cursor.insertText(replacement_text)
+        cursor.endEditBlock()
+
+        def adjusted_position(position_py: int) -> int:
+            delta = 0
+            for (py_start, py_end, _), (_, _, replacement_text) in zip(
+                python_matches, replacements
+            ):
+                if py_end <= position_py:
+                    delta += len(replacement_text) - (py_end - py_start)
+                elif py_start < position_py:
+                    return py_start + delta + len(replacement_text)
+            return position_py + delta
+
+        new_anchor = self._qt_position_for_python_index(
+            self.toPlainText(), adjusted_position(original_anchor_py)
+        )
+        new_position = self._qt_position_for_python_index(
+            self.toPlainText(), adjusted_position(original_position_py)
+        )
+        self._set_cursor_position_preserving_selection(new_anchor, new_position)
+
+        if scope == "selection":
+            new_bounds = list(old_bounds)
+            for py_start, py_end, replacement_text in [
+                (match[0], match[1], repl)
+                for match, (_, _, repl) in zip(python_matches, replacements)
+            ]:
+                delta = len(replacement_text) - (py_end - py_start)
+                if py_start < new_bounds[1]:
+                    new_bounds[1] += delta
+            bounds = (new_bounds[0], new_bounds[1])
+        else:
+            bounds = (0, len(self.toPlainText()))
+
+        self._search_snapshot = self.toPlainText()
+        self._search_scope_python_bounds = bounds
+        self._search_matches, self._search_python_matches, _ = self._build_search_matches(
+            query, case_sensitive, whole_word, regex, scope, bounds
+        )
+        self._search_match_index = -1
+        return len(replacements)
+
+    def cancel_search(self) -> None:
+        """Beendet die Suchsitzung ohne Text- oder Tab-Mutation."""
+        self._search_query = ""
+        self._search_matches = []
+        self._search_python_matches = []
+        self._search_snapshot = ""
+        self._search_match_index = -1
+
+    # === Code-Folding ===
+
+    def _indent_width(self, text: str) -> int:
+        """Ermittelt eine vergleichbare Einrückungsbreite für Leerzeichen/Tabs."""
+        prefix = text[:len(text) - len(text.lstrip(" \t"))]
+        return len(prefix.expandtabs(self.tab_size))
+
+    def _fold_body(self, start_block):
+        base_indent = self._indent_width(start_block.text())
+        body = []
+        block = start_block.next()
+        has_child = False
+        while block.isValid():
+            text = block.text()
+            if text.strip() and self._indent_width(text) <= base_indent:
+                break
+            body.append(block)
+            if text.strip():
+                has_child = True
+            block = block.next()
+        return body if has_child else []
+
+    def _request_fold_update(self, start_block, end_block) -> None:
+        self.document().markContentsDirty(
+            start_block.position(),
+            max(1, end_block.position() - start_block.position() + len(end_block.text())),
+        )
+        self.document().documentLayout().requestUpdate()
+        self.viewport().update()
+        self.line_number_area.update()
+
+    def foldable_block_numbers(self) -> List[int]:
+        """Gibt Zeilen mit mindestens einem eingerückten Folgeblock zurück."""
+        result = []
+        block = self.document().firstBlock()
+        while block.isValid():
+            if self._fold_body(block):
+                result.append(block.blockNumber())
+            block = block.next()
+        return result
+
+    def is_folded(self, line_number: int) -> bool:
+        block = self.document().findBlockByNumber(line_number)
+        return block.isValid() and block.position() in self._folded_regions
+
+    def fold_block(self, line_number: Optional[int] = None) -> bool:
+        """Faltet den Block der 0-basierten Zeilennummer ein."""
+        if line_number is None:
+            line_number = self.textCursor().blockNumber()
+        start_block = self.document().findBlockByNumber(int(line_number))
+        if not start_block.isValid() or self.is_folded(start_block.blockNumber()):
+            return False
+        body = self._fold_body(start_block)
+        if not body:
+            return False
+
+        body_positions = tuple(block.position() for block in body)
+        body_position_set = set(body_positions)
+        # Eine äußere Faltung übernimmt den Bereich vollständig; verschachtelte
+        # Zustände werden entfernt und beim Unfold nicht versehentlich reaktiviert.
+        for nested_start in list(self._folded_regions):
+            if nested_start in body_position_set:
+                self._restore_fold(nested_start)
+
+        for block in body:
+            block.setVisible(False)
+            block.setLineCount(0)
+        start_block.setVisible(True)
+        start_block.setLineCount(1)
+        self._folded_regions[start_block.position()] = body_positions
+        self._request_fold_update(start_block, body[-1])
+        return True
+
+    def _restore_fold(self, start_position: int) -> bool:
+        body_positions = self._folded_regions.pop(start_position, None)
+        if body_positions is None:
+            return False
+        start_block = self.document().findBlock(start_position)
+        if not start_block.isValid():
+            return False
+        for position in body_positions:
+            block = self.document().findBlock(position)
+            if block.isValid():
+                block.setVisible(True)
+                block.setLineCount(1)
+        start_block.setVisible(True)
+        start_block.setLineCount(1)
+        last_block = self.document().findBlock(body_positions[-1]) if body_positions else start_block
+        self._request_fold_update(start_block, last_block)
+        return True
+
+    def unfold_block(self, line_number: Optional[int] = None) -> bool:
+        """Entfaltet den Block der 0-basierten Zeilennummer."""
+        if line_number is None:
+            line_number = self.textCursor().blockNumber()
+        start_block = self.document().findBlockByNumber(int(line_number))
+        if not start_block.isValid():
+            return False
+        return self._restore_fold(start_block.position())
+
+    def toggle_fold(self, line_number: Optional[int] = None) -> bool:
+        """Schaltet Faltung für den aktuellen bzw. angegebenen Block um."""
+        if line_number is None:
+            line_number = self.textCursor().blockNumber()
+        if self.is_folded(int(line_number)):
+            return self.unfold_block(int(line_number))
+        return self.fold_block(int(line_number))
+
+    def unfold_all(self) -> None:
+        """Stellt alle zuvor verborgenen Blöcke wieder her."""
+        for start_position in list(self._folded_regions):
+            self._restore_fold(start_position)
+
     def load_file(self, file_path: str) -> bool:
         """
         Lädt eine Datei in den Editor
@@ -585,6 +1133,8 @@ class CodeEditor(QPlainTextEdit):
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
 
+            self.unfold_all()
+            self._folded_regions.clear()
             self._is_modified = True  # verhindert spurious file_modified(True) durch setPlainText
             self.setPlainText(content)
             self.file_path = file_path

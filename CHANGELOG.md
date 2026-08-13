@@ -5,6 +5,13 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Hinzugefügt / Added
+- Editor-Slice für Code-Folding und erweiterte Suche/Ersetzen: Der neue
+  nicht-modale Dialog unterstützt Dokument-/Auswahlbereich, Treffer-Navigation,
+  Groß-/Kleinschreibung, ganze Wörter und reguläre Ausdrücke. Ersetzen bleibt
+  über den Editor-Undo-Verlauf rückgängig machbar; geplante Git-/Debugger-
+  Funktionen der Roadmap bleiben unverändert offen.
+
 ### Technische Hygiene & Doku-Wartung / Maintenance (Pfad A) [G 2026-07-30]
 - **LLM Context**: `llms.txt` Last-checked Datum auf `2026-07-30` aktualisiert und veraltete `web_companion/`-Referenzen bereinigt.
 - **Changelog**: Wartungseintrag für den 30.07.2026 hinzugefügt.
