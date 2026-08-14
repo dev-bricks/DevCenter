@@ -6,7 +6,6 @@ Verwaltung von Python-Projekten
 
 import json
 import logging
-import os
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict, Any

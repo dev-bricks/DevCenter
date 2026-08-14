@@ -25,6 +25,7 @@ if errorlevel 1 (
   --icon "DevCenter.ico" ^
   --add-data "locales;locales" ^
   --add-data "resources;resources" ^
+  --add-data "assets;assets" ^
   main.py
 
 if errorlevel 1 pause

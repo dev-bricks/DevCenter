@@ -35,3 +35,25 @@ def get_settings_path() -> Path:
 def get_file_index_path() -> Path:
     """Liefert den Standardpfad zur lokalen Dateiindex-Datenbank."""
     return get_app_data_dir() / "file_index.db"
+
+
+def get_project_root() -> Path:
+    """Liefert das Root-Verzeichnis des Projekts."""
+    return Path(__file__).resolve().parents[2]
+
+
+def get_app_icon_path() -> Path:
+    """Liefert den Pfad zum Standard-App-Icon (bevorzugt assets/icon.png oder DevCenter.ico)."""
+    root = get_project_root()
+    candidates = [
+        Path(sys.executable).with_name("DevCenter.ico") if getattr(sys, "frozen", False) else None,
+        Path(sys.executable).with_name("icon.png") if getattr(sys, "frozen", False) else None,
+        root / "assets" / "icon.png",
+        root / "assets" / "app_icon.ico",
+        root / "DevCenter.ico",
+        root / "icon.png",
+    ]
+    for candidate in candidates:
+        if candidate and candidate.exists():
+            return candidate
+    return root / "DevCenter.ico"

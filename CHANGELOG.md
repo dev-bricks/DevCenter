@@ -5,6 +5,13 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### App-Icon & Asset-Modernisierung / Icon Refresh [G 2026-08-14]
+- **Master App-Icon & Asset-Set**: Neues hochauflösendes Master-Icon (512x512 PNG) mit modernem IDE/Python-Motiv generiert und unter `assets/icon.png` sowie `icon.png` bereitgestellt.
+- **Multi-Resolution ICO**: Neues Windows-Icon `DevCenter.ico` sowie `assets/app_icon.ico` und `assets/icon.ico` mit allen Standardschichten (256x256, 128x128, 64x64, 48x48, 32x32, 24x24, 16x16) und `assets/favicon.ico` erzeugt.
+- **Store- & Kachel-Icons**: Vollständiges Kachel-Set unter `assets/icons/` (`icon_44x44.png`, `icon_50x50.png`, `icon_150x150.png`, `icon_310x150.png`, `icon_310x310.png`) integriert.
+- **Runtime-Icon-Anbindung**: `src/core/app_paths.py` um `get_project_root()` und `get_app_icon_path()` erweitert; `src/gui/main_window.py` bindet das App-Icon verlässlich an `MainWindow` und `QApplication`.
+- **PyInstaller & Testsuite**: `build_exe.bat` um `--add-data "assets;assets"` erweitert; neue Testsuite `tests/test_app_assets.py` (5/5 Tests passed; Gesamt-Suite 126/126 Tests 100% grün).
+
 ### Hinzugefügt / Added
 - Editor-Slice für Code-Folding und erweiterte Suche/Ersetzen: Der neue
   nicht-modale Dialog unterstützt Dokument-/Auswahlbereich, Treffer-Navigation,

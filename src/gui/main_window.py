@@ -25,6 +25,7 @@ from core.project_manager import ProjectManager, ProjectConfig
 from core.settings_manager import get_settings
 from core.event_bus import EventType, get_event_bus
 from core.workspace_export import export_workspace
+from core.app_paths import get_app_icon_path
 from modules.editor.code_editor import CodeEditor
 from modules.analyzer import MethodAnalyzer, AnalysisResult
 from modules.ai_assistant import AIService
@@ -81,6 +82,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("DevCenter")
         self.setMinimumSize(1200, 800)
         
+        # App-Icon binden
+        icon_path = get_app_icon_path()
+        if icon_path and icon_path.exists():
+            self.setWindowIcon(QIcon(str(icon_path)))
+
         self._apply_dark_theme()
         self._setup_ui()
         self._setup_menus()
@@ -1291,8 +1297,8 @@ def main():
     """Haupteinstiegspunkt"""
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    icon_path = Path(__file__).resolve().parents[2] / "DevCenter.ico"
-    icon = QIcon(str(icon_path)) if icon_path.exists() else QIcon()
+    icon_path = get_app_icon_path()
+    icon = QIcon(str(icon_path)) if icon_path and icon_path.exists() else QIcon()
     if not icon.isNull():
         app.setWindowIcon(icon)
     
