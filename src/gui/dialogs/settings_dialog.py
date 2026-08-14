@@ -443,6 +443,18 @@ class SettingsDialog(QDialog):
     
     def _save_settings(self):
         """Speichert Einstellungen"""
+        # Credentials zuerst prüfen, damit ein Keyring-Fehler keine anderen
+        # Dialogwerte teilweise persistiert.
+        api_key = self.api_key.text()
+        current_api_key = self.settings.get('ai.api_key', '')
+        if api_key != current_api_key and not self.settings.set('ai.api_key', api_key):
+            QMessageBox.critical(
+                self,
+                "API-Key nicht gespeichert",
+                "Der System-Keyring ist nicht verfügbar. Der API-Key wurde nicht gespeichert.",
+            )
+            return
+
         # General
         self.settings.set('general.open_last_project', self.open_last_project.isChecked())
 
@@ -463,7 +475,6 @@ class SettingsDialog(QDialog):
         self.settings.set('build.upx_enabled', self.use_upx.isChecked())
         
         # AI
-        self.settings.set('ai.api_key', self.api_key.text())
         self.settings.set('ai.max_tokens', self.max_tokens.value())
         self.settings.set('ai.model', self.ai_model.currentText())
 
@@ -489,5 +500,12 @@ class SettingsDialog(QDialog):
         )
         
         if reply == QMessageBox.StandardButton.Yes:
-            self.settings.reset_to_defaults()
+            if not self.settings.reset_to_defaults():
+                QMessageBox.critical(
+                    self,
+                    "Einstellungen nicht zurückgesetzt",
+                    "Die Einstellungen konnten nicht vollständig zurückgesetzt werden. "
+                    "Prüfen Sie System-Keyring und Einstellungsdatei.",
+                )
+                return
             self._load_settings()

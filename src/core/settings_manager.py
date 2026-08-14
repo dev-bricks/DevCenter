@@ -5,6 +5,8 @@ Zentrale Einstellungsverwaltung
 """
 
 import json
+import keyring
+from keyring.errors import PasswordDeleteError
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -12,6 +14,10 @@ from dataclasses import dataclass, asdict, field, fields
 from PySide6.QtCore import QByteArray, QObject, Signal
 
 from core.app_paths import get_settings_path
+
+
+KEYRING_SERVICE = "DevCenter"
+KEYRING_ACCOUNT = "anthropic_api_key"
 
 
 @dataclass
@@ -47,7 +53,7 @@ class BuildSettings:
 @dataclass
 class AISettings:
     """AI-Einstellungen"""
-    api_key: str = ""  # Wird verschlüsselt gespeichert
+    api_key: str = ""  # Nur im Speicher; persistent ausschließlich im System-Keyring
     model: str = "claude-sonnet-4-20250514"
     max_tokens: int = 4096
     temperature: float = 0.7
@@ -130,12 +136,18 @@ class SettingsManager(QObject):
         settings_file = Path(self.settings_path)
         
         if not settings_file.exists():
+            self.settings.ai.api_key = self._read_api_key()
             self._save()  # Standardeinstellungen speichern
             return
         
         try:
             with open(settings_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+
+            raw_ai = data.get('ai')
+            legacy_api_key = ""
+            if isinstance(raw_ai, dict):
+                legacy_api_key = str(raw_ai.get('api_key') or "")
             
             # Einstellungen rekonstruieren
             self._extra_settings = self._extract_extra_settings(data)
@@ -157,6 +169,24 @@ class SettingsManager(QObject):
             self.settings.check_updates = data.get('check_updates', True)
             self.settings.telemetry_enabled = data.get('telemetry_enabled', False)
             self.settings.window_state = data.get('window_state', {})
+
+            stored_api_key = self._read_api_key()
+            legacy_cleanup_succeeded = True
+            if isinstance(raw_ai, dict) and 'api_key' in raw_ai:
+                legacy_cleanup_succeeded = self._save()
+                if not legacy_cleanup_succeeded:
+                    print(
+                        "Sicherheitswarnung: Legacy-API-Key konnte nicht aus "
+                        "settings.json entfernt werden."
+                    )
+
+            if stored_api_key:
+                self.settings.ai.api_key = stored_api_key
+            elif legacy_api_key:
+                if not legacy_cleanup_succeeded or not self._store_api_key(legacy_api_key):
+                    # Die Datei wird zuerst bereinigt. Schlägt das fehl, entsteht
+                    # keine zusätzliche persistente Kopie im Keyring.
+                    self.settings.ai.api_key = legacy_api_key
             
         except Exception as e:
             print(f"Fehler beim Laden der Einstellungen: {e}")
@@ -208,7 +238,7 @@ class SettingsManager(QObject):
                 extra[section] = section_extra
         return extra
     
-    def _save(self):
+    def _save(self) -> bool:
         """Speichert Einstellungen in Datei"""
         settings_file = Path(self.settings_path)
         settings_file.parent.mkdir(parents=True, exist_ok=True)
@@ -228,16 +258,20 @@ class SettingsManager(QObject):
 
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
+            return True
 
         except Exception as e:
             print(f"Fehler beim Speichern der Einstellungen: {e}")
+            return False
 
     def _settings_to_dict(self) -> Dict[str, Any]:
         """Serialize known settings plus custom settings."""
+        ai_settings = asdict(self.settings.ai)
+        ai_settings.pop('api_key', None)
         known = {
                 'editor': asdict(self.settings.editor),
                 'build': asdict(self.settings.build),
-                'ai': asdict(self.settings.ai),
+                'ai': ai_settings,
                 'sync': asdict(self.settings.sync),
                 'appearance': asdict(self.settings.appearance),
                 'general': asdict(self.settings.general),
@@ -248,7 +282,33 @@ class SettingsManager(QObject):
             }
         data = deepcopy(self._extra_settings)
         self._deep_update(data, known)
+        if isinstance(data.get('ai'), dict):
+            data['ai'].pop('api_key', None)
         return data
+
+    def _read_api_key(self) -> str:
+        """Liest den Anthropic-Key ausschließlich aus dem System-Keyring."""
+        try:
+            return keyring.get_password(KEYRING_SERVICE, KEYRING_ACCOUNT) or ""
+        except Exception as exc:
+            print(f"System-Keyring nicht verfügbar: {exc}")
+            return ""
+
+    def _store_api_key(self, api_key: str) -> bool:
+        """Speichert oder entfernt den Anthropic-Key im System-Keyring."""
+        try:
+            if api_key:
+                keyring.set_password(KEYRING_SERVICE, KEYRING_ACCOUNT, api_key)
+            else:
+                try:
+                    keyring.delete_password(KEYRING_SERVICE, KEYRING_ACCOUNT)
+                except PasswordDeleteError:
+                    pass
+            self.settings.ai.api_key = api_key
+            return True
+        except Exception as exc:
+            print(f"API-Key konnte nicht im System-Keyring gespeichert werden: {exc}")
+            return False
 
     def _deep_update(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
         """Merge source into target while keeping nested extra keys."""
@@ -326,7 +386,7 @@ class SettingsManager(QObject):
         except (json.JSONDecodeError, OSError, KeyError, TypeError):
             return default
     
-    def set(self, key: str, value: Any, save: bool = True):
+    def set(self, key: str, value: Any, save: bool = True) -> bool:
         """
         Setzt einen Einstellungswert
         
@@ -336,22 +396,31 @@ class SettingsManager(QObject):
             save: Sofort speichern
         """
         try:
+            if key == 'ai.api_key':
+                if not self._store_api_key(str(value or "")):
+                    return False
+                self.settings_changed.emit(key, value)
+                return True
+
             if not self._set_known(key, value):
                 self._set_extra(key, value)
 
             if save:
-                self._save()
+                if not self._save():
+                    return False
 
             self.settings_changed.emit(key, value)
 
             # Spezielle Signale
             if key.startswith('appearance.theme'):
                 self.theme_changed.emit(value)
+            return True
                     
         except Exception as e:
             print(f"Fehler beim Setzen von {key}: {e}")
+            return False
     
-    def reset_to_defaults(self, category: str = None):
+    def reset_to_defaults(self, category: str = None) -> bool:
         """
         Setzt Einstellungen auf Standard zurück
         
@@ -359,12 +428,16 @@ class SettingsManager(QObject):
             category: Optional - nur diese Kategorie zurücksetzen
         """
         if category is None:
+            if not self._store_api_key(""):
+                return False
             self.settings = AppSettings()
         elif category == 'editor':
             self.settings.editor = EditorSettings()
         elif category == 'build':
             self.settings.build = BuildSettings()
         elif category == 'ai':
+            if not self._store_api_key(""):
+                return False
             self.settings.ai = AISettings()
         elif category == 'sync':
             self.settings.sync = SyncSettings()
@@ -373,8 +446,10 @@ class SettingsManager(QObject):
         elif category == 'general':
             self.settings.general = GeneralSettings()
 
-        self._save()
+        if not self._save():
+            return False
         self.settings_changed.emit('*', None)
+        return True
     
     def export_settings(self, path: str) -> bool:
         """Exportiert Einstellungen in eine Datei"""
@@ -400,8 +475,10 @@ class SettingsManager(QObject):
                 self.settings.editor = self._load_section(data['editor'], EditorSettings)
             if 'build' in data:
                 self.settings.build = self._load_section(data['build'], BuildSettings)
+            current_api_key = self.settings.ai.api_key
             if 'ai' in data:
                 self.settings.ai = self._load_section(data['ai'], AISettings)
+                self.settings.ai.api_key = current_api_key
             if 'sync' in data:
                 self.settings.sync = self._load_section(data['sync'], SyncSettings)
             if 'appearance' in data:
@@ -409,7 +486,8 @@ class SettingsManager(QObject):
             if 'general' in data:
                 self.settings.general = self._load_section(data['general'], GeneralSettings)
 
-            self._save()
+            if not self._save():
+                return False
             self.settings_changed.emit('*', None)
             return True
         except Exception as e:

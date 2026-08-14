@@ -5,6 +5,14 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Sicherheit / Security [P 2026-08-14]
+- Anthropic-API-Schlüssel werden nicht mehr im Klartext in `settings.json` oder
+  exportierten Einstellungen serialisiert. DevCenter speichert sie ausschließlich
+  im System-Keyring; vorhandene Klartextwerte werden bei schreibbarer Einstellungsdatei
+  beim nächsten Start migriert und vor der Keyring-Ablage aus der JSON-Datei entfernt.
+- Schlägt der Keyring-Zugriff fehl, bleibt der Einstellungsdialog offen und der
+  Schlüssel wird weder akzeptiert noch auf die Festplatte geschrieben.
+
 ### App-Icon & Asset-Modernisierung / Icon Refresh [G 2026-08-14]
 - **Master App-Icon & Asset-Set**: Neues hochauflösendes Master-Icon (512x512 PNG) mit modernem IDE/Python-Motiv generiert und unter `assets/icon.png` sowie `icon.png` bereitgestellt.
 - **Multi-Resolution ICO**: Neues Windows-Icon `DevCenter.ico` sowie `assets/app_icon.ico` und `assets/icon.ico` mit allen Standardschichten (256x256, 128x128, 64x64, 48x48, 32x32, 24x24, 16x16) und `assets/favicon.ico` erzeugt.
