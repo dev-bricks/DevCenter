@@ -148,4 +148,3 @@ class SearchReplaceDialog(QDialog):
     def closeEvent(self, event):
         self.cancelled.emit()
         super().closeEvent(event)
-
