@@ -6,7 +6,7 @@ Zentrale Einstellungsverwaltung
 
 import json
 import keyring
-from keyring.errors import PasswordDeleteError
+from keyring.errors import NoKeyringError, PasswordDeleteError
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -304,6 +304,14 @@ class SettingsManager(QObject):
                     keyring.delete_password(KEYRING_SERVICE, KEYRING_ACCOUNT)
                 except PasswordDeleteError:
                     pass
+            self.settings.ai.api_key = api_key
+            return True
+        except NoKeyringError:
+            # Kein Keyring-Backend auf diesem System installiert (z. B. headless
+            # CI-Runner ohne Secret-Service). Ohne Backend gibt es nichts zu
+            # persistieren oder zu leaken — im Gegensatz zu einem vorhandenen,
+            # aber fehlschlagenden Backend darf das reset_to_defaults()/set()
+            # nicht blockieren.
             self.settings.ai.api_key = api_key
             return True
         except Exception as exc:
