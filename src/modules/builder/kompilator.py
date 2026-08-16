@@ -20,31 +20,31 @@ class BuildConfig:
     """Build-Konfiguration"""
     script_path: str
     output_dir: str = "dist"
-    
+
     # Allgemein
     name: Optional[str] = None
     one_file: bool = True
     console: bool = True
     icon: Optional[str] = None
-    
+
     # Erweitert
     hidden_imports: List[str] = None
     exclude_modules: List[str] = None
     data_files: List[tuple] = None
     binary_files: List[tuple] = None
-    
+
     # Optimierung
     upx: bool = False
     upx_dir: Optional[str] = None
     strip: bool = False
     clean: bool = True
-    
+
     # Metadaten
     version: Optional[str] = None
     company: Optional[str] = None
     copyright: Optional[str] = None
     description: Optional[str] = None
-    
+
     def __post_init__(self):
         """Initialisiert Standardwerte für Listen und optionalen Namen."""
         if self.hidden_imports is None:
@@ -68,7 +68,7 @@ class BuildResult:
     duration: float = 0.0
     log: List[str] = None
     warnings: List[str] = None
-    
+
     def __post_init__(self):
         """Initialisiert leere Listen für Logs und Warnungen."""
         if self.log is None:
@@ -80,11 +80,11 @@ class BuildResult:
 class Kompilator:
     """
     Python zu EXE Compiler
-    
+
     Verwendet PyInstaller um Python-Skripte in
     ausführbare Dateien zu konvertieren.
     """
-    
+
     def __init__(self, pyinstaller_path: str = None):
         """
         Args:
@@ -93,21 +93,21 @@ class Kompilator:
         self.pyinstaller_path = pyinstaller_path
         self._progress_callback: Optional[Callable] = None
         self._log: List[str] = []
-    
+
     def set_progress_callback(self, callback: Callable[[int, str], None]):
         """Setzt eine Callback-Funktion für Fortschrittsupdates"""
         self._progress_callback = callback
-    
+
     def _emit_progress(self, progress: int, message: str):
         """Sendet ein Fortschrittsupdate"""
         self._log.append(message)
         if self._progress_callback:
             self._progress_callback(progress, message)
-    
+
     def check_pyinstaller(self) -> bool:
         """
         Prüft ob PyInstaller im aktuellen Environment verfügbar ist.
-        
+
         Returns:
             bool: True wenn PyInstaller gefunden wurde, sonst False.
         """
@@ -136,33 +136,33 @@ class Kompilator:
         except Exception:
             pass
         return None
-    
+
     def build(self, config: BuildConfig) -> BuildResult:
         """
         Führt den Build-Prozess durch
-        
+
         Args:
             config: Build-Konfiguration
-            
+
         Returns:
             BuildResult mit Ergebnis
         """
         start_time = datetime.now()
         self._log = []
-        
+
         # Prüfungen
         if not os.path.exists(config.script_path):
             return BuildResult(
                 success=False,
                 error_message=f"Skript nicht gefunden: {config.script_path}"
             )
-        
+
         if not self.check_pyinstaller():
             return BuildResult(
                 success=False,
                 error_message="PyInstaller nicht installiert. Installieren mit: pip install pyinstaller"
             )
-        
+
         self._emit_progress(5, "Build wird vorbereitet...")
 
         # Ausgabeverzeichnis absolut auflösen (relativ zum Skript-Verzeichnis)
@@ -173,17 +173,17 @@ class Kompilator:
             output_dir = Path(config.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         config.output_dir = str(output_dir)
-        
+
         # Clean Build
         if config.clean:
             self._emit_progress(10, "Vorherige Build-Artefakte werden entfernt...")
             self._clean_build(config)
-        
+
         # PyInstaller-Kommando zusammenstellen
         cmd = self._build_command(config)
         self._emit_progress(15, "Starte PyInstaller...")
         self._log.append(f"Kommando: {' '.join(cmd)}")
-        
+
         # PyInstaller ausführen
         try:
             with subprocess.Popen(
@@ -231,10 +231,10 @@ class Kompilator:
                 error_message=f"Fehler beim Ausführen von PyInstaller: {e}",
                 log=self._log
             )
-        
+
         # Ergebnis prüfen
         duration = (datetime.now() - start_time).total_seconds()
-        
+
         if return_code != 0:
             return BuildResult(
                 success=False,
@@ -243,14 +243,14 @@ class Kompilator:
                 log=self._log,
                 warnings=warnings
             )
-        
+
         # Output-Pfad ermitteln
         if config.one_file:
             exe_name = f"{config.name}.exe" if sys.platform == 'win32' else config.name
             output_path = str(output_dir / exe_name)
         else:
             output_path = str(output_dir / config.name)
-        
+
         if os.path.exists(output_path):
             self._emit_progress(100, f"Build erfolgreich: {output_path}")
             return BuildResult(
@@ -268,66 +268,66 @@ class Kompilator:
                 log=self._log,
                 warnings=warnings
             )
-    
+
     def _build_command(self, config: BuildConfig) -> List[str]:
         """Erstellt das PyInstaller-Kommando"""
         cmd = [sys.executable, '-m', 'PyInstaller']
-        
+
         # Basis-Optionen
         cmd.extend(['--name', config.name])
         cmd.extend(['--distpath', config.output_dir])
-        
+
         # One-File oder One-Directory
         if config.one_file:
             cmd.append('--onefile')
         else:
             cmd.append('--onedir')
-        
+
         # Console oder Windowed
         if config.console:
             cmd.append('--console')
         else:
             cmd.append('--windowed')
-        
+
         # Icon
         if config.icon and os.path.exists(config.icon):
             cmd.extend(['--icon', config.icon])
-        
+
         # Hidden Imports
         for imp in config.hidden_imports:
             cmd.extend(['--hidden-import', imp])
-        
+
         # Exclude Modules
         for mod in config.exclude_modules:
             cmd.extend(['--exclude-module', mod])
-        
+
         # Data Files
         for src, dest in config.data_files:
             cmd.extend(['--add-data', f'{src}{os.pathsep}{dest}'])
-        
+
         # Binary Files
         for src, dest in config.binary_files:
             cmd.extend(['--add-binary', f'{src}{os.pathsep}{dest}'])
-        
+
         # UPX
         if config.upx and config.upx_dir:
             cmd.extend(['--upx-dir', config.upx_dir])
         elif not config.upx:
             cmd.append('--noupx')
-        
+
         # Strip
         if config.strip:
             cmd.append('--strip')
-        
+
         # Clean
         cmd.append('--clean')
         cmd.append('--noconfirm')
-        
+
         # Das Skript
         cmd.append(config.script_path)
-        
+
         return cmd
-    
+
     def _clean_build(self, config: BuildConfig):
         """Entfernt vorherige Build-Artefakte"""
         script_dir = Path(os.path.dirname(config.script_path) or '.')
@@ -338,15 +338,15 @@ class Kompilator:
         spec_file = script_dir / f'{config.name}.spec'
         if spec_file.exists():
             spec_file.unlink()
-    
+
     def create_spec_file(self, config: BuildConfig, output_path: str = None) -> str:
         """
         Erstellt eine .spec Datei für erweiterte Konfiguration
-        
+
         Args:
             config: Build-Konfiguration
             output_path: Ausgabepfad für die Spec-Datei
-            
+
         Returns:
             Pfad zur erstellten Spec-Datei
         """
@@ -381,7 +381,7 @@ a = Analysis(
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 '''
-        
+
         if config.one_file:
             spec_content += f'''exe = EXE(
     pyz,
@@ -435,16 +435,16 @@ coll = COLLECT(
     name='{config.name}',
 )
 '''
-        
+
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(spec_content)
-        
+
         return output_path
 
 
 if __name__ == "__main__":
     # Test
     kompilator = Kompilator()
-    
+
     print(f"PyInstaller installiert: {kompilator.check_pyinstaller()}")
     print(f"PyInstaller Version: {kompilator.get_pyinstaller_version()}")

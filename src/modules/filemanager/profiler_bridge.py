@@ -40,14 +40,14 @@ class SearchResult:
 class ProfilerBridge:
     """
     Verbindung zu ProFiler-artiger Datei-Indexierung
-    
+
     Features:
     - SQLite-basierter Datei-Index
     - Volltext-Suche im Inhalt
     - Hash-basierte Duplikat-Erkennung
     - Inkrementelle Updates
     """
-    
+
     def __init__(self, db_path: str = None):
         """
         Args:
@@ -57,11 +57,11 @@ class ProfilerBridge:
             db_dir = get_file_index_path().parent
             db_dir.mkdir(parents=True, exist_ok=True)
             db_path = str(db_dir / 'file_index.db')
-        
+
         self.db_path = db_path
         self._lock = threading.Lock()
         self._init_database()
-    
+
     def _init_database(self):
         """Initialisiert die Datenbank"""
         with self._lock:
@@ -109,11 +109,11 @@ class ProfilerBridge:
                 conn.commit()
             finally:
                 conn.close()
-    
+
     def _get_connection(self) -> sqlite3.Connection:
         """Gibt eine Thread-sichere Verbindung zurück"""
         return sqlite3.connect(self.db_path)
-    
+
     def _calculate_hash(self, file_path: str) -> str:
         """Berechnet MD5-Hash einer Datei"""
         hash_md5 = hashlib.md5()
@@ -132,15 +132,15 @@ class ProfilerBridge:
                 return f.read(max_chars)
         except (OSError, IOError):
             return ""
-    
+
     def index_file(self, file_path: str, project_path: str = None) -> bool:
         """
         Indiziert eine einzelne Datei
-        
+
         Args:
             file_path: Pfad zur Datei
             project_path: Zugehöriges Projekt
-            
+
         Returns:
             True bei Erfolg
         """
@@ -148,23 +148,23 @@ class ProfilerBridge:
             path = Path(file_path)
             if not path.exists() or not path.is_file():
                 return False
-            
+
             stat = path.stat()
-            
+
             # Nur Text-Dateien indizieren
             text_extensions = {
                 '.py', '.txt', '.md', '.json', '.xml', '.html', '.css', '.js',
                 '.yml', '.yaml', '.ini', '.cfg', '.conf', '.toml', '.rst',
                 '.csv', '.sql', '.sh', '.bat', '.ps1'
             }
-            
+
             content = ""
             file_hash = ""
-            
+
             if path.suffix.lower() in text_extensions:
                 content = self._read_content_preview(file_path)
                 file_hash = self._calculate_hash(file_path)
-            
+
             with self._lock:
                 conn = self._get_connection()
                 try:
@@ -204,78 +204,78 @@ class ProfilerBridge:
                     conn.commit()
                 finally:
                     conn.close()
-            
+
             return True
-            
+
         except Exception as e:
             print(f"Index-Fehler für {file_path}: {e}")
             return False
-    
-    def index_directory(self, 
-                        dir_path: str, 
+
+    def index_directory(self,
+                        dir_path: str,
                         project_path: str = None,
                         recursive: bool = True,
                         progress_callback = None) -> int:
         """
         Indiziert alle Dateien in einem Verzeichnis
-        
+
         Args:
             dir_path: Pfad zum Verzeichnis
             project_path: Zugehöriges Projekt
             recursive: Auch Unterverzeichnisse
             progress_callback: Callback(current, total, file)
-            
+
         Returns:
             Anzahl indizierter Dateien
         """
         path = Path(dir_path)
         if not path.exists():
             return 0
-        
+
         if project_path is None:
             project_path = str(path)
-        
+
         # Dateien sammeln
         if recursive:
             files = list(path.rglob('*'))
         else:
             files = list(path.glob('*'))
-        
+
         files = [f for f in files if f.is_file()]
-        
+
         # Ausschlüsse (Pfad-Komponenten, nicht Substring)
         excludes = {'__pycache__', '.git', 'node_modules', 'venv', '.venv', 'dist', 'build'}
         files = [
             f for f in files
             if f.is_relative_to(path) and not any(part in excludes for part in f.relative_to(path).parts)
         ]
-        
+
         total = len(files)
         indexed = 0
-        
+
         for i, file in enumerate(files):
             if progress_callback:
                 progress_callback(i + 1, total, str(file))
-            
+
             if self.index_file(str(file), project_path):
                 indexed += 1
-        
+
         return indexed
-    
-    def search(self, 
-               query: str, 
+
+    def search(self,
+               query: str,
                project_path: str = None,
                search_content: bool = True,
                limit: int = 50) -> List[SearchResult]:
         """
         Sucht im Index
-        
+
         Args:
             query: Suchbegriff
             project_path: Nur in diesem Projekt suchen
             search_content: Auch im Inhalt suchen
             limit: Maximale Ergebnisse
-            
+
         Returns:
             Liste von SearchResults
         """
@@ -358,14 +358,14 @@ class ProfilerBridge:
                 conn.close()
 
         return results
-    
+
     def find_duplicates(self, project_path: str = None) -> Dict[str, List[str]]:
         """
         Findet Duplikate basierend auf Hash
-        
+
         Args:
             project_path: Nur in diesem Projekt
-            
+
         Returns:
             Dict mit Hash -> Liste von Pfaden
         """
@@ -400,14 +400,14 @@ class ProfilerBridge:
                 conn.close()
 
         return duplicates
-    
+
     def get_statistics(self, project_path: str = None) -> Dict:
         """
         Gibt Index-Statistiken zurück
-        
+
         Args:
             project_path: Nur für dieses Projekt
-            
+
         Returns:
             Dict mit Statistiken
         """
@@ -458,11 +458,11 @@ class ProfilerBridge:
                 conn.close()
 
         return stats
-    
+
     def clear_index(self, project_path: str = None):
         """
         Löscht den Index
-        
+
         Args:
             project_path: Nur für dieses Projekt (sonst alles)
         """
@@ -487,17 +487,17 @@ class ProfilerBridge:
 if __name__ == "__main__":
     # Test
     bridge = ProfilerBridge()
-    
+
     # Index testen
     indexed = bridge.index_directory(".", recursive=False)
     print(f"Indiziert: {indexed} Dateien")
-    
+
     # Suche testen
     results = bridge.search("def ")
     print(f"Gefunden: {len(results)} Ergebnisse")
     for r in results[:5]:
         print(f"  - {r.file.name} ({r.match_type})")
-    
+
     # Statistiken
     stats = bridge.get_statistics()
     print(f"Statistiken: {stats['total_files']} Dateien, {stats['total_size']} Bytes")

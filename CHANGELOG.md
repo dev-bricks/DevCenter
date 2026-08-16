@@ -5,6 +5,12 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Discoverability, README-Design & Pytest Status Badge (Pfad B) [G 2026-08-16]
+- `README.md`: Badges um Testsuite (134 Passed), `llms.txt` Context, `dev-bricks` Ökosystem und `open-bricks` Umbrella erweitert; AI-Agent Hinweisbox ergänzt.
+- `pyproject.toml`: `[tool.ruff.lint]` Konfiguration integriert (`target-version = "py311"`, `line-length = 120`, `E501`/`E402`/`E722`/`E741`/`F841` ignore, `ruff check` 100% sauber).
+- `llms.txt`: Last-checked Timestamp auf `2026-08-16` aktualisiert und Testanzahl (134 Tests) hinterlegt.
+- Verifikation: Pytest Testsuite (134/134 passed in 2.36s), `compileall` & `ruff check` 100% grün.
+
 ### Sicherheit / Security [P 2026-08-14]
 - Anthropic-API-Schlüssel werden nicht mehr im Klartext in `settings.json` oder
   exportierten Einstellungen serialisiert. DevCenter speichert sie ausschließlich

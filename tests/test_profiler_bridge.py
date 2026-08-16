@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Regressionstests für ProfilerBridge — insbesondere Re-Index ohne FTS-Duplikate."""
 
-import os
 import sys
 import tempfile
 import unittest

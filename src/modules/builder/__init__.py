@@ -7,6 +7,6 @@ from .license_generator import LicenseGenerator
 
 __all__ = [
     'Kompilator', 'BuildConfig', 'BuildResult',
-    'IcoBuilder', 
+    'IcoBuilder',
     'LicenseGenerator'
 ]

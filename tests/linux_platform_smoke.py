@@ -30,7 +30,6 @@ sys.path.insert(0, str(SRC_ROOT))
 from PySide6.QtWidgets import QApplication
 
 from core.settings_manager import SettingsManager
-import core.settings_manager as settings_manager_module
 from gui.main_window import MainWindow
 from gui.panels.explorer_panel import ExplorerPanel
 from gui.panels.output_panel import OutputPanel

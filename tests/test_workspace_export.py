@@ -2,7 +2,6 @@
 """Tests für den redigierten DevCenter-Workspace-Export."""
 
 import json
-import os
 import sys
 import tempfile
 import unittest

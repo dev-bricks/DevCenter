@@ -23,7 +23,7 @@ def install_and_import(package_name, import_name=None):
     """
     if import_name is None:
         import_name = package_name
-    
+
     try:
         importlib.import_module(import_name)
     except ImportError:
@@ -37,7 +37,7 @@ def install_and_import(package_name, import_name=None):
             print("Bitte führen Sie das Skript als Administrator aus oder installieren Sie manuell.")
             input("Drücken Sie Enter zum Beenden...")
             sys.exit(1)
-        
+
         # Cache invalidieren und neu importieren
         try:
             importlib.invalidate_caches()
@@ -186,21 +186,21 @@ class ProgressDialog(tk.Toplevel):
         self.resizable(False, False)
         self.transient(parent)
         self.grab_set()
-        
+
         ttk.Label(self, text=title, font=("Arial", 10, "bold")).pack(pady=10)
         self.progress = ttk.Progressbar(self, mode='indeterminate', length=350)
         self.progress.pack(pady=10)
         self.progress.start(10)
-        
+
         self.status_label = ttk.Label(self, text="Bitte warten...")
         self.status_label.pack(pady=5)
-        
+
         self.protocol("WM_DELETE_WINDOW", lambda: None)  # Prevent closing
-        
+
     def update_status(self, text):
         """Thread-safe update of the status label"""
         self.after(0, lambda: self.status_label.config(text=text))
-        
+
     def close(self):
         """Thread-safe close"""
         self.after(0, self._close_internal)
@@ -237,7 +237,7 @@ class StorePackagerApp(tk.Tk):
         self.pfx_password = tk.StringVar()
         self.timestamp_url = tk.StringVar(value="http://timestamp.digicert.com")
         self.msix_name = tk.StringVar()
-        
+
         # External Python (Recursion Fix)
         self.python_path = tk.StringVar()
 
@@ -296,7 +296,7 @@ class StorePackagerApp(tk.Tk):
                 self.support_url.set(data.get("support_url", ""))
                 self.category.set(data.get("category", "Productivity"))
                 self.age_rating.set(data.get("age_rating", "3+"))
-                
+
                 # Kein Try/Except mehr nötig, da keyring oben installiert wurde
                 pwd = keyring.get_password(KEYRING_SERVICE, "pfx_password")
                 if pwd:
@@ -313,7 +313,7 @@ class StorePackagerApp(tk.Tk):
                 keyring.set_password(KEYRING_SERVICE, "pfx_password", self.pfx_password.get())
             except Exception as e:
                 messagebox.showwarning("Warnung", f"Passwort konnte nicht im Keyring gespeichert werden:\n{e}")
-        
+
         data = {
             "app_name": self.app_name.get(),
             "publisher": self.publisher.get(),
@@ -342,7 +342,7 @@ class StorePackagerApp(tk.Tk):
             "category": self.category.get(),
             "age_rating": self.age_rating.get()
         }
-            
+
         try:
             with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
@@ -354,19 +354,19 @@ class StorePackagerApp(tk.Tk):
     def build_gui(self):
         notebook = ttk.Notebook(self)
         notebook.pack(fill="both", expand=True, padx=10, pady=10)
-        
+
         tab1 = ttk.Frame(notebook)
         notebook.add(tab1, text="Metadaten")
         self.build_metadata_tab(tab1)
-        
+
         tab2 = ttk.Frame(notebook)
         notebook.add(tab2, text="Build-Einstellungen")
         self.build_build_tab(tab2)
-        
+
         tab3 = ttk.Frame(notebook)
         notebook.add(tab3, text="Store-Informationen")
         self.build_store_tab(tab3)
-        
+
         tab4 = ttk.Frame(notebook)
         notebook.add(tab4, text="Aktionen")
         self.build_actions_tab(tab4)
@@ -390,7 +390,7 @@ class StorePackagerApp(tk.Tk):
         add_row("Publisher Display Name:", self.publisher_display)
         add_row("Identity Name:", self.identity_name)
         add_row("Version (z.B. 1.0.0.0):", self.version)
-        
+
         ttk.Separator(frm, orient='horizontal').grid(row=row, column=0, columnspan=3, sticky='ew', pady=10)
         row += 1
 
@@ -450,11 +450,11 @@ class StorePackagerApp(tk.Tk):
         # NEU: Python Environment für externe Builds
         ttk.Label(frm, text="Python Umgebung (für Builds)", font=("Arial", 10, "bold")).grid(row=row, column=0, columnspan=3, sticky="w", pady=(5,10))
         row += 1
-        
+
         add_row("Python.exe Pfad:", self.python_path, self.choose_python_exe)
         ttk.Label(frm, text="Wichtig, wenn dieses Tool als EXE läuft. Muss 'pip install pyinstaller' haben.", foreground="gray").grid(row=row, column=1, sticky="w")
         row += 1
-        
+
         ttk.Separator(frm, orient='horizontal').grid(row=row, column=0, columnspan=3, sticky='ew', pady=10)
         row += 1
 
@@ -464,10 +464,10 @@ class StorePackagerApp(tk.Tk):
         add_row("MakeAppx.exe:", self.makeappx_path, self.choose_makeappx)
         add_row("SignTool.exe:", self.signtool_path, self.choose_signtool)
         add_row("AppCert.exe (WACK):", self.appcert_path, self.choose_appcert)
-        
+
         ttk.Separator(frm, orient='horizontal').grid(row=row, column=0, columnspan=3, sticky='ew', pady=10)
         row += 1
-        
+
         ttk.Label(frm, text="Zertifikat & Signierung", font=("Arial", 10, "bold")).grid(row=row, column=0, columnspan=3, sticky="w", pady=(5,10))
         row += 1
 
@@ -475,10 +475,10 @@ class StorePackagerApp(tk.Tk):
         add_row("PFX Passwort:", self.pfx_password, show="*")
         add_row("Timestamp URL:", self.timestamp_url)
         add_row("MSIX Name:", self.msix_name)
-        
+
         ttk.Label(frm, text="✓ Passwort wird sicher im Keyring gespeichert", foreground="green").grid(row=row, column=1, sticky="w", pady=3)
         row += 1
-        
+
         ttk.Separator(frm, orient='horizontal').grid(row=row, column=0, columnspan=3, sticky='ew', pady=10)
         row += 1
 
@@ -506,7 +506,7 @@ class StorePackagerApp(tk.Tk):
         add_row("Privacy Policy URL:", self.privacy_url)
         add_row("Support URL:", self.support_url)
         add_row("Capabilities (Komma-getrennt):", self.capabilities)
-        
+
         ttk.Label(frm, text="Beispiele: internetClient, microphone, webcam, location").grid(row=row, column=1, sticky="w", pady=2)
         row += 1
 
@@ -589,7 +589,7 @@ class StorePackagerApp(tk.Tk):
                 self.signtool_path.set(sg)
             if ac and not self.appcert_path.get():
                 self.appcert_path.set(ac)
-    
+
     # ---------- Logic: Determine Interpreter ----------
     def get_build_interpreter(self):
         """
@@ -602,14 +602,14 @@ class StorePackagerApp(tk.Tk):
         user_path = self.python_path.get().strip()
         if user_path and os.path.exists(user_path):
             return user_path
-        
+
         system_python = shutil.which("python") or shutil.which("python3")
         if system_python:
             return system_python
-            
+
         if not getattr(sys, 'frozen', False):
             return sys.executable
-            
+
         return None
 
     # ---------- File Choosers ----------
@@ -707,7 +707,7 @@ class StorePackagerApp(tk.Tk):
     def build_icons(self, icon_src, icon_dir):
         img = Image.open(icon_src)
         os.makedirs(icon_dir, exist_ok=True)
-        
+
         for size in ICON_SIZES:
             resized = img.resize((size, size), Image.Resampling.LANCZOS)
             out_path = os.path.join(icon_dir, f"icon_{size}x{size}.png")
@@ -747,9 +747,9 @@ class Translator:
             base_path = sys._MEIPASS
         else:
             base_path = os.path.abspath(".")
-            
+
         full_path = os.path.join(base_path, file_path)
-        
+
         if os.path.exists(full_path):
             with open(full_path, "r", encoding="utf-8") as f:
                 self.translations = json.load(f)
@@ -855,12 +855,12 @@ def patch_widgets(translator):
         target = os.path.join(outdir, "THIRD_PARTY_LICENSES.txt")
         try:
             python_exe = self.get_build_interpreter() or sys.executable
-            subprocess.run([python_exe, "-m", "pip", "install", "pip-licenses"], 
+            subprocess.run([python_exe, "-m", "pip", "install", "pip-licenses"],
                           check=True, capture_output=True, timeout=60)
-            
+
             with open(target, "w", encoding="utf-8") as f:
                 subprocess.run(
-                    [python_exe, "-m", "pip_licenses", 
+                    [python_exe, "-m", "pip_licenses",
                      "--with-license-file", "--format=plain"],
                     stdout=f,
                     stderr=subprocess.PIPE,
@@ -879,11 +879,11 @@ def patch_widgets(translator):
         if not script or not os.path.exists(script):
             messagebox.showerror("Fehler", "Bitte gültiges Haupt-Skript auswählen.")
             return
-        
+
         # --- FIX: Benutze externen Interpreter statt sys.executable (vermeidet Rekursion)
         python_exe = self.get_build_interpreter()
         if not python_exe:
-            messagebox.showerror("Konfiguration fehlt", 
+            messagebox.showerror("Konfiguration fehlt",
                 "Kein Python-Interpreter gefunden!\n\n"
                 "Da dieses Tool als EXE läuft, kann es sich nicht selbst zum Bauen verwenden.\n"
                 "Bitte gib im Reiter 'Build-Einstellungen' den Pfad zu deiner python.exe an.")
@@ -891,10 +891,10 @@ def patch_widgets(translator):
 
         # Check if PyInstaller is available in that environment
         try:
-            subprocess.run([python_exe, "-m", "PyInstaller", "--version"], 
+            subprocess.run([python_exe, "-m", "PyInstaller", "--version"],
                            capture_output=True, check=True)
         except Exception:
-            if not messagebox.askyesno("Warnung", 
+            if not messagebox.askyesno("Warnung",
                 f"Es scheint, als sei PyInstaller in diesem Python nicht installiert:\n{python_exe}\n\n"
                 "Trotzdem versuchen fortzufahren?"):
                 return
@@ -904,7 +904,7 @@ def patch_widgets(translator):
         os.makedirs(outdir, exist_ok=True)
 
         progress = ProgressDialog(self, "EXE wird gebaut...")
-        
+
         def build_thread():
             try:
                 progress.update_status("Staging Skript...")
@@ -917,7 +917,7 @@ def patch_widgets(translator):
                     progress.update_status("Integriere i18n-Modul...")
                     ok, info = self.integrate_i18n(outdir, script_to_patch=staged_script)
                     if not ok:
-                        self.after(0, lambda: messagebox.showwarning("Warnung", 
+                        self.after(0, lambda: messagebox.showwarning("Warnung",
                             f"Sprachmodul konnte nicht integriert werden:\n{info}"))
                     else:
                         i18n_path = os.path.join(outdir, "i18n")
@@ -929,7 +929,7 @@ def patch_widgets(translator):
                 icon_arg = []
                 if self.icon_path.get() and os.path.exists(self.icon_path.get()):
                     icon_arg = ["--icon", self.icon_path.get()]
-                
+
                 # --- FIX: Verwende python_exe Variable ---
                 cmd = [
                     python_exe, "-m", "PyInstaller",
@@ -954,7 +954,7 @@ def patch_widgets(translator):
                     startupinfo=startupinfo,
                     check=True,
                 )
-                
+
                 progress.update_status("Aufräumen...")
                 for pattern in ["build", "*.spec"]:
                     for item in glob.glob(pattern):
@@ -965,7 +965,7 @@ def patch_widgets(translator):
                                 os.remove(item)
                         except:
                             pass
-                
+
                 final = os.path.join(outdir, exe_name)
                 if not os.path.exists(final):
                     possible = os.path.join(outdir, os.path.splitext(exe_name)[0] + ".exe")
@@ -974,17 +974,17 @@ def patch_widgets(translator):
 
                 progress.update_status("Sammle Drittanbieter-Lizenzen...")
                 ok_lic, info_lic = self.collect_python_licenses(outdir)
-                
+
                 progress.close()
-                
+
                 msg = f"EXE erzeugt:\n{final}\n\nErstellt mit:\n{python_exe}"
                 if ok_lic:
                     msg += f"\n\nDrittanbieter-Lizenzen:\n{info_lic}"
                 else:
                     msg += f"\n\nLizenzen-Warnung:\n{info_lic}"
-                
+
                 self.after(0, lambda: messagebox.showinfo("Fertig", msg))
-                
+
             except subprocess.CalledProcessError as e:
                 progress.close()
                 err_out = e.stderr or e.stdout or "Unbekannter Fehler"
@@ -993,7 +993,7 @@ def patch_widgets(translator):
                 progress.close()
                 err_msg = f"EXE-Erzeugung fehlgeschlagen:\n{e}"
                 self.after(0, lambda: messagebox.showerror("Fehler", err_msg))
-        
+
         thread = threading.Thread(target=build_thread, daemon=True)
         thread.start()
 
@@ -1005,7 +1005,7 @@ def patch_widgets(translator):
 
         outdir = self.package_dir()
         if os.path.exists(outdir):
-            if not messagebox.askyesno("Bestätigung", 
+            if not messagebox.askyesno("Bestätigung",
                 f"Ausgabeordner existiert bereits:\n{outdir}\n\nÜberschreiben?"):
                 return
             shutil.rmtree(outdir)
@@ -1031,12 +1031,12 @@ def patch_widgets(translator):
                     try:
                         shutil.copy(path, os.path.join(outdir, f"LICENSE_{i}.txt"))
                     except Exception as e:
-                        messagebox.showwarning("Warnung", 
+                        messagebox.showwarning("Warnung",
                             f"Konnte Lizenzdatei nicht kopieren:\n{path}\n{e}")
-            
+
             for i, txt in enumerate(self.license_text_entries, 1):
                 self.write_text_file(os.path.join(outdir, f"LICENSE_TEXT_{i}.txt"), txt)
-            
+
             if not self.license_files and not self.license_text_entries:
                 lic = self.license_box.get("1.0", tk.END).strip()
                 if lic:
@@ -1057,7 +1057,7 @@ def patch_widgets(translator):
             if self.enable_i18n.get() and staged_script:
                 ok, info = self.integrate_i18n(outdir, script_to_patch=staged_script)
                 if not ok:
-                    messagebox.showwarning("Warnung", 
+                    messagebox.showwarning("Warnung",
                         f"Sprachmodul konnte nicht integriert werden:\n{info}")
 
             exe_name = self.exe_name.get().strip()
@@ -1068,17 +1068,17 @@ def patch_widgets(translator):
             self.generate_manifest(outdir, exe_name)
 
             ok_lic, info_lic = self.collect_python_licenses(outdir)
-            
+
             self.save_settings()
-            
+
             msg = f"Paket für {appname} wurde erstellt:\n{outdir}"
             if ok_lic:
                 msg += f"\n\nDrittanbieter-Lizenzen gesammelt:\n{info_lic}"
             else:
                 msg += f"\n\nLizenzen-Warnung:\n{info_lic}"
-            
+
             messagebox.showinfo("Fertig", msg)
-            
+
         except Exception as e:
             messagebox.showerror("Fehler", f"Paket-Erstellung fehlgeschlagen:\n{e}")
 
@@ -1096,7 +1096,7 @@ def patch_widgets(translator):
 
         makeappx = self.makeappx_path.get().strip()
         signtool = self.signtool_path.get().strip()
-        
+
         if not (makeappx and os.path.isfile(makeappx)):
             messagebox.showerror("Fehler", "MakeAppx.exe nicht gefunden. Bitte Pfad setzen.")
             return
@@ -1126,7 +1126,7 @@ def patch_widgets(translator):
 
                 if not pfx or not os.path.isfile(pfx):
                     progress.close()
-                    self.after(0, lambda: messagebox.showerror("Fehler", 
+                    self.after(0, lambda: messagebox.showerror("Fehler",
                         "Zertifikat (.pfx) nicht gesetzt oder nicht gefunden."))
                     return
 
@@ -1141,11 +1141,11 @@ def patch_widgets(translator):
                     "/v", msix_path
                 ]
                 subprocess.run(cmd_sign, capture_output=True, text=True, encoding='utf-8', errors='replace', check=True)
-                
+
                 progress.close()
-                self.after(0, lambda: messagebox.showinfo("Fertig", 
+                self.after(0, lambda: messagebox.showinfo("Fertig",
                     f"MSIX gebaut und signiert:\n{msix_path}\n\nBereit für den Store!"))
-                    
+
             except subprocess.CalledProcessError as e:
                 progress.close()
                 error_msg = f"Befehl fehlgeschlagen:\n{e.cmd}\n\nAusgabe:\n{e.stderr if e.stderr else e.stdout}"
@@ -1154,7 +1154,7 @@ def patch_widgets(translator):
                 progress.close()
                 err_msg = f"MSIX-Build fehlgeschlagen:\n{e}"
                 self.after(0, lambda: messagebox.showerror("Fehler", err_msg))
-        
+
         thread = threading.Thread(target=build_thread, daemon=True)
         thread.start()
 
@@ -1162,22 +1162,22 @@ def patch_widgets(translator):
     def generate_manifest(self, outdir, executable_name):
         desc = self.desc_box.get("1.0", tk.END).strip()
         manifest = MANIFEST_TEMPLATE
-        
-        manifest = manifest.replace("{{IDENTITY_NAME}}", 
+
+        manifest = manifest.replace("{{IDENTITY_NAME}}",
             self.identity_name.get().strip() or f"YourCompany.{self.app_name.get().strip()}")
-        manifest = manifest.replace("{{PUBLISHER}}", 
+        manifest = manifest.replace("{{PUBLISHER}}",
             self.publisher.get().strip() or "CN=YourPublisher")
-        manifest = manifest.replace("{{APPNAME}}", 
+        manifest = manifest.replace("{{APPNAME}}",
             self.app_name.get().strip() or "MyApp")
-        manifest = manifest.replace("{{PUBLISHER_DISPLAY}}", 
+        manifest = manifest.replace("{{PUBLISHER_DISPLAY}}",
             self.publisher_display.get().strip() or self.publisher.get().strip().replace("CN=", "") or "YourPublisher")
-        manifest = manifest.replace("{{DESCRIPTION}}", 
+        manifest = manifest.replace("{{DESCRIPTION}}",
             desc or "No description provided.")
-        manifest = manifest.replace("{{VERSION}}", 
+        manifest = manifest.replace("{{VERSION}}",
             self.version.get().strip() or DEFAULT_VERSION)
-        manifest = manifest.replace("{{EXECUTABLE}}", 
+        manifest = manifest.replace("{{EXECUTABLE}}",
             executable_name or "MyApp.exe")
-        
+
         caps = ""
         if self.capabilities.get().strip():
             for c in self.capabilities.get().split(","):
@@ -1185,30 +1185,30 @@ def patch_widgets(translator):
                 if c:
                     caps += f'    <Capability Name="{c}"/>\n'
         manifest = manifest.replace("{{CAPABILITIES}}", caps)
-        
+
         with open(os.path.join(outdir, "AppxManifest.xml"), "w", encoding="utf-8") as f:
             f.write(manifest)
 
     # ---------- Screenshots ----------
     def run_screenshots(self):
         if not gw:
-            messagebox.showerror("Fehler", 
+            messagebox.showerror("Fehler",
                 "pygetwindow nicht verfügbar. Installieren Sie: pip install pygetwindow")
             return
-            
+
         exe_name = self.exe_name.get() or f"{self.app_name.get()}.exe"
         exe_path = os.path.join(self.package_dir(), exe_name)
-        
+
         if not os.path.exists(exe_path):
             messagebox.showerror("Fehler", f"EXE nicht gefunden:\n{exe_path}\n\nBitte zuerst EXE bauen.")
             return
-            
+
         outdir = self.package_dir()
-        
+
         try:
             proc = subprocess.Popen([exe_path])
             time.sleep(5)
-            
+
             app_name = self.app_name.get()
             windows = gw.getWindowsWithTitle(app_name)
             if windows:
@@ -1217,33 +1217,33 @@ def patch_widgets(translator):
                 except:
                     pass
                 time.sleep(1)
-            
+
             img = ImageGrab.grab()
             shots_dir = os.path.join(outdir, "screenshots")
             os.makedirs(shots_dir, exist_ok=True)
-            
+
             formats = [
                 (1240, 600, "Desktop 16:9"),
                 (2480, 1200, "Desktop 16:9 @2x"),
                 (1080, 1920, "Mobile Portrait"),
                 (1920, 1080, "Desktop Landscape")
             ]
-            
+
             for width, height, desc in formats:
                 resized = img.resize((width, height), Image.Resampling.LANCZOS)
                 filename = f"screenshot_{width}x{height}.png"
                 resized.save(os.path.join(shots_dir, filename))
-            
+
             proc.terminate()
             try:
                 proc.wait(timeout=5)
             except:
                 proc.kill()
-                
-            messagebox.showinfo("Screenshots", 
+
+            messagebox.showinfo("Screenshots",
                 f"Screenshots in Store-Formaten gespeichert:\n{shots_dir}\n\n" +
                 "\n".join([f"• {w}x{h} ({d})" for w, h, d in formats]))
-                
+
         except Exception as e:
             messagebox.showerror("Fehler", f"Screenshots fehlgeschlagen:\n{e}")
             try:
@@ -1257,45 +1257,45 @@ def patch_widgets(translator):
         if not appcert or not os.path.exists(appcert):
             appcert = which("appcert.exe")
             if not appcert:
-                messagebox.showerror("Fehler", 
+                messagebox.showerror("Fehler",
                     "appcert.exe nicht gefunden. Windows SDK erforderlich.")
                 return
             self.appcert_path.set(appcert)
-        
+
         msix_name = self.msix_name.get().strip() or f"{self.app_name.get()}.msix"
         msix_path = os.path.join(self.package_dir(), msix_name)
-        
+
         if not os.path.exists(msix_path):
-            messagebox.showerror("Fehler", 
+            messagebox.showerror("Fehler",
                 f"MSIX-Datei nicht gefunden:\n{msix_path}\n\nBitte zuerst MSIX bauen.")
             return
-        
+
         try:
             subprocess.run([appcert, "reset"], capture_output=True, timeout=30)
-            
-            messagebox.showinfo("WACK-Test", 
+
+            messagebox.showinfo("WACK-Test",
                 "WACK-Test wird gestartet...\n\nDies kann mehrere Minuten dauern.\n" +
                 "Das Ergebnis wird in einem separaten Fenster angezeigt.")
-            
+
             subprocess.Popen([appcert, "test", "/packagepath", msix_path])
-            
+
         except Exception as e:
             messagebox.showerror("Fehler", f"WACK-Test fehlgeschlagen:\n{e}")
-    
+
     # ---------- Preflight Check ----------
     def preflight_check(self):
         issues = []
 
         if not self.app_name.get().strip():
             issues.append("❌ App-Name fehlt")
-        
+
         valid, msg = validate_publisher_cn(self.publisher.get())
         if not valid:
             issues.append(f"❌ Publisher: {msg}")
-        
+
         if not self.script_path.get().strip() or not os.path.exists(self.script_path.get()):
             issues.append("❌ Haupt-Skript fehlt oder existiert nicht")
-        
+
         if not self.icon_path.get().strip() or not os.path.exists(self.icon_path.get()):
             issues.append("❌ Icon fehlt oder existiert nicht")
         else:
@@ -1305,66 +1305,66 @@ def patch_widgets(translator):
                     issues.append(f"⚠️  Icon zu klein ({img.width}x{img.height}), mindestens 310x310 empfohlen")
             except:
                 pass
-        
+
         if not self.privacy_url.get().strip():
             issues.append("❌ Privacy Policy URL fehlt")
         elif not self.privacy_url.get().startswith(("http://", "https://")):
             issues.append("⚠️  Privacy Policy URL sollte mit http:// oder https:// beginnen")
-        
+
         if not self.support_url.get().strip():
             issues.append("❌ Support URL fehlt")
         elif not self.support_url.get().startswith(("http://", "https://")):
             issues.append("⚠️  Support URL sollte mit http:// oder https:// beginnen")
-        
+
         if not self.pfx_path.get().strip() or not os.path.exists(self.pfx_path.get()):
             issues.append("❌ Zertifikat (.pfx) fehlt oder existiert nicht")
-        
+
         if not self.capabilities.get().strip():
             issues.append("⚠️  Capabilities nicht gesetzt (z.B. internetClient)")
-        
+
         if not self.desc_box.get("1.0", tk.END).strip():
             issues.append("⚠️  Beschreibung fehlt")
-        
+
         if not self.readme_box.get("1.0", tk.END).strip():
             issues.append("⚠️  README fehlt")
-        
+
         if not self.license_box.get("1.0", tk.END).strip() and not self.license_files:
             issues.append("⚠️  Lizenz fehlt")
-        
+
         if not self.makeappx_path.get().strip() or not os.path.exists(self.makeappx_path.get()):
             issues.append("❌ MakeAppx.exe nicht gefunden")
-        
+
         if not self.signtool_path.get().strip() or not os.path.exists(self.signtool_path.get()):
             issues.append("❌ SignTool.exe nicht gefunden")
-        
+
         version = self.version.get().strip()
         if not re.match(r'^\d+\.\d+\.\d+\.\d+$', version):
             issues.append(f"⚠️  Version hat falsches Format: {version} (erwartet: X.X.X.X)")
-        
+
         if not self.publisher_display.get().strip():
             issues.append("⚠️  Publisher Display Name fehlt")
-        
+
         if not self.identity_name.get().strip():
             issues.append("⚠️  Identity Name fehlt")
 
         if issues:
             critical = [i for i in issues if i.startswith("❌")]
             warnings = [i for i in issues if i.startswith("⚠️")]
-            
+
             msg = ""
             if critical:
                 msg += "KRITISCHE FEHLER (müssen behoben werden):\n\n"
                 msg += "\n".join(critical)
-            
+
             if warnings:
                 if msg:
                     msg += "\n\n"
                 msg += "WARNUNGEN (sollten behoben werden):\n\n"
                 msg += "\n".join(warnings)
-            
+
             messagebox.showwarning("Preflight-Check", msg)
         else:
-            messagebox.showinfo("Preflight-Check", 
+            messagebox.showinfo("Preflight-Check",
                 "✅ Alle Pflichtfelder sind ausgefüllt!\n\n" +
                 "Bereit für:\n" +
                 "1. Paket erzeugen\n" +

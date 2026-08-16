@@ -23,7 +23,7 @@ class TestAppAssetsAndIcons(unittest.TestCase):
         """Testet, dass get_project_root und get_app_icon_path gültige Pfade liefern."""
         root = get_project_root()
         self.assertTrue(root.exists(), f"Projekt-Root {root} existiert nicht.")
-        
+
         icon_path = get_app_icon_path()
         self.assertIsNotNone(icon_path)
         self.assertTrue(icon_path.exists(), f"App-Icon {icon_path} existiert nicht.")
@@ -63,7 +63,7 @@ class TestAppAssetsAndIcons(unittest.TestCase):
         """Testet die Store- und Kachel-Icons in assets/icons/."""
         root = get_project_root()
         icons_dir = root / "assets" / "icons"
-        
+
         expected_tiles = {
             "icon_44x44.png": (44, 44),
             "icon_50x50.png": (50, 50),

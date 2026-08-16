@@ -37,7 +37,7 @@ class EditorSettings:
     auto_save_interval: int = 60  # Sekunden
 
 
-@dataclass  
+@dataclass
 class BuildSettings:
     """Build-Einstellungen"""
     pyinstaller_path: str = ""
@@ -109,37 +109,37 @@ class AppSettings:
 class SettingsManager(QObject):
     """
     Zentrale Einstellungsverwaltung für DevCenter
-    
+
     Signals:
         settings_changed: Eine Einstellung hat sich geändert (key, value)
         theme_changed: Theme wurde geändert (theme_name)
     """
-    
+
     settings_changed = Signal(str, object)
     theme_changed = Signal(str)
-    
+
     def __init__(self, settings_path: str = None):
         super().__init__()
         self.settings_path = settings_path or self._default_settings_path()
         self.settings = AppSettings()
         self._extra_settings: Dict[str, Any] = {}
         self._load()
-    
+
     def _default_settings_path(self) -> str:
         """Standardpfad für Einstellungen"""
         settings_dir = get_settings_path().parent
         settings_dir.mkdir(parents=True, exist_ok=True)
         return str(settings_dir / 'settings.json')
-    
+
     def _load(self):
         """Lädt Einstellungen aus Datei"""
         settings_file = Path(self.settings_path)
-        
+
         if not settings_file.exists():
             self.settings.ai.api_key = self._read_api_key()
             self._save()  # Standardeinstellungen speichern
             return
-        
+
         try:
             with open(settings_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -148,7 +148,7 @@ class SettingsManager(QObject):
             legacy_api_key = ""
             if isinstance(raw_ai, dict):
                 legacy_api_key = str(raw_ai.get('api_key') or "")
-            
+
             # Einstellungen rekonstruieren
             self._extra_settings = self._extract_extra_settings(data)
             if 'editor' in data:
@@ -187,7 +187,7 @@ class SettingsManager(QObject):
                     # Die Datei wird zuerst bereinigt. Schlägt das fehl, entsteht
                     # keine zusätzliche persistente Kopie im Keyring.
                     self.settings.ai.api_key = legacy_api_key
-            
+
         except Exception as e:
             print(f"Fehler beim Laden der Einstellungen: {e}")
             self.settings = AppSettings()
@@ -237,7 +237,7 @@ class SettingsManager(QObject):
             if section_extra:
                 extra[section] = section_extra
         return extra
-    
+
     def _save(self) -> bool:
         """Speichert Einstellungen in Datei"""
         settings_file = Path(self.settings_path)
@@ -372,15 +372,15 @@ class SettingsManager(QObject):
                 obj[part] = child
             obj = child
         obj[parts[-1]] = value
-    
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         Holt einen Einstellungswert
-        
+
         Args:
             key: Punktnotation z.B. "editor.font_size"
             default: Standardwert wenn nicht gefunden
-            
+
         Returns:
             Einstellungswert oder default
         """
@@ -393,11 +393,11 @@ class SettingsManager(QObject):
             return default if value is missing else value
         except (json.JSONDecodeError, OSError, KeyError, TypeError):
             return default
-    
+
     def set(self, key: str, value: Any, save: bool = True) -> bool:
         """
         Setzt einen Einstellungswert
-        
+
         Args:
             key: Punktnotation z.B. "editor.font_size"
             value: Neuer Wert
@@ -423,15 +423,15 @@ class SettingsManager(QObject):
             if key.startswith('appearance.theme'):
                 self.theme_changed.emit(value)
             return True
-                    
+
         except Exception as e:
             print(f"Fehler beim Setzen von {key}: {e}")
             return False
-    
+
     def reset_to_defaults(self, category: str = None) -> bool:
         """
         Setzt Einstellungen auf Standard zurück
-        
+
         Args:
             category: Optional - nur diese Kategorie zurücksetzen
         """
@@ -458,25 +458,25 @@ class SettingsManager(QObject):
             return False
         self.settings_changed.emit('*', None)
         return True
-    
+
     def export_settings(self, path: str) -> bool:
         """Exportiert Einstellungen in eine Datei"""
         try:
             data = self._settings_to_dict()
-            
+
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             return True
         except Exception as e:
             print(f"Export-Fehler: {e}")
             return False
-    
+
     def import_settings(self, path: str) -> bool:
         """Importiert Einstellungen aus einer Datei"""
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             # Einstellungen übernehmen
             self._extra_settings = self._extract_extra_settings(data)
             if 'editor' in data:
@@ -501,7 +501,7 @@ class SettingsManager(QObject):
         except Exception as e:
             print(f"Import-Fehler: {e}")
             return False
-    
+
     def save_window_state(self, geometry: bytes, state: bytes):
         """Speichert Fensterzustand"""
         self.settings.window_state = {
@@ -509,7 +509,7 @@ class SettingsManager(QObject):
             'state': self._serialize_qt_bytes(state),
         }
         self._save()
-    
+
     def restore_window_state(self) -> tuple:
         """Stellt Fensterzustand wieder her"""
         ws = self.settings.window_state

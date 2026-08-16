@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 class SettingsDialog(QDialog):
     """
     Einstellungen-Dialog
-    
+
     Tabs:
     - Editor: Schrift, Tab-Größe, Auto-Save
     - Build: PyInstaller-Optionen
@@ -22,7 +22,7 @@ class SettingsDialog(QDialog):
     - Sync: Backup-Pfade
     - Appearance: Theme, Farben
     """
-    
+
     def __init__(self, settings_manager, parent=None):
         super().__init__(parent)
         self.settings = settings_manager
@@ -30,10 +30,10 @@ class SettingsDialog(QDialog):
         self.setMinimumSize(600, 500)
         self._setup_ui()
         self._load_settings()
-    
+
     def _setup_ui(self):
         layout = QVBoxLayout(self)
-        
+
         # Style
         self.setStyleSheet("""
             QDialog {
@@ -93,7 +93,7 @@ class SettingsDialog(QDialog):
                 color: #cccccc;
             }
         """)
-        
+
         # Tab Widget
         tabs = QTabWidget()
         tabs.addTab(self._create_general_tab(), "Allgemein")
@@ -102,27 +102,27 @@ class SettingsDialog(QDialog):
         tabs.addTab(self._create_ai_tab(), "AI")
         tabs.addTab(self._create_sync_tab(), "Sync")
         tabs.addTab(self._create_appearance_tab(), "Aussehen")
-        
+
         layout.addWidget(tabs)
-        
+
         # Buttons
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
-        
+
         self.reset_btn = QPushButton("Zurücksetzen")
         self.reset_btn.clicked.connect(self._reset_settings)
         btn_layout.addWidget(self.reset_btn)
-        
+
         self.cancel_btn = QPushButton("Abbrechen")
         self.cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(self.cancel_btn)
-        
+
         self.save_btn = QPushButton("Speichern")
         self.save_btn.clicked.connect(self._save_settings)
         btn_layout.addWidget(self.save_btn)
-        
+
         layout.addLayout(btn_layout)
-    
+
     def _create_general_tab(self) -> QWidget:
         """Allgemeine Einstellungen"""
         widget = QWidget()
@@ -144,61 +144,61 @@ class SettingsDialog(QDialog):
         """Editor-Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # Schrift
         font_group = QGroupBox("Schrift")
         font_layout = QFormLayout(font_group)
-        
+
         self.font_family = QComboBox()
         self.font_family.addItems(["Consolas", "Courier New", "Monaco", "Fira Code", "JetBrains Mono"])
         font_layout.addRow("Schriftart:", self.font_family)
-        
+
         self.font_size = QSpinBox()
         self.font_size.setRange(8, 24)
         self.font_size.setValue(11)
         font_layout.addRow("Schriftgröße:", self.font_size)
-        
+
         layout.addWidget(font_group)
-        
+
         # Verhalten
         behavior_group = QGroupBox("Verhalten")
         behavior_layout = QFormLayout(behavior_group)
-        
+
         self.tab_size = QSpinBox()
         self.tab_size.setRange(2, 8)
         self.tab_size.setValue(4)
         behavior_layout.addRow("Tab-Breite:", self.tab_size)
-        
+
         self.line_numbers = QCheckBox("Zeilennummern anzeigen")
         self.line_numbers.setChecked(True)
         behavior_layout.addRow("", self.line_numbers)
-        
+
         self.auto_complete = QCheckBox("Auto-Vervollständigung")
         self.auto_complete.setChecked(True)
         behavior_layout.addRow("", self.auto_complete)
-        
+
         self.auto_save = QCheckBox("Auto-Speichern")
         self.auto_save.setChecked(False)
         behavior_layout.addRow("", self.auto_save)
-        
+
         self.highlight_line = QCheckBox("Aktuelle Zeile hervorheben")
         self.highlight_line.setChecked(True)
         behavior_layout.addRow("", self.highlight_line)
-        
+
         layout.addWidget(behavior_group)
         layout.addStretch()
-        
+
         return widget
-    
+
     def _create_build_tab(self) -> QWidget:
         """Build-Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # PyInstaller
         pi_group = QGroupBox("PyInstaller")
         pi_layout = QFormLayout(pi_group)
-        
+
         pyinstaller_row = QHBoxLayout()
         self.pyinstaller_path = QLineEdit()
         self.pyinstaller_path.setPlaceholderText("(System-Standard)")
@@ -224,68 +224,68 @@ class SettingsDialog(QDialog):
         )
         output_row.addWidget(self.output_dir_browse_btn)
         pi_layout.addRow("Ausgabe:", output_row)
-        
+
         layout.addWidget(pi_group)
-        
+
         # Optionen
         opt_group = QGroupBox("Standard-Optionen")
         opt_layout = QFormLayout(opt_group)
-        
+
         self.one_file = QCheckBox("One-File Modus")
         self.one_file.setChecked(True)
         opt_layout.addRow("", self.one_file)
-        
+
         self.console_mode = QCheckBox("Konsole anzeigen")
         self.console_mode.setChecked(True)
         opt_layout.addRow("", self.console_mode)
-        
+
         self.use_upx = QCheckBox("UPX-Komprimierung")
         self.use_upx.setChecked(False)
         opt_layout.addRow("", self.use_upx)
-        
+
         layout.addWidget(opt_group)
         layout.addStretch()
-        
+
         return widget
-    
+
     def _create_ai_tab(self) -> QWidget:
         """AI-Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # API
         api_group = QGroupBox("Anthropic API")
         api_layout = QFormLayout(api_group)
-        
+
         self.api_key = QLineEdit()
         self.api_key.setEchoMode(QLineEdit.EchoMode.Password)
         self.api_key.setPlaceholderText("sk-...")
         api_layout.addRow("API-Key:", self.api_key)
-        
+
         show_key = QCheckBox("Anzeigen")
         show_key.toggled.connect(lambda checked: self.api_key.setEchoMode(
             QLineEdit.EchoMode.Normal if checked else QLineEdit.EchoMode.Password
         ))
         api_layout.addRow("", show_key)
-        
+
         layout.addWidget(api_group)
-        
+
         # Modell
         model_group = QGroupBox("Modell")
         model_layout = QFormLayout(model_group)
-        
+
         self.ai_model = QComboBox()
         self.ai_model.addItems(["Claude Sonnet", "Claude Opus", "Claude Haiku"])
         model_layout.addRow("Standard-Modell:", self.ai_model)
-        
+
         self.max_tokens = QSpinBox()
         self.max_tokens.setRange(256, 8192)
         self.max_tokens.setValue(4096)
         self.max_tokens.setSingleStep(256)
         model_layout.addRow("Max Tokens:", self.max_tokens)
-        
+
         layout.addWidget(model_group)
-        
+
         # Info
         info_label = QLabel(
             "💡 API-Key erhältlich unter: console.anthropic.com\n"
@@ -293,20 +293,20 @@ class SettingsDialog(QDialog):
         )
         info_label.setStyleSheet("color: #888; font-style: italic;")
         layout.addWidget(info_label)
-        
+
         layout.addStretch()
-        
+
         return widget
-    
+
     def _create_sync_tab(self) -> QWidget:
         """Sync-Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # Backup
         backup_group = QGroupBox("Backup")
         backup_layout = QFormLayout(backup_group)
-        
+
         backup_row = QHBoxLayout()
         self.backup_path = QLineEdit()
         self.backup_path.setPlaceholderText("Backup-Verzeichnis")
@@ -319,64 +319,64 @@ class SettingsDialog(QDialog):
         )
         backup_row.addWidget(self.backup_browse_btn)
         backup_layout.addRow("Backup-Pfad:", backup_row)
-        
+
         self.auto_backup = QCheckBox("Automatische Backups")
         self.auto_backup.setChecked(False)
         backup_layout.addRow("", self.auto_backup)
-        
+
         self.backup_interval = QSpinBox()
         self.backup_interval.setRange(5, 120)
         self.backup_interval.setValue(30)
         self.backup_interval.setSuffix(" min")
         backup_layout.addRow("Intervall:", self.backup_interval)
-        
+
         layout.addWidget(backup_group)
-        
+
         # Ausschlüsse
         exclude_group = QGroupBox("Ausschlüsse")
         exclude_layout = QVBoxLayout(exclude_group)
-        
+
         self.excludes_edit = QLineEdit()
         self.excludes_edit.setText("__pycache__, .git, venv, dist, build")
         self.excludes_edit.setPlaceholderText("Komma-getrennte Liste")
         exclude_layout.addWidget(self.excludes_edit)
-        
+
         exclude_hint = QLabel("Muster für Dateien/Ordner die nicht synchronisiert werden")
         exclude_hint.setStyleSheet("color: #888; font-size: 11px;")
         exclude_layout.addWidget(exclude_hint)
-        
+
         layout.addWidget(exclude_group)
         layout.addStretch()
-        
+
         return widget
-    
+
     def _create_appearance_tab(self) -> QWidget:
         """Aussehen-Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # Theme
         theme_group = QGroupBox("Theme")
         theme_layout = QFormLayout(theme_group)
-        
+
         self.theme = QComboBox()
         self.theme.addItems(["Dunkel", "Hell", "System"])
         theme_layout.addRow("Farbschema:", self.theme)
-        
+
         self.editor_theme = QComboBox()
         self.editor_theme.addItems(["VS Code Dark", "Monokai", "Dracula", "One Dark"])
         theme_layout.addRow("Editor-Theme:", self.editor_theme)
-        
+
         layout.addWidget(theme_group)
-        
+
         # Akzentfarbe
         accent_group = QGroupBox("Akzente")
         accent_layout = QFormLayout(accent_group)
-        
+
         self.accent_color = QComboBox()
         self.accent_color.addItems(["Blau (#007acc)", "Grün (#4ec9b0)", "Orange (#ce9178)", "Lila (#c586c0)"])
         accent_layout.addRow("Akzentfarbe:", self.accent_color)
-        
+
         layout.addWidget(accent_group)
         layout.addStretch()
 
@@ -397,13 +397,13 @@ class SettingsDialog(QDialog):
         path, _ = QFileDialog.getOpenFileName(self, title)
         if path:
             line_edit.setText(path)
-    
+
     def _browse_folder(self, line_edit: QLineEdit, title: str):
         """Ordner auswählen"""
         path = QFileDialog.getExistingDirectory(self, title)
         if path:
             line_edit.setText(path)
-    
+
     def _load_settings(self):
         """Lädt Einstellungen in die UI"""
         # General
@@ -417,14 +417,14 @@ class SettingsDialog(QDialog):
         self.auto_complete.setChecked(self.settings.get('editor.auto_complete', True))
         self.auto_save.setChecked(self.settings.get('editor.auto_save', False))
         self.highlight_line.setChecked(self.settings.get('editor.highlight_current_line', True))
-        
+
         # Build
         self.pyinstaller_path.setText(self.settings.get('build.pyinstaller_path', ''))
         self.output_dir.setText(self.settings.get('build.default_output_dir', 'dist'))
         self.one_file.setChecked(self.settings.get('build.one_file', True))
         self.console_mode.setChecked(self.settings.get('build.console_mode', True))
         self.use_upx.setChecked(self.settings.get('build.upx_enabled', False))
-        
+
         # AI
         self.api_key.setText(self.settings.get('ai.api_key', ''))
         self.max_tokens.setValue(self.settings.get('ai.max_tokens', 4096))
@@ -436,11 +436,11 @@ class SettingsDialog(QDialog):
         self.backup_interval.setValue(self.settings.get('sync.backup_interval', 1800) // 60)
         excludes_raw = self.settings.get('sync.excludes', ['__pycache__', '.git', 'venv', 'dist', 'build'])
         self.excludes_edit.setText(', '.join(excludes_raw) if isinstance(excludes_raw, list) else str(excludes_raw))
-        
+
         # Appearance
         theme_map = {'dark': 0, 'light': 1, 'system': 2}
         self.theme.setCurrentIndex(theme_map.get(self.settings.get('appearance.theme', 'dark'), 0))
-    
+
     def _save_settings(self):
         """Speichert Einstellungen"""
         # Credentials zuerst prüfen, damit ein Keyring-Fehler keine anderen
@@ -466,14 +466,14 @@ class SettingsDialog(QDialog):
         self.settings.set('editor.auto_complete', self.auto_complete.isChecked())
         self.settings.set('editor.auto_save', self.auto_save.isChecked())
         self.settings.set('editor.highlight_current_line', self.highlight_line.isChecked())
-        
+
         # Build
         self.settings.set('build.pyinstaller_path', self.pyinstaller_path.text())
         self.settings.set('build.default_output_dir', self.output_dir.text())
         self.settings.set('build.one_file', self.one_file.isChecked())
         self.settings.set('build.console_mode', self.console_mode.isChecked())
         self.settings.set('build.upx_enabled', self.use_upx.isChecked())
-        
+
         # AI
         self.settings.set('ai.max_tokens', self.max_tokens.value())
         self.settings.set('ai.model', self.ai_model.currentText())
@@ -484,13 +484,13 @@ class SettingsDialog(QDialog):
         self.settings.set('sync.backup_interval', self.backup_interval.value() * 60)
         excludes_list = [e.strip() for e in self.excludes_edit.text().split(',') if e.strip()]
         self.settings.set('sync.excludes', excludes_list)
-        
+
         # Appearance
         themes = ['dark', 'light', 'system']
         self.settings.set('appearance.theme', themes[self.theme.currentIndex()])
-        
+
         self.accept()
-    
+
     def _reset_settings(self):
         """Setzt auf Standardwerte zurück"""
         reply = QMessageBox.question(
@@ -498,7 +498,7 @@ class SettingsDialog(QDialog):
             "Alle Einstellungen auf Standardwerte zurücksetzen?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
-        
+
         if reply == QMessageBox.StandardButton.Yes:
             if not self.settings.reset_to_defaults():
                 QMessageBox.critical(

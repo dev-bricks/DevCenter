@@ -15,7 +15,6 @@ Bug #12-1: ai_panel.py — Stale-Response-Race beim Neustart des Workers.
 """
 import os
 import re
-import sys
 import unittest
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

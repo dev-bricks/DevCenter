@@ -6,8 +6,15 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.11%2B-green)](https://python.org)
-[![License](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-lightgrey)](https://github.com/dev-bricks/DevCenter)
+[![Tests: 134 Passed](https://img.shields.io/badge/tests-134%20passed-brightgreen)](tests/)
+[![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
+[![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
+[![Umbrella: open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
+
+> [!NOTE]
+> **For AI Agents & LLM Tools:** This repository maintains an [`llms.txt`](llms.txt) machine-readable index for automated discovery, capability summaries, and CLI interfaces.
 
 > **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop app.
 

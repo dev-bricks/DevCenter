@@ -28,7 +28,7 @@ Privacy and safety:
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: implemented redacted desktop-export contract (`devcenter-workspace-v1`).
 - `DOCUMENTATION_STATUS.md`: current-source hierarchy and historical/external-document boundary.
-- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12; package metadata requires Python 3.11+.
+- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12; package metadata requires Python 3.11+ (134 passed regression & contract tests).
 - `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
 
 ## Search Phrases
@@ -43,4 +43,4 @@ Python IDE with workspace export
 dev-bricks DevCenter Python desktop suite
 ```
 
-## Last-checked: 2026-08-14
+## Last-checked: 2026-08-16
