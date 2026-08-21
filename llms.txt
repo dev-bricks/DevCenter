@@ -33,8 +33,10 @@ Privacy and safety:
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: implemented redacted desktop-export contract (`devcenter-workspace-v1`).
 - `DOCUMENTATION_STATUS.md`: current-source hierarchy and historical/external-document boundary.
-- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12, Linux smoke and macOS smoke; package metadata requires Python 3.11+ (143 passed regression, contract & metadata tests).
+- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12, Linux smoke and macOS smoke; package metadata requires Python 3.11+ (151 passed regression, contract, I18N & metadata tests).
 - `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
+- `translator.py`: Tier-2 multi-language translation engine supporting DE, EN, ES, ZH, JA, RU with 4-stage fallback chain.
+- `tests/test_i18n.py`: unit test suite validating 6-language translations parity and fallback resolution.
 - `tests/test_metadata.py`: automated testsuite for metadata, badges, security policy and documentation parity.
 
 ## Search Phrases

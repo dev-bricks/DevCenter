@@ -1,110 +1,602 @@
 {
+  "&Analyse": {
+    "de": "&Analyse",
+    "en": "&Analysis",
+    "es": "&Análisis",
+    "zh": "&分析",
+    "ja": "&分析",
+    "ru": "&Анализ"
+  },
+  "&Ansicht": {
+    "de": "&Ansicht",
+    "en": "&View",
+    "es": "&Ver",
+    "zh": "&视图",
+    "ja": "&表示",
+    "ru": "&Вид"
+  },
+  "&Ausführen": {
+    "de": "&Ausführen",
+    "en": "&Run",
+    "es": "&Ejecutar",
+    "zh": "&运行",
+    "ja": "&実行",
+    "ru": "&Запуск"
+  },
+  "&Bearbeiten": {
+    "de": "&Bearbeiten",
+    "en": "&Edit",
+    "es": "&Editar",
+    "zh": "&编辑",
+    "ja": "&編集",
+    "ru": "&Правка"
+  },
+  "&Datei": {
+    "de": "&Datei",
+    "en": "&File",
+    "es": "&Archivo",
+    "zh": "&文件",
+    "ja": "&ファイル",
+    "ru": "&Файл"
+  },
+  "&Hilfe": {
+    "de": "&Hilfe",
+    "en": "&Help",
+    "es": "&Ayuda",
+    "zh": "&帮助",
+    "ja": "&ヘルプ",
+    "ru": "&Справка"
+  },
+  "&Projekt": {
+    "de": "&Projekt",
+    "en": "&Project",
+    "es": "&Proyecto",
+    "zh": "&项目",
+    "ja": "&プロジェクト",
+    "ru": "&Проект"
+  },
+  "&Werkzeuge": {
+    "de": "&Werkzeuge",
+    "en": "&Tools",
+    "es": "&Herramientas",
+    "zh": "&工具",
+    "ja": "&ツール",
+    "ru": "&Инструменты"
+  },
   "0 Fehler": {
     "de": "0 Fehler",
-    "en": "0 Errors"
+    "en": "0 Errors",
+    "es": "0 errores",
+    "zh": "0 个错误",
+    "ja": "0 エラー",
+    "ru": "0 ошибок"
+  },
+  "0 Warnungen": {
+    "de": "0 Warnungen",
+    "en": "0 Warnings",
+    "es": "0 advertencias",
+    "zh": "0 个警告",
+    "ja": "0 警告",
+    "ru": "0 предупреждений"
   },
   "Abbrechen": {
     "de": "Abbrechen",
-    "en": "Cancel"
+    "en": "Cancel",
+    "es": "Cancelar",
+    "zh": "取消",
+    "ja": "キャンセル",
+    "ru": "Отмена"
+  },
+  "Aktualisieren": {
+    "de": "Aktualisieren",
+    "en": "Refresh",
+    "es": "Actualizar",
+    "zh": "刷新",
+    "ja": "更新",
+    "ru": "Обновить"
+  },
+  "Alles schließen": {
+    "de": "Alles schließen",
+    "en": "Close All",
+    "es": "Cerrar todo",
+    "zh": "全部关闭",
+    "ja": "すべて閉じる",
+    "ru": "Закрыть все"
+  },
+  "Alles speichern": {
+    "de": "Alles speichern",
+    "en": "Save All",
+    "es": "Guardar todo",
+    "zh": "全部保存",
+    "ja": "すべて保存",
+    "ru": "Сохранить все"
   },
   "Ausgabeordner öffnen": {
     "de": "Ausgabeordner öffnen",
-    "en": "Open Output Folder"
+    "en": "Open Output Folder",
+    "es": "Abrir carpeta de salida",
+    "zh": "打开输出文件夹",
+    "ja": "出力フォルダーを開く",
+    "ru": "Открыть папку вывода"
+  },
+  "Ausschlüsse": {
+    "de": "Ausschlüsse",
+    "en": "Exclusions",
+    "es": "Exclusiones",
+    "zh": "排除项",
+    "ja": "除外項目",
+    "ru": "Исключения"
+  },
+  "Beenden": {
+    "de": "Beenden",
+    "en": "Exit",
+    "es": "Salir",
+    "zh": "退出",
+    "ja": "終了",
+    "ru": "Выход"
+  },
+  "Build erstellen": {
+    "de": "Build erstellen",
+    "en": "Create Build",
+    "es": "Crear compilación",
+    "zh": "创建构建",
+    "ja": "ビルドを作成",
+    "ru": "Создать сборку"
   },
   "Build läuft...": {
     "de": "Build läuft...",
-    "en": "Build running..."
+    "en": "Build running...",
+    "es": "Compilación en curso...",
+    "zh": "正在构建...",
+    "ja": "ビルド実行中...",
+    "ru": "Выполняется сборка..."
   },
   "Build-Einstellungen": {
     "de": "Build-Einstellungen",
-    "en": "Build Settings"
+    "en": "Build Settings",
+    "es": "Ajustes de compilación",
+    "zh": "构建设置",
+    "ja": "ビルド設定",
+    "ru": "Настройки сборки"
   },
   "Datei +": {
     "de": "Datei +",
-    "en": "File +"
+    "en": "File +",
+    "es": "Archivo +",
+    "zh": "文件 +",
+    "ja": "ファイル +",
+    "ru": "Файл +"
   },
   "Datei hinzufügen...": {
     "de": "Datei hinzufügen...",
-    "en": "Add File..."
+    "en": "Add File...",
+    "es": "Añadir archivo...",
+    "zh": "添加文件...",
+    "ja": "ファイルを追加...",
+    "ru": "Добавить файл..."
   },
   "Datei laden": {
     "de": "Datei laden",
-    "en": "Load File"
+    "en": "Load File",
+    "es": "Cargar archivo",
+    "zh": "加载文件",
+    "ja": "ファイルを読み込む",
+    "ru": "Загрузить файл"
+  },
+  "Dateien": {
+    "de": "Dateien",
+    "en": "Files",
+    "es": "Archivos",
+    "zh": "文件",
+    "ja": "ファイル",
+    "ru": "Файлы"
+  },
+  "Dateien im Explorer filtern": {
+    "de": "Dateien im Explorer filtern",
+    "en": "Filter files in Explorer",
+    "es": "Filtrar archivos en el explorador",
+    "zh": "在资源管理器中过滤文件",
+    "ja": "エクスプローラーでファイルをフィルター",
+    "ru": "Фильтровать файлы в проводнике"
+  },
+  "Dokumentation": {
+    "de": "Dokumentation",
+    "en": "Documentation",
+    "es": "Documentación",
+    "zh": "文档",
+    "ja": "ドキュメント",
+    "ru": "Документация"
   },
   "Einstellungen": {
     "de": "Einstellungen",
-    "en": "Settings"
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh": "设置",
+    "ja": "設定",
+    "ru": "Настройки"
   },
   "Einstellungen speichern": {
     "de": "Einstellungen speichern",
-    "en": "Save Settings"
+    "en": "Save Settings",
+    "es": "Guardar ajustes",
+    "zh": "保存设置",
+    "ja": "設定を保存",
+    "ru": "Сохранить настройки"
+  },
+  "Encoding prüfen": {
+    "de": "Encoding prüfen",
+    "en": "Check Encoding",
+    "es": "Comprobar codificación",
+    "zh": "检查编码",
+    "ja": "エンコーディングを確認",
+    "ru": "Проверить кодировку"
+  },
+  "Erfolgreich beendet": {
+    "de": "Erfolgreich beendet",
+    "en": "Completed successfully",
+    "es": "Finalizado con éxito",
+    "zh": "已成功完成",
+    "ja": "正常に完了しました",
+    "ru": "Успешно завершено"
+  },
+  "Fehler: Prozess konnte nicht gestartet werden": {
+    "de": "Fehler: Prozess konnte nicht gestartet werden",
+    "en": "Error: Process could not be started",
+    "es": "Error: No se pudo iniciar el proceso",
+    "zh": "错误：无法启动进程",
+    "ja": "エラー：プロセスを開始できませんでした",
+    "ru": "Ошибка: не удалось запустить процесс"
   },
   "Filter:": {
     "de": "Filter:",
-    "en": "Filter:"
+    "en": "Filter:",
+    "es": "Filtro:",
+    "zh": "筛选:",
+    "ja": "フィルター:",
+    "ru": "Фильтр:"
+  },
+  "Hidden Imports": {
+    "de": "Hidden Imports",
+    "en": "Hidden Imports",
+    "es": "Importaciones ocultas",
+    "zh": "隐藏导入",
+    "ja": "隠しインポート",
+    "ru": "Скрытые импорты"
+  },
+  "Icon Generator": {
+    "de": "Icon Generator",
+    "en": "Icon Generator",
+    "es": "Generador de iconos",
+    "zh": "图标生成器",
+    "ja": "アイコンジェネレーター",
+    "ru": "Генератор иконок"
+  },
+  "Kein Projekt": {
+    "de": "Kein Projekt",
+    "en": "No Project",
+    "es": "Ningún proyecto",
+    "zh": "无项目",
+    "ja": "プロジェクトなし",
+    "ru": "Нет проекта"
+  },
+  "Letzte Projekte:": {
+    "de": "Letzte Projekte:",
+    "en": "Recent Projects:",
+    "es": "Proyectos recientes:",
+    "zh": "最近的项目:",
+    "ja": "最近のプロジェクト:",
+    "ru": "Недавние проекты:"
   },
   "Lizenz (Text/Dateien):": {
     "de": "Lizenz (Text/Dateien):",
-    "en": "License (Text/Files):"
+    "en": "License (Text/Files):",
+    "es": "Licencia (texto/archivos):",
+    "zh": "许可证（文本/文件）:",
+    "ja": "ライセンス (テキスト/ファイル):",
+    "ru": "Лицензия (текст/файлы):"
+  },
+  "Lizenzen sammeln": {
+    "de": "Lizenzen sammeln",
+    "en": "Collect Licenses",
+    "es": "Recopilar licencias",
+    "zh": "收集许可证",
+    "ja": "ライセンスを収集",
+    "ru": "Собрать лицензии"
   },
   "Muster für Dateien/Ordner die nicht synchronisiert werden": {
     "de": "Muster für Dateien/Ordner die nicht synchronisiert werden",
-    "en": "Patterns for files/folders that will not be synced"
+    "en": "Patterns for files/folders that will not be synced",
+    "es": "Patrones para archivos/carpetas que no se sincronizarán",
+    "zh": "不进行同步的文件/文件夹模式",
+    "ja": "同期されないファイル/フォルダーのパターン",
+    "ru": "Шаблоны файлов/папок, которые не будут синхронизироваться"
+  },
+  "Neu": {
+    "de": "Neu",
+    "en": "New",
+    "es": "Nuevo",
+    "zh": "新建",
+    "ja": "新規",
+    "ru": "Создать"
+  },
+  "Neues Projekt erstellen": {
+    "de": "Neues Projekt erstellen",
+    "en": "Create New Project",
+    "es": "Crear nuevo proyecto",
+    "zh": "创建新项目",
+    "ja": "新規プロジェクトを作成",
+    "ru": "Создать новый проект"
+  },
+  "Optionen": {
+    "de": "Optionen",
+    "en": "Options",
+    "es": "Opciones",
+    "zh": "选项",
+    "ja": "オプション",
+    "ru": "Параметры"
+  },
+  "Projektdetails": {
+    "de": "Projektdetails",
+    "en": "Project Details",
+    "es": "Detalles del proyecto",
+    "zh": "项目详情",
+    "ja": "プロジェクトの詳細",
+    "ru": "Детали проекта"
+  },
+  "Projektvorlage:": {
+    "de": "Projektvorlage:",
+    "en": "Project Template:",
+    "es": "Plantilla de proyecto:",
+    "zh": "项目模板:",
+    "ja": "プロジェクトテンプレート:",
+    "ru": "Шаблон проекта:"
+  },
+  "PyInstaller Build": {
+    "de": "PyInstaller Build",
+    "en": "PyInstaller Build",
+    "es": "Compilación PyInstaller",
+    "zh": "PyInstaller 构建",
+    "ja": "PyInstaller ビルド",
+    "ru": "Сборка PyInstaller"
   },
   "Python Umgebung (für Builds)": {
     "de": "Python Umgebung (für Builds)",
-    "en": "Python Environment (for Builds)"
+    "en": "Python Environment (for Builds)",
+    "es": "Entorno Python (para compilaciones)",
+    "zh": "Python 环境（用于构建）",
+    "ja": "Python 環境 (ビルド用)",
+    "ru": "Окружение Python (для сборок)"
   },
   "README (Text oder Datei):": {
     "de": "README (Text oder Datei):",
-    "en": "README (Text or File):"
+    "en": "README (Text or File):",
+    "es": "README (texto o archivo):",
+    "zh": "README（文本或文件）:",
+    "ja": "README (テキストまたはファイル):",
+    "ru": "README (текст или файл):"
+  },
+  "Schließen": {
+    "de": "Schließen",
+    "en": "Close",
+    "es": "Cerrar",
+    "zh": "关闭",
+    "ja": "閉じる",
+    "ru": "Закрыть"
   },
   "Speichern": {
     "de": "Speichern",
-    "en": "Save"
+    "en": "Save",
+    "es": "Guardar",
+    "zh": "保存",
+    "ja": "保存",
+    "ru": "Сохранить"
+  },
+  "Speichern unter...": {
+    "de": "Speichern unter...",
+    "en": "Save As...",
+    "es": "Guardar como...",
+    "zh": "另存为...",
+    "ja": "名前を付けて保存...",
+    "ru": "Сохранить как..."
+  },
+  "Standard-Optionen": {
+    "de": "Standard-Optionen",
+    "en": "Standard Options",
+    "es": "Opciones estándar",
+    "zh": "标准选项",
+    "ja": "標準オプション",
+    "ru": "Стандартные параметры"
+  },
+  "Startverhalten": {
+    "de": "Startverhalten",
+    "en": "Startup Behavior",
+    "es": "Comportamiento de inicio",
+    "zh": "启动行为",
+    "ja": "起動時の動作",
+    "ru": "Поведение при запуске"
+  },
+  "Suchen und Ersetzen": {
+    "de": "Suchen und Ersetzen",
+    "en": "Find and Replace",
+    "es": "Buscar y reemplazar",
+    "zh": "查找与替换",
+    "ja": "検索と置換",
+    "ru": "Поиск и замена"
+  },
+  "Ungenutzte Imports": {
+    "de": "Ungenutzte Imports",
+    "en": "Unused Imports",
+    "es": "Importaciones no utilizadas",
+    "zh": "未使用的导入",
+    "ja": "未使用のインポート",
+    "ru": "Неиспользуемые импорты"
   },
   "WACK-Test starten": {
     "de": "WACK-Test starten",
-    "en": "Start WACK Test"
+    "en": "Start WACK Test",
+    "es": "Iniciar prueba WACK",
+    "zh": "启动 WACK 测试",
+    "ja": "WACK テストを開始",
+    "ru": "Запустить тест WACK"
   },
   "Wichtig, wenn dieses Tool als EXE läuft. Muss 'pip install pyinstaller' haben.": {
     "de": "Wichtig, wenn dieses Tool als EXE läuft. Muss 'pip install pyinstaller' haben.",
-    "en": "Important when this tool runs as EXE. Must have 'pip install pyinstaller'."
+    "en": "Important when this tool runs as EXE. Must have 'pip install pyinstaller'.",
+    "es": "Importante si esta herramienta se ejecuta como EXE. Debe tener 'pip install pyinstaller'.",
+    "zh": "此工具作为 EXE 运行时很重要。必须安装 'pip install pyinstaller'。",
+    "ja": "このツールを EXE として実行する場合に重要です。'pip install pyinstaller' が必要です。",
+    "ru": "Важно, если этот инструмент запущен как EXE. Требуется 'pip install pyinstaller'."
+  },
+  "Workspace exportieren": {
+    "de": "Workspace exportieren",
+    "en": "Export Workspace",
+    "es": "Exportar espacio de trabajo",
+    "zh": "导出工作区",
+    "ja": "ワークスペースをエクスポート",
+    "ru": "Экспортировать рабочее пространство"
   },
   "Wählen": {
     "de": "Wählen",
-    "en": "Select"
+    "en": "Select",
+    "es": "Seleccionar",
+    "zh": "选择",
+    "ja": "選択",
+    "ru": "Выбрать"
   },
   "Zeigt erstellte Dateien": {
     "de": "Zeigt erstellte Dateien",
-    "en": "Shows created files"
+    "en": "Shows created files",
+    "es": "Muestra los archivos creados",
+    "zh": "显示创建的文件",
+    "ja": "作成されたファイルを表示",
+    "ru": "Показывает созданные файлы"
   },
   "Zurücksetzen": {
     "de": "Zurücksetzen",
-    "en": "Reset"
+    "en": "Reset",
+    "es": "Restablecer",
+    "zh": "重置",
+    "ja": "リセット",
+    "ru": "Сбросить"
   },
   "Zusätzliche Aktionen": {
     "de": "Zusätzliche Aktionen",
-    "en": "Additional Actions"
+    "en": "Additional Actions",
+    "es": "Acciones adicionales",
+    "zh": "附加操作",
+    "ja": "追加のアクション",
+    "ru": "Дополнительные действия"
+  },
+  "Zusätzliche Dateien": {
+    "de": "Zusätzliche Dateien",
+    "en": "Additional Files",
+    "es": "Archivos adicionales",
+    "zh": "附加文件",
+    "ja": "追加ファイル",
+    "ru": "Дополнительные файлы"
+  },
+  "Über DevCenter": {
+    "de": "Über DevCenter",
+    "en": "About DevCenter",
+    "es": "Acerca de DevCenter",
+    "zh": "关于 DevCenter",
+    "ja": "DevCenter について",
+    "ru": "О программе DevCenter"
   },
   "▶ Ausführen": {
     "de": "▶ Ausführen",
-    "en": "▶ Execute"
+    "en": "▶ Run",
+    "es": "▶ Ejecutar",
+    "zh": "▶ 运行",
+    "ja": "▶ 実行",
+    "ru": "▶ Запуск"
+  },
+  "✅ Build erfolgreich!": {
+    "de": "✅ Build erfolgreich!",
+    "en": "✅ Build successful!",
+    "es": "✅ ¡Compilación exitosa!",
+    "zh": "✅ 构建成功！",
+    "ja": "✅ ビルドが成功しました！",
+    "ru": "✅ Сборка успешно завершена!"
+  },
+  "✨ Projekt erstellen": {
+    "de": "✨ Projekt erstellen",
+    "en": "✨ Create Project",
+    "es": "✨ Crear proyecto",
+    "zh": "✨ 创建项目",
+    "ja": "✨ プロジェクトを作成",
+    "ru": "✨ Создать проект"
+  },
+  "⬛ Stopp": {
+    "de": "⬛ Stopp",
+    "en": "⬛ Stop",
+    "es": "⬛ Detener",
+    "zh": "⬛ 停止",
+    "ja": "⬛ 停止",
+    "ru": "⬛ Стоп"
+  },
+  "📁 Durchsuchen": {
+    "de": "📁 Durchsuchen",
+    "en": "📁 Browse",
+    "es": "📁 Examinar",
+    "zh": "📁 浏览",
+    "ja": "📁 参照",
+    "ru": "📁 Обзор"
+  },
+  "📁 Neues Projekt erstellen": {
+    "de": "📁 Neues Projekt erstellen",
+    "en": "📁 Create New Project",
+    "es": "📁 Crear nuevo proyecto",
+    "zh": "📁 创建新项目",
+    "ja": "📁 新規プロジェクトを作成",
+    "ru": "📁 Создать новый проект"
+  },
+  "📂 Im Explorer öffnen": {
+    "de": "📂 Im Explorer öffnen",
+    "en": "📂 Open in Explorer",
+    "es": "📂 Abrir en el explorador",
+    "zh": "📂 在资源管理器中打开",
+    "ja": "📂 エクスプローラーで開く",
+    "ru": "📂 Открыть в проводнике"
   },
   "📂 Projekt öffnen": {
     "de": "📂 Projekt öffnen",
-    "en": "📂 Open Project"
+    "en": "📂 Open Project",
+    "es": "📂 Abrir proyecto",
+    "zh": "📂 打开项目",
+    "ja": "📂 プロジェクトを開く",
+    "ru": "📂 Открыть проект"
   },
   "📄 Datei öffnen": {
     "de": "📄 Datei öffnen",
-    "en": "📄 Open File"
+    "en": "📄 Open File",
+    "es": "📄 Abrir archivo",
+    "zh": "📄 打开文件",
+    "ja": "📄 ファイルを開く",
+    "ru": "📄 Открыть файл"
   },
   "📖 Erklären": {
     "de": "📖 Erklären",
-    "en": "📖 Explain"
+    "en": "📖 Explain",
+    "es": "📖 Explicar",
+    "zh": "📖 解释",
+    "ja": "📖 説明",
+    "ru": "📖 Объяснить"
   },
   "🔨 Build starten": {
     "de": "🔨 Build starten",
-    "en": "🔨 Start Build"
+    "en": "🔨 Start Build",
+    "es": "🔨 Iniciar compilación",
+    "zh": "🔨 开始构建",
+    "ja": "🔨 ビルドを開始",
+    "ru": "🔨 Начать сборку"
+  },
+  "🚀 Neues Python-Projekt": {
+    "de": "🚀 Neues Python-Projekt",
+    "en": "🚀 New Python Project",
+    "es": "🚀 Nuevo proyecto de Python",
+    "zh": "🚀 新建 Python 项目",
+    "ja": "🚀 新規 Python プロジェクト",
+    "ru": "🚀 Новый проект Python"
   }
 }

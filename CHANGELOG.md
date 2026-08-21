@@ -5,6 +5,16 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Tier-2 Multi-Language Expansion (DE, EN, ES, ZH, JA, RU) gemäß Policy P-006 [G 2026-08-21]
+- `locales/translations.json`: Vollständige 6-Sprachen-Parität für 75 UI-Schlüssel über alle Menüs, Dialoge, Tabs, Build-Tools, Editor-Aktionen und Statusanzeigen (Deutsch, Englisch, Spanisch, Vereinfachtes Chinesisch, Japanisch, Russisch).
+- `translator.py`: Upgrade auf Version 2.0.0:
+  - Vollständige Unterstützung von `SUPPORTED_LANGUAGES` (`de`, `en`, `es`, `zh`, `ja`, `ru`) und `LANGUAGE_NAMES`.
+  - 4-stufige robuste Fallback-Kette: `current_lang -> en -> de -> key`.
+  - Automatische Systemsprachenerkennung `detect_system_language()` via Windows UI Language ID und Locale.
+  - Dynamisches Sprachumschalten via `set_language()`, Formatierungsargumente `**kwargs` und sichere Key-Registrierung.
+- `manage_translations.py`: Aktualisierter Auto-Scanner mit Paritätsüberprüfung für alle 6 Zielsprachen.
+- `tests/test_i18n.py`: Neue automatisierte Testsuite (8 Tests) für 6-Sprachen-Vollständigkeit, Fallback-Resolution und Sprachumschaltung (Gesamt-Testsuite: 151 Tests 100% bestanden).
+
 ### Cross-Platform macOS Source-Smoke & CI Matrix Expansion (Phase P4) [G 2026-08-21]
 - `tests/macos_platform_smoke.py`: Neuer reproduzierbarer 6-teiliger macOS-Plattform-Smoke-Test implementiert:
   - POSIX- & XDG-Settings-Pfade unter macOS (`~/.config/DevCenter/settings.json`).
