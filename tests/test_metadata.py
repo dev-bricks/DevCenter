@@ -113,3 +113,20 @@ def test_changelog_currency():
 
     content = changelog_file.read_text(encoding="utf-8")
     assert "2026-08-21" in content, "CHANGELOG.md muss einen Eintrag für 2026-08-21 enthalten"
+
+
+def test_cross_platform_smoke_scripts_and_ci():
+    """Prüft, dass Linux- und macOS-Plattform-Smokes existieren und im CI-Workflow verdrahtet sind."""
+    linux_smoke = REPO_ROOT / "tests" / "linux_platform_smoke.py"
+    macos_smoke = REPO_ROOT / "tests" / "macos_platform_smoke.py"
+    workflow = REPO_ROOT / ".github" / "workflows" / "tests.yml"
+
+    assert linux_smoke.is_file(), "linux_platform_smoke.py fehlt in tests/"
+    assert macos_smoke.is_file(), "macos_platform_smoke.py fehlt in tests/"
+    assert workflow.is_file(), "tests.yml fehlt in .github/workflows/"
+
+    workflow_content = workflow.read_text(encoding="utf-8")
+    assert "linux-platform-smoke:" in workflow_content
+    assert "macos-platform-smoke:" in workflow_content
+    assert "tests/linux_platform_smoke.py" in workflow_content
+    assert "tests/macos_platform_smoke.py" in workflow_content

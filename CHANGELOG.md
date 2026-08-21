@@ -5,6 +5,19 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Cross-Platform macOS Source-Smoke & CI Matrix Expansion (Phase P4) [G 2026-08-21]
+- `tests/macos_platform_smoke.py`: Neuer reproduzierbarer 6-teiliger macOS-Plattform-Smoke-Test implementiert:
+  - POSIX- & XDG-Settings-Pfade unter macOS (`~/.config/DevCenter/settings.json`).
+  - Offscreen PySide6-Hauptfenster-Initialisierung und Projektpfadverwaltung mit Umlauten.
+  - macOS-System-Explorer-Aufruf (`open <path>`) via `ExplorerPanel._open_in_explorer()`.
+  - macOS-Terminal- und Shell-Prozessausführung (`bash -c`) im `OutputPanel`.
+  - Plattformunabhängige Asset- und Icon-Auflösung (`assets/icon.png`).
+  - Redigierter Workspace-Export (`devcenter-workspace-v1.json`) ohne Secrets und ohne BOM.
+  - SQLite ProfilerBridge Dateiindexierung auf POSIX/macOS.
+- `.github/workflows/tests.yml`: Neuer CI-Job `macos-platform-smoke` auf `macos-latest` hinzugefügt.
+- `PORTIERUNGSPLAN.md` & `AUFGABEN.txt`: Phase P4 (macOS-Smoke) als abgeschlossen (`DONE`) dokumentiert.
+- `tests/test_metadata.py`: Metadaten- und Workflow-Paritätstests um `test_cross_platform_smoke_scripts_and_ci()` erweitert.
+
 ### Discoverability, README Architecture Design, Security Parity & Bilingual Documentation (Pfad B) [G 2026-08-21]
 - `README.md` & `README_de.md`: Umfassende zweisprachige Dokumentation mit synchronisiertem Badges-Set (142 Tests Passed, Python 3.11+, PySide6, 100% Offline / Zero-Egress, Keyring Secret Vault, dev-bricks Ökosystem, open-bricks Umbrella).
 - **Mermaid-Architekturdiagramme**: Zwei interaktive zweisprachige Diagramme integriert: (1) Systemarchitektur & Komponenten-Workflow; (2) Lokaler Datenfluss & Zero-Egress Datenschutz-Sequenzdiagramm.
