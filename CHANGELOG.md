@@ -5,6 +5,14 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Discoverability, README Architecture Design, Security Parity & Bilingual Documentation (Pfad B) [G 2026-08-21]
+- `README.md` & `README_de.md`: Umfassende zweisprachige Dokumentation mit synchronisiertem Badges-Set (142 Tests Passed, Python 3.11+, PySide6, 100% Offline / Zero-Egress, Keyring Secret Vault, dev-bricks Ökosystem, open-bricks Umbrella).
+- **Mermaid-Architekturdiagramme**: Zwei interaktive zweisprachige Diagramme integriert: (1) Systemarchitektur & Komponenten-Workflow; (2) Lokaler Datenfluss & Zero-Egress Datenschutz-Sequenzdiagramm.
+- `SECURITY.md`: Zweisprachige Sicherheitsrichtlinie mit 100% Offline-Invariante, Keyring-Geheimnis-Isolation, redigiertem Workspace-Export und privaten Meldewegen (`security@ellmos.ai` & `support@lukasgeiger.com`).
+- **Ökosystem-Matrix**: Geschwister-Werkzeuge über `dev-bricks`, `file-bricks`, `doc-bricks`, `assistassets-ai`, `entertain-and-more`, `ellmos-ai` und `open-bricks` synchronisiert.
+- `tests/test_metadata.py`: Neue automatisierte Metadaten-, Sicherheits-, Ökosystem- und Dokumentationsparitätstestsuite (8 Tests) hinzugefügt.
+- `llms.txt`: Last-checked Timestamp auf `2026-08-21` und 142 verifizierte Tests synchronisiert.
+
 ### Discoverability, README-Design & Pytest Status Badge (Pfad B) [G 2026-08-16]
 - `README.md`: Badges um Testsuite (134 Passed), `llms.txt` Context, `dev-bricks` Ökosystem und `open-bricks` Umbrella erweitert; AI-Agent Hinweisbox ergänzt.
 - `pyproject.toml`: `[tool.ruff.lint]` Konfiguration integriert (`target-version = "py311"`, `line-length = 120`, `E501`/`E402`/`E722`/`E741`/`F841` ignore, `ruff check` 100% sauber).

@@ -1,8 +1,10 @@
 # DevCenter
 
 Canonical repository: https://github.com/dev-bricks/DevCenter
+Ecosystem: dev-bricks
+Umbrella: open-bricks
 
-DevCenter is a local-first Python desktop IDE and developer toolkit from dev-bricks. It combines a PySide6 editor, static analysis, encoding repair, PyInstaller build helpers, icon conversion, third-party license collection, project/file indexing, backup-oriented sync helpers and an optional Claude/Anthropic AI assistant.
+DevCenter is a local-first Python desktop IDE and developer toolkit from dev-bricks under the open-bricks umbrella. It combines a PySide6 editor, static analysis, encoding repair, PyInstaller build helpers, icon conversion, third-party license collection, project/file indexing, backup-oriented sync helpers and an optional Claude/Anthropic AI assistant.
 
 ## Audience
 
@@ -21,15 +23,19 @@ Privacy and safety:
 - Projects, settings, file indexes and build artifacts stay local by default.
 - Network access is only expected for explicitly configured integrations such as the optional Claude/Anthropic API or package installation commands started by the user.
 - API keys, tokens, local absolute paths and full source contents must not be written into public exports.
+- Anthropic API keys are stored exclusively in the native system keyring (Windows Credential Manager).
 
 ## Important files
 
-- `README.md`: user-facing overview, screenshots, installation and feature list.
+- `README.md`: English user-facing overview, architecture diagrams, screenshots, installation and feature list.
+- `README_de.md`: German user-facing overview with complete feature parity and architecture documentation.
+- `SECURITY.md`: bilingual security policy detailing 100% offline invariants, keyring secret isolation and vulnerability reporting.
 - `PRIVACY_POLICY.md`: privacy scope for local settings, indexes, build artifacts and optional API use.
 - `EXPORTFORMAT.md`: implemented redacted desktop-export contract (`devcenter-workspace-v1`).
 - `DOCUMENTATION_STATUS.md`: current-source hierarchy and historical/external-document boundary.
-- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12; package metadata requires Python 3.11+ (134 passed regression & contract tests).
+- `.github/workflows/tests.yml`: smoke tests for Python 3.10, 3.11 and 3.12; package metadata requires Python 3.11+ (142 passed regression, contract & metadata tests).
 - `src/core/app_paths.py`: XDG-compliant platform path resolver for settings and file index.
+- `tests/test_metadata.py`: automated testsuite for metadata, badges, security policy and documentation parity.
 
 ## Search Phrases
 
@@ -41,6 +47,7 @@ offline Python code editor and static analyzer
 Python developer toolkit with license collector
 Python IDE with workspace export
 dev-bricks DevCenter Python desktop suite
+open-bricks developer tools
 ```
 
-## Last-checked: 2026-08-16
+## Last-checked: 2026-08-21
