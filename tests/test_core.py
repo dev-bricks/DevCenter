@@ -792,6 +792,21 @@ class TestSettingsDialogGeneralTab(unittest.TestCase):
         self.assertIn('open_last_project', inspect.getsource(SettingsDialog))
 
 
+class TestSettingsDialogResetConfirmation(unittest.TestCase):
+    """Das Zurücksetzen darf bei Enter nicht unbeabsichtigt bestätigt werden."""
+
+    def test_reset_confirmation_defaults_to_no(self):
+        import inspect
+        from gui.dialogs.settings_dialog import SettingsDialog
+
+        source = inspect.getsource(SettingsDialog._reset_settings)
+        self.assertIn(
+            'QMessageBox.StandardButton.No,',
+            source,
+            "Die Zurücksetzen-Bestätigung muss standardmäßig Nein auswählen.",
+        )
+
+
 class TestSettingsDialogLineNumbersKey(unittest.TestCase):
     """Bug 27: settings_dialog verwendete 'editor.line_numbers' statt kanonischem 'editor.show_line_numbers'."""
 

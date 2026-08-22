@@ -496,7 +496,8 @@ class SettingsDialog(QDialog):
         reply = QMessageBox.question(
             self, "Zurücksetzen",
             "Alle Einstellungen auf Standardwerte zurücksetzen?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
         )
 
         if reply == QMessageBox.StandardButton.Yes:
