@@ -439,6 +439,7 @@ class SettingsManager(QObject):
             if not self._store_api_key(""):
                 return False
             self.settings = AppSettings()
+            self._extra_settings = {}
         elif category == 'editor':
             self.settings.editor = EditorSettings()
         elif category == 'build':
@@ -457,6 +458,8 @@ class SettingsManager(QObject):
         if not self._save():
             return False
         self.settings_changed.emit('*', None)
+        if category is None or category == 'appearance':
+            self.theme_changed.emit(self.settings.appearance.theme)
         return True
 
     def export_settings(self, path: str) -> bool:
@@ -494,9 +497,21 @@ class SettingsManager(QObject):
             if 'general' in data:
                 self.settings.general = self._load_section(data['general'], GeneralSettings)
 
+            # Allgemeine Einstellungen
+            if 'language' in data:
+                self.settings.language = data['language']
+            if 'check_updates' in data:
+                self.settings.check_updates = bool(data['check_updates'])
+            if 'telemetry_enabled' in data:
+                self.settings.telemetry_enabled = bool(data['telemetry_enabled'])
+            if 'window_state' in data and isinstance(data['window_state'], dict):
+                self.settings.window_state = data['window_state']
+
             if not self._save():
                 return False
             self.settings_changed.emit('*', None)
+            if 'appearance' in data and hasattr(self.settings.appearance, 'theme'):
+                self.theme_changed.emit(self.settings.appearance.theme)
             return True
         except Exception as e:
             print(f"Import-Fehler: {e}")

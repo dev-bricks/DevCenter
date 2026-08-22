@@ -221,7 +221,7 @@ def _build_build_payload(
         "one_file": bool(project_build.get("one_file", settings.get("build.one_file", True))),
         "console": bool(project_build.get("console", settings.get("build.console_mode", True))),
         "output_ref": redactor.redact(output_dir, "output-dir"),
-        "hidden_imports": [],
+        "hidden_imports": list(project_build.get("hidden_imports", [])),
     }
     icon_path = project_build.get("icon")
     if icon_path:

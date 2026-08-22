@@ -282,6 +282,49 @@ class DevCenterSettingsTests(unittest.TestCase):
                 self.assertEqual(Path(bridge.db_path), expected)
                 self.assertTrue(expected.exists())
 
+    def test_import_settings_restores_general_and_top_level_settings(self):
+        """Regression: import_settings() muss language, check_updates, telemetry_enabled und window_state übernehmen."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_path = Path(temp_dir) / "source_settings.json"
+            target_path = Path(temp_dir) / "target_settings.json"
+            export_path = Path(temp_dir) / "export.json"
+
+            source = SettingsManager(str(source_path))
+            source.set("language", "en")
+            source.set("check_updates", False)
+            source.set("telemetry_enabled", True)
+            source.save_window_state(b"geom-data", b"state-data")
+            source.set("appearance.theme", "light")
+            self.assertTrue(source.export_settings(str(export_path)))
+
+            target = SettingsManager(str(target_path))
+            self.assertEqual(target.get("language"), "de")
+            self.assertTrue(target.get("check_updates"))
+            self.assertFalse(target.get("telemetry_enabled"))
+
+            theme_signals = []
+            target.theme_changed.connect(lambda t: theme_signals.append(t))
+
+            self.assertTrue(target.import_settings(str(export_path)))
+
+            self.assertEqual(target.get("language"), "en")
+            self.assertFalse(target.get("check_updates"))
+            self.assertTrue(target.get("telemetry_enabled"))
+            geom, state = target.restore_window_state()
+            self.assertEqual(bytes(geom), b"geom-data")
+            self.assertEqual(bytes(state), b"state-data")
+            self.assertEqual(target.get("appearance.theme"), "light")
+            self.assertIn("light", theme_signals)
+
+    def test_reset_to_defaults_clears_extra_settings(self):
+        """Regression: reset_to_defaults(category=None) muss auch _extra_settings leeren."""
+        settings = self._temp_settings()
+        settings.set("custom.plugin_field", "value123")
+        self.assertEqual(settings.get("custom.plugin_field"), "value123")
+
+        self.assertTrue(settings.reset_to_defaults())
+        self.assertIsNone(settings.get("custom.plugin_field"))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

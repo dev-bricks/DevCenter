@@ -157,6 +157,17 @@ class WorkspaceExportTests(unittest.TestCase):
         self.assertEqual(payload["schema"], "devcenter-workspace-v1")
         self.assertEqual(payload["build"]["output_ref"], "output-dir-1")
 
+    def test_build_workspace_export_includes_hidden_imports(self):
+        """Regression: build_workspace_export() muss hidden_imports aus der Build-Konfiguration übernehmen."""
+        self.project.build_config["hidden_imports"] = ["pkg_resources.py2_warn", "chardet"]
+        payload = build_workspace_export(
+            self.project,
+            self.settings,
+            problems=self.problems,
+            exported_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
+        )
+        self.assertEqual(payload["build"]["hidden_imports"], ["pkg_resources.py2_warn", "chardet"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
