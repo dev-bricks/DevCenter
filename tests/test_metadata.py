@@ -54,16 +54,19 @@ def test_mermaid_diagrams_present():
 
 
 def test_security_policy_bilingual_and_contacts():
-    """Prüft, dass SECURITY.md zweisprachig ist und Zero-Egress sowie den Sicherheitskontakt enthält."""
+    """Prüft, dass SECURITY.md zweisprachig ist, Zero-Egress, 48h SLA und die Sicherheitskontakte enthält."""
     sec_file = REPO_ROOT / "SECURITY.md"
     assert sec_file.is_file(), "SECURITY.md fehlt im Repo-Root"
 
     content = sec_file.read_text(encoding="utf-8")
 
+    assert "security@open-bricks.org" in content, "SECURITY.md muss security@open-bricks.org als Kontakt enthalten"
     assert "security@ellmos.ai" in content, "SECURITY.md muss security@ellmos.ai als Kontakt enthalten"
+    assert "48" in content, "SECURITY.md muss 48h Reaktions-SLA erwähnen"
     assert "local-first" in content.lower(), "SECURITY.md muss local-first erwähnen"
     assert "zero-egress" in content.lower() or "offline" in content.lower()
     assert "keyring" in content.lower()
+    assert "advisories" in content.lower()
     assert "Sicherheitsrichtlinie" in content, "SECURITY.md muss einen deutschen Abschnitt enthalten"
 
 
@@ -75,14 +78,14 @@ def test_llms_txt_currency_and_structure():
     content = llms_file.read_text(encoding="utf-8")
 
     assert "https://github.com/dev-bricks/DevCenter" in content
-    assert "2026-08-21" in content, "llms.txt Last-checked Timestamp muss auf 2026-08-21 stehen"
+    assert "2026-08-24" in content, "llms.txt Last-checked Timestamp muss auf 2026-08-24 stehen"
     assert "local-first Python IDE" in content
     assert "dev-bricks" in content
     assert "open-bricks" in content.lower() or "umbrella" in content.lower()
 
 
-def test_pyproject_version_and_ruff_config():
-    """Prüft die Gültigkeit von pyproject.toml und die Linter-Konfiguration."""
+def test_pyproject_version_and_pep621_metadata():
+    """Prüft die Gültigkeit von pyproject.toml, PEP 621 Classifiers, URLs und Linter-Konfiguration."""
     pyproject_file = REPO_ROOT / "pyproject.toml"
     assert pyproject_file.is_file(), "pyproject.toml fehlt im Repo-Root"
 
@@ -90,6 +93,14 @@ def test_pyproject_version_and_ruff_config():
 
     assert 'name = "devcenter-suite"' in content
     assert 'version = "1.0.0"' in content
+    assert "classifiers = [" in content
+    assert "keywords = [" in content
+    assert "[project.urls]" in content
+    assert "Homepage =" in content
+    assert "Repository =" in content
+    assert "Security =" in content
+    assert "Parent Organization" in content
+    assert "Umbrella Ecosystem" in content
     assert "[tool.ruff]" in content
     assert "[tool.ruff.lint]" in content
 
@@ -107,16 +118,16 @@ def test_sibling_ecosystem_matrix_presence():
 
 
 def test_changelog_currency():
-    """Prüft, dass CHANGELOG.md einen aktuellen Eintrag für 2026-08-21 enthält."""
+    """Prüft, dass CHANGELOG.md einen aktuellen Eintrag für 2026-08-24 enthält."""
     changelog_file = REPO_ROOT / "CHANGELOG.md"
     assert changelog_file.is_file(), "CHANGELOG.md fehlt im Repo-Root"
 
     content = changelog_file.read_text(encoding="utf-8")
-    assert "2026-08-21" in content, "CHANGELOG.md muss einen Eintrag für 2026-08-21 enthalten"
+    assert "2026-08-24" in content, "CHANGELOG.md muss einen Eintrag für 2026-08-24 enthalten"
 
 
 def test_cross_platform_smoke_scripts_and_ci():
-    """Prüft, dass Linux- und macOS-Plattform-Smokes existieren und im CI-Workflow verdrahtet sind."""
+    """Prüft, dass Linux- und macOS-Plattform-Smokes existieren und im CI-Workflow mit Concurrency verdrahtet sind."""
     linux_smoke = REPO_ROOT / "tests" / "linux_platform_smoke.py"
     macos_smoke = REPO_ROOT / "tests" / "macos_platform_smoke.py"
     workflow = REPO_ROOT / ".github" / "workflows" / "tests.yml"
@@ -126,7 +137,32 @@ def test_cross_platform_smoke_scripts_and_ci():
     assert workflow.is_file(), "tests.yml fehlt in .github/workflows/"
 
     workflow_content = workflow.read_text(encoding="utf-8")
+    assert "actions/checkout@v4" in workflow_content
+    assert "actions/setup-python@v5" in workflow_content
+    assert "concurrency:" in workflow_content
+    assert "cancel-in-progress: true" in workflow_content
     assert "linux-platform-smoke:" in workflow_content
     assert "macos-platform-smoke:" in workflow_content
     assert "tests/linux_platform_smoke.py" in workflow_content
     assert "tests/macos_platform_smoke.py" in workflow_content
+
+
+def test_offline_and_zero_egress_invariants():
+    """Prüft, dass Core-Module keine ungeprüften externen Netzwerk-Libraries importieren."""
+    import core.app_paths
+    import core.settings_manager
+
+    assert hasattr(core.app_paths, "get_app_data_dir")
+    assert hasattr(core.app_paths, "get_settings_path")
+    assert hasattr(core.app_paths, "get_app_icon_path")
+    assert hasattr(core.settings_manager, "SettingsManager")
+
+
+def test_gitignore_hygiene_and_lock_exclusion():
+    """Prüft, dass .gitignore Schutz vor Lock-Dateien und Sync-Konflikten bietet."""
+    gitignore_file = REPO_ROOT / ".gitignore"
+    assert gitignore_file.is_file(), ".gitignore fehlt im Repo-Root"
+
+    content = gitignore_file.read_text(encoding="utf-8")
+    assert "LOCK*.txt" in content
+    assert "*.sync-conflict-*" in content or "*.conflict" in content

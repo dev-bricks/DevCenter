@@ -598,5 +598,13 @@
     "zh": "🚀 新建 Python 项目",
     "ja": "🚀 新規 Python プロジェクト",
     "ru": "🚀 Новый проект Python"
+  },
+  "Erstellt Ausgabeordner mit allen Assets": {
+    "de": "Erstellt Ausgabeordner mit allen Assets",
+    "en": "Creates output folder with all assets",
+    "es": "Crea una carpeta de salida con todos los recursos",
+    "zh": "创建包含所有资源的输出文件夹",
+    "ja": "すべてのアセットを含む出力フォルダーを作成します",
+    "ru": "Создает папку вывода со всеми ресурсами"
   }
 }

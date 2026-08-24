@@ -5,6 +5,15 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### GitHub Repository Hygiene, Multi-OS CI Hardening & PEP 621 Metadata Parity (Pfad A) [G 2026-08-24]
+- `.github/workflows/tests.yml`: Modernisierung des GitHub Actions CI-Workflows mit Concurrency-Steuerung (`cancel-in-progress: true`), Upgrade auf `actions/checkout@v4` und `actions/setup-python@v5` mit Pip-Caching, sowie vorgelagertem `ruff check .` Linter-Gate.
+- `pyproject.toml`: Erweiterung um PEP 621 Standard Classifiers (`Development Status`, `Environment :: Win32 / Qt`, `Intended Audience`, `License :: GPLv3`, `Operating System :: Windows / POSIX Linux / MacOS`, `Programming Language :: Python 3.11/3.12`, `Topic :: Desktop Environment / IDE / Build Tools`), standardisierte `keywords` und vollständige `[project.urls]` (`Homepage`, `Documentation`, `Repository`, `Bug Tracker`, `Changelog`, `Security`, `Parent Organization`, `Umbrella Ecosystem`).
+- `SECURITY.md`: Zweisprachige Sicherheitsrichtlinie um 48-Stunden-Reaktions-SLA, GitHub Security Advisories Link und offizielle Sicherheitskontakte (`security@open-bricks.org`, `security@ellmos.ai`, `support@lukasgeiger.com`, `lukas@open-bricks.org`) gehärtet.
+- `locales/translations.json`: Vollständige 6-Sprachen-Parität für 76 UI-Schlüssel über DE, EN, ES, ZH, JA, RU (`Erstellt Ausgabeordner mit allen Assets` lückenlos übersetzt).
+- `.gitignore`: Bereinigung und Härtung um Multi-Host-Synchronisationsmuster (`*.sync-conflict-*`, `*.conflict`).
+- `tests/test_metadata.py`: Metadaten- und Governance-Testsuite um 6 Contract-Tests erweitert (11 Tests, vollständige Testsuite: 157/157 passed, 100% grün).
+- `llms.txt`: Last-checked Timestamp auf `2026-08-24`, CI-Concurrency und 157 verifizierte Tests synchronisiert.
+
 ### Tier-2 Multi-Language Expansion (DE, EN, ES, ZH, JA, RU) gemäß Policy P-006 [G 2026-08-21]
 - `locales/translations.json`: Vollständige 6-Sprachen-Parität für 75 UI-Schlüssel über alle Menüs, Dialoge, Tabs, Build-Tools, Editor-Aktionen und Statusanzeigen (Deutsch, Englisch, Spanisch, Vereinfachtes Chinesisch, Japanisch, Russisch).
 - `translator.py`: Upgrade auf Version 2.0.0:

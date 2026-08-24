@@ -1,4 +1,4 @@
-﻿# =============================================================================
+# =============================================================================
 # .gitignore Template fuer Software Entwicklung Projekte
 # Kopieren und als .gitignore im Projektroot ablegen
 # Projektspezifische Eintraege am Ende anfuegen
@@ -84,6 +84,8 @@ ehthumbs.db
 
 # ---- Lokale Sync-/Host-Nebenstaende ----
 *-ASUS-GEI.md
+*.sync-conflict-*
+*.conflict
 
 # ---- Standard-Patterns ----
 PLAN.txt

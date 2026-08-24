@@ -1,4 +1,4 @@
-name: DevCenter smoke tests
+name: DevCenter CI & Smoke Tests
 
 on:
   push:
@@ -6,25 +6,49 @@ on:
   pull_request:
     branches: [master]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install linter
+        run: pip install ruff
+
+      - name: Run Ruff Linter
+        run: ruff check .
+
   test:
+    needs: [lint]
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12"]
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -37,19 +61,21 @@ jobs:
       - name: Run unit tests
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python -m unittest discover -s tests -v
+        run: python -m pytest -v
 
   linux-platform-smoke:
+    needs: [lint]
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install system Qt libs (Linux)
         run: |
@@ -68,7 +94,7 @@ jobs:
       - name: Run unit tests
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python -m unittest discover -s tests -v
+        run: python -m pytest -v
 
       - name: Run Linux platform smoke
         env:
@@ -76,6 +102,7 @@ jobs:
         run: python tests/linux_platform_smoke.py
 
   macos-platform-smoke:
+    needs: [lint]
     runs-on: macos-latest
     env:
       QT_QPA_PLATFORM: offscreen
@@ -83,12 +110,13 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -99,7 +127,7 @@ jobs:
         run: python -m compileall -q main.py manage_translations.py translator.py src tests
 
       - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+        run: python -m pytest -v
 
       - name: Run macOS platform smoke
         run: python tests/macos_platform_smoke.py

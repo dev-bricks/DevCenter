@@ -35,10 +35,10 @@ DevCenter is designed as a **local-first desktop development suite** for Windows
 
 If you discover a security vulnerability in DevCenter, please report it privately:
 
-1. **GitHub Security Advisory (Preferred):** Go to the **Security** tab of [dev-bricks/DevCenter](https://github.com/dev-bricks/DevCenter) and select **Report a vulnerability**.
-2. **Direct Security Contact:** Send an encrypted email to `security@ellmos.ai` (CC: `support@lukasgeiger.com`).
+1. **GitHub Security Advisory (Preferred):** Open an advisory at [GitHub Security Advisories](https://github.com/dev-bricks/DevCenter/security/advisories) by selecting **Report a vulnerability**.
+2. **Direct Security Contact:** Send an encrypted email to `security@open-bricks.org` and `security@ellmos.ai` (CC: `support@lukasgeiger.com`, `lukas@open-bricks.org`).
 
-**Please do not report security vulnerabilities in public issues or discussions.** We will acknowledge receipt within 48 hours and coordinate a coordinated fix.
+**Please do not report security vulnerabilities in public issues or discussions.** We will acknowledge receipt within 48 hours and coordinate a fix release.
 
 ---
 
@@ -64,4 +64,6 @@ DevCenter wurde als **lokale Desktop-Entwicklungsumgebung** für Windows entwick
 
 ### Meldung von Sicherheitslücken
 
-Bitte melden Sie Sicherheitslücken vertraulich über die GitHub-Schwachstellenmeldung oder per E-Mail an `security@ellmos.ai` (CC: `support@lukasgeiger.com`).
+Bitte melden Sie Sicherheitslücken vertraulich über die [GitHub-Schwachstellenmeldung](https://github.com/dev-bricks/DevCenter/security/advisories) oder per E-Mail an `security@open-bricks.org` und `security@ellmos.ai` (CC: `support@lukasgeiger.com`, `lukas@open-bricks.org`).
+
+Wir bestätigen den Eingang innerhalb von **48 Stunden** und stellen zeitnah einen Sicherheitspatch bereit.
