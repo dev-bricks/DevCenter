@@ -87,5 +87,137 @@ class TestAIPanelIdentityGuard(unittest.TestCase):
         )
 
 
+class TestProjectManagerMetadataIntegrity(unittest.TestCase):
+    """
+    Bug B-004: ProjectManager Robustheit & Metadaten-Integrität
+    - Absturz bei unvollständigen/minimalen Pflichtfeldern (path, created, last_opened)
+    - Datenverlust benutzerdefinierter Felder in devcenter.json bei open_project & save_project
+    - Geister-Einträge mit leerem Pfad in get_recent_projects
+    - Überschreiben bestehender Codedateien beim Erstellen von Projekten
+    """
+
+    def setUp(self):
+        import tempfile
+        import sys
+        self.temp_dir = tempfile.mkdtemp()
+        sys_path_src = os.path.join(PROJECT_ROOT, "src")
+        if sys_path_src not in sys.path:
+            sys.path.insert(0, sys_path_src)
+        from core.project_manager import ProjectManager
+        self.settings_file = os.path.join(self.temp_dir, "settings.json")
+        self.pm = ProjectManager(settings_path=self.settings_file)
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def test_open_project_minimal_metadata(self):
+        """open_project muss auch bei minimalem devcenter.json ohne path/created/last_opened gelingen."""
+        import json
+        proj_dir = os.path.join(self.temp_dir, "minimal_proj")
+        os.makedirs(proj_dir, exist_ok=True)
+        with open(os.path.join(proj_dir, "devcenter.json"), "w", encoding="utf-8") as f:
+            json.dump({"name": "MinimalProject"}, f)
+
+        config = self.pm.open_project(proj_dir)
+        self.assertIsNotNone(config, "open_project() darf bei fehlenden Pflichtfeldern nicht mit TypeError abstürzen")
+        self.assertEqual(config.name, "MinimalProject")
+        self.assertEqual(config.path, proj_dir)
+        self.assertTrue(bool(config.created), "created muss automatisch initialisiert werden")
+        self.assertTrue(bool(config.last_opened), "last_opened muss initialisiert werden")
+
+    def test_open_project_preserves_custom_fields_on_disk(self):
+        """open_project darf beim Speichern von last_opened keine benutzerdefinierten JSON-Felder löschen."""
+        import json
+        proj_dir = os.path.join(self.temp_dir, "custom_proj")
+        os.makedirs(proj_dir, exist_ok=True)
+        devcenter_path = os.path.join(proj_dir, "devcenter.json")
+        initial_data = {
+            "name": "CustomProj",
+            "path": proj_dir,
+            "created": "2026-01-01T00:00:00",
+            "last_opened": "2026-01-01T00:00:00",
+            "custom_plugin": "linter_x",
+            "env_vars": {"DEBUG": "1"},
+        }
+        with open(devcenter_path, "w", encoding="utf-8") as f:
+            json.dump(initial_data, f)
+
+        config = self.pm.open_project(proj_dir)
+        self.assertIsNotNone(config)
+
+        with open(devcenter_path, "r", encoding="utf-8") as f:
+            saved_data = json.load(f)
+
+        self.assertIn("custom_plugin", saved_data, "Custom-Felder müssen auf der Platte erhalten bleiben")
+        self.assertEqual(saved_data["custom_plugin"], "linter_x")
+        self.assertIn("env_vars", saved_data)
+        self.assertEqual(saved_data["env_vars"], {"DEBUG": "1"})
+
+    def test_save_project_preserves_custom_fields_on_disk(self):
+        """save_project darf ebenfalls keine benutzerdefinierten JSON-Felder löschen."""
+        import json
+        proj_dir = os.path.join(self.temp_dir, "custom_proj_save")
+        os.makedirs(proj_dir, exist_ok=True)
+        devcenter_path = os.path.join(proj_dir, "devcenter.json")
+        initial_data = {
+            "name": "SaveProj",
+            "path": proj_dir,
+            "created": "2026-01-01T00:00:00",
+            "last_opened": "2026-01-01T00:00:00",
+            "custom_metadata": {"version": 42},
+        }
+        with open(devcenter_path, "w", encoding="utf-8") as f:
+            json.dump(initial_data, f)
+
+        self.pm.open_project(proj_dir)
+        self.pm.current_project.description = "Aktualisierte Beschreibung"
+        self.assertTrue(self.pm.save_project())
+
+        with open(devcenter_path, "r", encoding="utf-8") as f:
+            saved_data = json.load(f)
+
+        self.assertEqual(saved_data.get("description"), "Aktualisierte Beschreibung")
+        self.assertIn("custom_metadata", saved_data, "Custom-Felder müssen durch save_project erhalten bleiben")
+        self.assertEqual(saved_data["custom_metadata"], {"version": 42})
+
+    def test_get_recent_projects_prunes_empty_and_whitespace_paths(self):
+        """get_recent_projects muss Geister-Einträge mit leerem/Whitespace-Pfad entfernen."""
+        import json
+        with open(self.settings_file, "w", encoding="utf-8") as f:
+            json.dump({
+                "recent_projects": [
+                    {"name": "EmptyPath", "path": ""},
+                    {"name": "WhitespacePath", "path": "   "},
+                    {"name": "ValidDir", "path": self.temp_dir},
+                ]
+            }, f)
+        from core.project_manager import ProjectManager
+        pm = ProjectManager(settings_path=self.settings_file)
+        valid = pm.get_recent_projects()
+        paths = [p.get("path") for p in valid]
+        self.assertNotIn("", paths, "Leere Pfade dürfen nicht als existierend gewertet werden")
+        self.assertNotIn("   ", paths, "Whitespace-Pfade dürfen nicht als existierend gewertet werden")
+        self.assertEqual(len(valid), 1)
+
+    def test_create_project_does_not_overwrite_existing_files(self):
+        """create_project darf vorhandenen Quellcode nicht mit Vorlagentext überschreiben."""
+        proj_dir = os.path.join(self.temp_dir, "existing_code_project")
+        src_dir = os.path.join(proj_dir, "src")
+        os.makedirs(src_dir, exist_ok=True)
+        main_file = os.path.join(src_dir, "main.py")
+        with open(main_file, "w", encoding="utf-8") as f:
+            f.write("# Benutzerdefinierter Code\ndef custom(): pass\n")
+
+        self.pm.create_project("ExistingCodeTest", proj_dir)
+
+        with open(main_file, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        self.assertIn("# Benutzerdefinierter Code", content, "Bestehende main.py darf nicht überschrieben werden")
+        self.assertNotIn("Hello from", content)
+
+
 if __name__ == "__main__":
     unittest.main()
+

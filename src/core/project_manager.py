@@ -80,8 +80,10 @@ class ProjectManager(QObject):
             try:
                 with open(settings_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    self.recent_projects = data.get('recent_projects', [])
-            except (json.JSONDecodeError, IOError):
+                    recent = data.get('recent_projects', [])
+                    self.recent_projects = recent if isinstance(recent, list) else []
+            except (json.JSONDecodeError, IOError) as e:
+                logger.warning("Konnte Recent Projects aus '%s' nicht laden: %s", self.settings_path, e)
                 self.recent_projects = []
 
     def _save_recent_projects(self):
@@ -104,7 +106,7 @@ class ProjectManager(QObject):
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"Fehler beim Speichern der Recent Projects: {e}")
+            logger.error("Fehler beim Speichern der Recent Projects: %s", e)
 
     def _add_to_recent(self, project_path: str, project_name: str):
         """Fügt ein Projekt zur Recent-Liste hinzu"""
@@ -163,10 +165,18 @@ class ProjectManager(QObject):
                 author=author
             )
 
-            # Projektdatei speichern
+            # Projektdatei speichern (bestehende Custom-Felder nicht löschen, falls vorhanden)
             project_file = project_dir / self.PROJECT_FILE
+            data = {}
+            if project_file.exists():
+                try:
+                    with open(project_file, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                except (json.JSONDecodeError, OSError):
+                    data = {}
+            data.update(asdict(config))
             with open(project_file, 'w', encoding='utf-8') as f:
-                json.dump(asdict(config), f, indent=2, ensure_ascii=False)
+                json.dump(data, f, indent=2, ensure_ascii=False)
 
             # Template-Dateien erstellen
             self._create_template_files(project_dir, name)
@@ -181,14 +191,16 @@ class ProjectManager(QObject):
             return config
 
         except Exception as e:
-            print(f"Fehler beim Erstellen des Projekts: {e}")
+            logger.error("Fehler beim Erstellen des Projekts: %s", e, exc_info=True)
             return None
 
     def _create_template_files(self, project_dir: Path, project_name: str):
-        """Erstellt Template-Dateien für ein neues Projekt"""
+        """Erstellt Template-Dateien für ein neues Projekt (überschreibt keine bestehenden Dateien)"""
 
         # main.py
-        main_content = f'''# -*- coding: utf-8 -*-
+        main_path = project_dir / "src" / "main.py"
+        if not main_path.exists():
+            main_content = f'''# -*- coding: utf-8 -*-
 """
 {project_name}
 Erstellt mit DevCenter
@@ -200,16 +212,20 @@ def main():
 if __name__ == "__main__":
     main()
 '''
-        (project_dir / "src" / "main.py").write_text(main_content, encoding='utf-8')
+            main_path.write_text(main_content, encoding='utf-8')
 
         # __init__.py
-        (project_dir / "src" / "__init__.py").write_text(
-            f'"""{project_name} Package"""\n',
-            encoding='utf-8'
-        )
+        init_path = project_dir / "src" / "__init__.py"
+        if not init_path.exists():
+            init_path.write_text(
+                f'"""{project_name} Package"""\n',
+                encoding='utf-8'
+            )
 
         # README.md
-        readme_content = f'''# {project_name}
+        readme_path = project_dir / "README.md"
+        if not readme_path.exists():
+            readme_content = f'''# {project_name}
 
 ## Beschreibung
 
@@ -231,13 +247,15 @@ python src/main.py
 
 [Lizenz hier einfügen]
 '''
-        (project_dir / "README.md").write_text(readme_content, encoding='utf-8')
+            readme_path.write_text(readme_content, encoding='utf-8')
 
         # requirements.txt
-        (project_dir / "requirements.txt").write_text(
-            "# Projektabhängigkeiten\n",
-            encoding='utf-8'
-        )
+        req_path = project_dir / "requirements.txt"
+        if not req_path.exists():
+            req_path.write_text(
+                "# Projektabhängigkeiten\n",
+                encoding='utf-8'
+            )
 
     def open_project(self, path: str) -> Optional[ProjectConfig]:
         """
@@ -258,22 +276,31 @@ python src/main.py
         project_file = project_path / self.PROJECT_FILE
 
         if not project_file.exists():
-            print(f"Keine Projektdatei gefunden: {project_file}")
+            logger.warning("Keine Projektdatei gefunden: %s", project_file)
             return None
 
         try:
             with open(project_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
 
+            now = datetime.now().isoformat()
             valid_fields = {f.name for f in fields(ProjectConfig)}
             filtered = {k: v for k, v in data.items() if k in valid_fields}
+
+            # Pflichtfelder absichern (Fallbacks bei unvollständigen JSON-Metadaten)
+            filtered.setdefault("name", project_path.name or "Projekt")
+            filtered.setdefault("path", str(project_path))
+            filtered.setdefault("created", now)
+            filtered.setdefault("last_opened", now)
+
             config = ProjectConfig(**filtered)
             config.path = str(project_path)  # Pfad aktualisieren
-            config.last_opened = datetime.now().isoformat()
+            config.last_opened = now
 
-            # Aktualisierte Konfiguration speichern
+            # Aktualisierte Konfiguration speichern, ohne benutzerdefinierte Felder zu löschen
+            data.update(asdict(config))
             with open(project_file, 'w', encoding='utf-8') as f:
-                json.dump(asdict(config), f, indent=2, ensure_ascii=False)
+                json.dump(data, f, indent=2, ensure_ascii=False)
 
             self.current_project = config
             self._add_to_recent(str(project_path), config.name)
@@ -304,19 +331,30 @@ python src/main.py
 
         try:
             project_file = Path(self.current_project.path) / self.PROJECT_FILE
+            data = {}
+            if project_file.exists():
+                try:
+                    with open(project_file, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                except (json.JSONDecodeError, OSError):
+                    data = {}
+
+            data.update(asdict(self.current_project))
             with open(project_file, 'w', encoding='utf-8') as f:
-                json.dump(asdict(self.current_project), f, indent=2, ensure_ascii=False)
+                json.dump(data, f, indent=2, ensure_ascii=False)
             return True
         except Exception as e:
-            print(f"Fehler beim Speichern: {e}")
+            logger.error("Fehler beim Speichern: %s", e)
             return False
 
     def get_recent_projects(self) -> List[Dict[str, str]]:
         """Gibt die Liste der zuletzt geöffneten Projekte zurück"""
-        # Prüfen, ob Projekte noch existieren
+        # Prüfen, ob Projekte noch existieren (leere oder reine Whitespace-Pfade ausschließen)
         valid_projects = []
         for project in self.recent_projects:
-            if Path(project.get('path', '')).exists():
+            raw_path = project.get('path', '')
+            p_path = raw_path.strip() if isinstance(raw_path, str) else ''
+            if p_path and Path(p_path).exists():
                 valid_projects.append(project)
 
         if len(valid_projects) != len(self.recent_projects):
