@@ -168,6 +168,114 @@ class WorkspaceExportTests(unittest.TestCase):
         )
         self.assertEqual(payload["build"]["hidden_imports"], ["pkg_resources.py2_warn", "chardet"])
 
+    def test_parse_open_tasks_standard_markdown_lists(self):
+        """Regression B-005: _parse_open_tasks muss Standard-Markdown-Listen (- [ ], * [ ], + [ ]) erfassen."""
+        from core.workspace_export import _parse_open_tasks
+
+        tasks_file = self.project_root / "AUFGABEN_TEST.txt"
+        tasks_file.write_text(
+            "# Projekt-Aufgaben\n\n"
+            "## PORTIERUNG / PLATTFORMÜBERGREIFENDE NUTZUNG (2026-05-27)\n"
+            "- [ ] P0: Dash-Listen-Aufgabe\n"
+            "* [ ] P1: Asterisk-Listen-Aufgabe\n"
+            "+ [ ] P2: Plus-Listen-Aufgabe\n"
+            "  - [ ] P0: Eingerückte Aufgabe\n"
+            "[ ] P3: Bare-Checkbox-Aufgabe\n"
+            "- [x] Erledigte Dash-Aufgabe\n"
+            "* [x] Erledigte Asterisk-Aufgabe\n"
+            "[x] Erledigte Bare-Aufgabe\n",
+            encoding="utf-8",
+        )
+
+        tasks = _parse_open_tasks(tasks_file)
+        self.assertEqual(len(tasks), 5, "Genau 5 offene Aufgaben müssen geparst werden")
+        self.assertEqual(tasks[0]["priority"], "P0")
+        self.assertEqual(tasks[0]["title"], "Dash-Listen-Aufgabe")
+        self.assertEqual(tasks[1]["priority"], "P1")
+        self.assertEqual(tasks[1]["title"], "Asterisk-Listen-Aufgabe")
+        self.assertEqual(tasks[2]["priority"], "P2")
+        self.assertEqual(tasks[2]["title"], "Plus-Listen-Aufgabe")
+        self.assertEqual(tasks[3]["priority"], "P0")
+        self.assertEqual(tasks[3]["title"], "Eingerückte Aufgabe")
+        self.assertEqual(tasks[4]["priority"], "P3")
+        self.assertEqual(tasks[4]["title"], "Bare-Checkbox-Aufgabe")
+
+    def test_parse_requirements_supports_pep508_extras_and_markers(self):
+        """Regression B-006: _parse_requirements muss PEP-508 Extras und Environment-Marker parsen."""
+        from core.workspace_export import _parse_requirements
+
+        req_file = self.project_root / "req_test.txt"
+        req_file.write_text(
+            "# Kommentarzeile\n"
+            "requests[security]>=2.28.0\n"
+            "pydantic[email,dotenv]>=2.0.0 # inline comment\n"
+            "uvicorn[standard]\n"
+            "importlib-metadata>=4.4;python_version<'3.10'\n"
+            "PySide6>=6.5.0\n",
+            encoding="utf-8",
+        )
+
+        reqs = _parse_requirements(req_file)
+        self.assertEqual(len(reqs), 5)
+        self.assertEqual(reqs[0]["name"], "requests")
+        self.assertEqual(reqs[0]["extras"], ["security"])
+        self.assertEqual(reqs[0]["specifier"], ">=2.28.0")
+
+        self.assertEqual(reqs[1]["name"], "pydantic")
+        self.assertEqual(reqs[1]["extras"], ["email", "dotenv"])
+        self.assertEqual(reqs[1]["specifier"], ">=2.0.0")
+
+        self.assertEqual(reqs[2]["name"], "uvicorn")
+        self.assertEqual(reqs[2]["extras"], ["standard"])
+        self.assertNotIn("specifier", reqs[2])
+
+        self.assertEqual(reqs[3]["name"], "importlib-metadata")
+        self.assertEqual(reqs[3]["specifier"], ">=4.4")
+
+        self.assertEqual(reqs[4]["name"], "PySide6")
+        self.assertNotIn("extras", reqs[4])
+        self.assertEqual(reqs[4]["specifier"], ">=6.5.0")
+
+    def test_count_project_files_prunes_venv_node_modules_and_caches(self):
+        """Regression B-007: _count_project_files muss .venv, node_modules, .ruff_cache etc. ignorieren."""
+        from core.workspace_export import _count_project_files
+
+        venv_dir = self.project_root / ".venv" / "Lib" / "site-packages"
+        venv_dir.mkdir(parents=True)
+        (venv_dir / "dummy.py").write_text("pass", encoding="utf-8")
+
+        node_dir = self.project_root / "node_modules" / "express"
+        node_dir.mkdir(parents=True)
+        (node_dir / "index.js").write_text("console.log()", encoding="utf-8")
+
+        ruff_dir = self.project_root / ".ruff_cache" / "content"
+        ruff_dir.mkdir(parents=True)
+        (ruff_dir / "cache.json").write_text("{}", encoding="utf-8")
+
+        # In setUp wurden angelegt: src/main.py, requirements.txt, AUFGABEN.txt, devcenter.json, resources/app.ico (5 Dateien)
+        # Die 3 Dateien in .venv, node_modules und .ruff_cache müssen ignoriert werden.
+        count = _count_project_files(self.project_root)
+        self.assertEqual(count, 5, "Nur die 5 echten Projektdateien dürfen gezählt werden, keine aus .venv/node_modules/.ruff_cache")
+
+    def test_infer_frameworks_preserves_pure_pyqt6(self):
+        """Regression B-008: _infer_frameworks darf bei reinen PyQt6-Projekten PySide6 nicht erzwingen."""
+        from core.workspace_export import _infer_frameworks
+
+        # Reines PyQt6 Projekt
+        pyqt_reqs = [{"name": "PyQt6", "specifier": ">=6.5.0"}]
+        frameworks = _infer_frameworks(pyqt_reqs)
+        self.assertEqual(frameworks, ["PyQt6"], "PySide6 darf bei reinem PyQt6 nicht hinzugefügt werden")
+
+        # PySide6 Projekt
+        pyside_reqs = [{"name": "PySide6", "specifier": ">=6.5.0"}]
+        frameworks = _infer_frameworks(pyside_reqs)
+        self.assertEqual(frameworks, ["PySide6"])
+
+        # Projekt ohne Qt (Fallback auf PySide6)
+        other_reqs = [{"name": "anthropic", "specifier": ">=0.18.0"}]
+        frameworks = _infer_frameworks(other_reqs)
+        self.assertEqual(frameworks, ["PySide6", "Anthropic"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

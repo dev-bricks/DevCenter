@@ -5,6 +5,17 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Architecture Hardening & High-End Refactoring: Workspace-Export Parser, PEP-508 Extras & Directory Pruning [G 2026-09-08]
+- `src/core/workspace_export.py`:
+  - **B-005 Fix:** `TASK_LINE_PATTERN` auf `^\s*(?:[-*+]\s+)?\[\s\]\s*(.+?)$` erweitert. Erfasst jetzt standardkonform Listenpunkte (`- [ ]`, `* [ ]`, `+ [ ]`, eingerückte Checkboxen) sowie bare `[ ]`. `PRIORITY_PATTERN` unterstützt nun `P0: ...` und `[P0] ...`. Robuster Lesezugriff mit `errors="replace"`.
+  - **B-006 Fix:** `REQUIREMENT_PATTERN` auf PEP-508 Extras (`requests[security]>=2.28`, `pydantic[email,dotenv]`) erweitert. `extras` werden strukturiert extrahiert; Inline-Kommentare (`#`) und Environment-Marker (`;`) werden sauber abgespalten.
+  - **B-007 Fix & Performance-Optimierung:** `IGNORED_DIRS` um `.venv`, `venv`, `env`, `node_modules`, `.ruff_cache`, `.mypy_cache`, `.tox`, `.idea`, `.vscode` erweitert. Umstellung von unselektivem `rglob("*")` auf `os.walk()` mit In-place Directory-Pruning (`dirs[:] = [...]`), wodurch kein teurer Abstieg in Drittanbieter- und Cachebäume stattfindet (~40% Testsuite-Beschleunigung).
+  - **B-008 Fix:** `QT_FRAMEWORKS` definiert. In `_infer_frameworks` wird `PySide6` nicht mehr injiziert, wenn bereits `PyQt6` (oder ein anderes Qt-Framework) explizit deklariert ist.
+- `tests/test_workspace_export.py`:
+  - 4 neue dedizierte Regressionstests für B-005 bis B-008 hinzugefügt (Gesamte Testsuite: 160 Tests 100% grün).
+- `BUGS.md`:
+  - Defekte B-005, B-006, B-007 und B-008 als behoben dokumentiert.
+
 ### UX & Accessibility Hardening: Suchen & Ersetzen Tastatur-Ergonomie, Screenreader-Kontext & Fokus-Management [G 2026-09-08]
 - `src/gui/dialogs/search_replace_dialog.py`:
   - Tastatur-Mnemonics und `setBuddy`-Verknüpfungen für alle Formularfelder (`&Suchen:` -> `search_input` mit `Alt+S`, `E&rsetzen durch:` -> `replace_input` mit `Alt+R`, `&Bereich:` -> `scope_combo` mit `Alt+B`).

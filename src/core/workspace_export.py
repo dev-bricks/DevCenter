@@ -6,6 +6,7 @@ DevCenter - Redigierter Workspace-Export
 from __future__ import annotations
 
 import json
+import os
 import re
 from collections import Counter
 from datetime import datetime, timezone
@@ -18,17 +19,46 @@ from core.settings_manager import SettingsManager
 SCHEMA_NAME = "devcenter-workspace-v1"
 APP_NAME = "DevCenter"
 APP_VERSION = "1.0.0"
-TASK_LINE_PATTERN = re.compile(r"^\s*\[\s\]\s*(.+?)\s*$")
-PRIORITY_PATTERN = re.compile(r"^(P\d+):\s*(.+)$")
-REQUIREMENT_PATTERN = re.compile(r"^([A-Za-z0-9_.-]+)\s*([<>=!~].+)?$")
+
+# B-005: Erlaubt Standard-Markdown-Aufgabenlisten (- [ ], * [ ], + [ ]) sowie bare [ ]
+TASK_LINE_PATTERN = re.compile(r"^\s*(?:[-*+]\s+)?\[\s\]\s*(.+?)\s*$")
+# Unterstützt P0: ... sowie [P0] ...
+PRIORITY_PATTERN = re.compile(r"^(?:\[(P\d+)\]|(P\d+):)\s*(.+)$")
+
+# B-006: PEP-508 Extras wie requests[security]>=2.28 oder pydantic[email,dotenv]
+REQUIREMENT_PATTERN = re.compile(r"^([A-Za-z0-9_.-]+)(?:\[([A-Za-z0-9_.,\s-]+)\])?\s*([<>=!~].+)?$")
+
 WINDOWS_ABS_PATTERN = re.compile(r"^[A-Za-z]:[\\/]")
 PATH_HINT_PATTERN = re.compile(r"[\\/]|^[A-Za-z]:")
+
 FRAMEWORK_MAP = {
     "pyside6": "PySide6",
     "pyqt6": "PyQt6",
+    "pyqt5": "PyQt5",
+    "pyside2": "PySide2",
     "anthropic": "Anthropic",
     "keyring": "Keyring",
     "pyinstaller": "PyInstaller",
+}
+QT_FRAMEWORKS = {"PySide6", "PyQt6", "PyQt5", "PySide2"}
+
+# B-007: Verzeichnisse, die bei der Dateizählung ignoriert werden
+IGNORED_DIRS = {
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "build",
+    "dist",
+    "releases",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".tox",
+    ".idea",
+    ".vscode",
 }
 
 
@@ -229,34 +259,42 @@ def _build_build_payload(
     return payload
 
 
-def _parse_requirements(requirements_path: Path) -> List[Dict[str, str]]:
+def _parse_requirements(requirements_path: Path) -> List[Dict[str, Any]]:
     if not requirements_path.exists():
         return []
 
-    requirements: List[Dict[str, str]] = []
-    for raw_line in requirements_path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.split("#", 1)[0].strip()
+    requirements: List[Dict[str, Any]] = []
+    try:
+        content = requirements_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+
+    for raw_line in content.splitlines():
+        line = raw_line.split("#", 1)[0].split(";", 1)[0].strip()
         if not line or line.startswith(("-", ".")):
             continue
         match = REQUIREMENT_PATTERN.match(line)
         if not match:
             continue
-        name, specifier = match.groups()
-        entry = {"name": name}
+        name, extras, specifier = match.groups()
+        entry: Dict[str, Any] = {"name": name}
+        if extras:
+            entry["extras"] = [e.strip() for e in extras.split(",") if e.strip()]
         if specifier:
             entry["specifier"] = specifier.strip()
         requirements.append(entry)
     return requirements
 
 
-def _infer_frameworks(requirements: List[Dict[str, str]]) -> List[str]:
+def _infer_frameworks(requirements: List[Dict[str, Any]]) -> List[str]:
     detected = []
     for requirement in requirements:
         key = requirement["name"].lower()
         framework = FRAMEWORK_MAP.get(key)
         if framework and framework not in detected:
             detected.append(framework)
-    if "PySide6" not in detected:
+    # B-008: Nur PySide6 als Fallback einfügen, wenn kein anderes Qt-Framework erkannt wurde
+    if not any(f in detected for f in QT_FRAMEWORKS):
         detected.insert(0, "PySide6")
     return detected
 
@@ -267,7 +305,12 @@ def _parse_open_tasks(tasks_path: Path) -> List[Dict[str, Any]]:
 
     tasks: List[Dict[str, Any]] = []
     current_section = ""
-    for raw_line in tasks_path.read_text(encoding="utf-8").splitlines():
+    try:
+        content = tasks_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+
+    for raw_line in content.splitlines():
         stripped = raw_line.strip()
         if stripped.startswith("## "):
             current_section = stripped[3:].strip()
@@ -281,20 +324,20 @@ def _parse_open_tasks(tasks_path: Path) -> List[Dict[str, Any]]:
             task["section"] = current_section
         priority_match = PRIORITY_PATTERN.match(text)
         if priority_match:
-            task["priority"], task["title"] = priority_match.groups()
+            prio = priority_match.group(1) or priority_match.group(2)
+            task["priority"] = prio
+            task["title"] = priority_match.group(3).strip()
         tasks.append(task)
     return tasks
 
 
 def _count_project_files(project_root: Path) -> int:
-    ignored_dirs = {".git", "__pycache__", ".pytest_cache", "build", "dist", "releases"}
+    if not project_root.exists():
+        return 0
     count = 0
-    for path in project_root.rglob("*"):
-        if path.is_file():
-            try:
-                relative = path.relative_to(project_root)
-                if not any(part in ignored_dirs for part in relative.parts):
-                    count += 1
-            except ValueError:
-                pass
+    resolved_root = project_root.resolve()
+    for root, dirs, files in os.walk(resolved_root):
+        # In-place Pruning der ignorierten Ordner (verhindert zeitraubendes Traversieren von .venv/node_modules)
+        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
+        count += len(files)
     return count

@@ -37,38 +37,29 @@ für Releases erzeugen.
 **Befund:** Das mitgeführte Hilfsskript installiert Pillow, pygetwindow und keyring bei
 Import automatisch ohne Versionsbindung. Vor erneuter Nutzung oder Distribution auf
 explizite, vorab installierte und geprüfte Abhängigkeiten umstellen.
-
-### B-005: AUFGABEN.txt Markdown-Parsing ignoriert Standard-Aufgabenlisten
-**Status:** Offen
-**Fundort:** `src/core/workspace_export.py` — `_parse_open_tasks()`
-**Befund:** `TASK_LINE_PATTERN = re.compile(r"^\s*\[\s\]\s*(.+?)\s*$")` erwartet bare `[ ]`,
-wodurch Standard-Markdown-Aufgabenlisten mit `- [ ]` oder `* [ ]` (wie in allen AUFGABEN.txt-Dateien üblich)
-nicht gematcht werden und im Workspace-Export als leere Aufgaben- und Release-Checklistenlisten enden.
-
-### B-006: requirements.txt-Parser verwirft Abhängigkeiten mit Extras
-**Status:** Offen
-**Fundort:** `src/core/workspace_export.py` — `_parse_requirements()`
-**Befund:** `REQUIREMENT_PATTERN = re.compile(r"^([A-Za-z0-9_.-]+)\s*([<>=!~].+)?$")`
-kennt keine PEP-508-Extras wie `requests[security]>=2.28` oder `pydantic[email]`.
-Pakete mit eckigen Klammern schlagen im Regex fehl und werden still aus dem Export gedroppt.
-
-### B-007: _count_project_files indexiert .venv, node_modules und .ruff_cache
-**Status:** Offen
-**Fundort:** `src/core/workspace_export.py` — `_count_project_files()`
-**Befund:** Die Ausschlussliste `ignored_dirs` umfasst nur `.git`, `__pycache__`, `.pytest_cache`,
-`build`, `dist`, `releases`. Befinden sich `.venv`, `node_modules` oder `.ruff_cache` im Projekt,
-fließen tausende Artefakt-Dateien fälschlich in `files_indexed` ein.
-
-### B-008: _infer_frameworks erzwingt PySide6 bei reinen PyQt6-Projekten
-**Status:** Offen
-**Fundort:** `src/core/workspace_export.py` — `_infer_frameworks()`
-**Befund:** Wenn ein Projekt explizit `pyqt6` deklariert, wird `PyQt6` erkannt, aber
-durch `if "PySide6" not in detected: detected.insert(0, "PySide6")` zusätzlich
-`PySide6` eingefügt, obwohl beide Qt-Bindings inkompatibel sind.
-
 ---
 
 ## Behoben
+
+### B-005: AUFGABEN.txt Markdown-Parsing ignoriert Standard-Aufgabenlisten
+**Status:** Behoben (2026-09-08)
+**Dateien:** `src/core/workspace_export.py`, `tests/test_workspace_export.py`
+**Fix:** `TASK_LINE_PATTERN` auf `^\s*(?:[-*+]\s+)?\[\s\]\s*(.+?)$` erweitert, um Standard-Listenpunkte (`- [ ]`, `* [ ]`, `+ [ ]`, eingerückte Aufgaben) sowie bare `[ ]` robust zu parsen. `PRIORITY_PATTERN` unterstützt nun sowohl `P0: ...` als auch `[P0] ...`. Robuste Fehlerbehandlung mit `errors="replace"`. Regressionstest `test_parse_open_tasks_standard_markdown_lists` hinzugefügt.
+
+### B-006: requirements.txt-Parser verwirft Abhängigkeiten mit Extras
+**Status:** Behoben (2026-09-08)
+**Dateien:** `src/core/workspace_export.py`, `tests/test_workspace_export.py`
+**Fix:** `REQUIREMENT_PATTERN` auf `^([A-Za-z0-9_.-]+)(?:\[([A-Za-z0-9_.,\s-]+)\])?\s*([<>=!~].+)?$` erweitert, um PEP-508 Extras (`requests[security]>=2.28`, `pydantic[email,dotenv]`) sauber zu extrahieren (`extras: [...]`), Inline-Kommentare (`#`) und Environment-Marker (`;`) vor dem Parsing abzuspalten. Regressionstest `test_parse_requirements_supports_pep508_extras_and_markers` hinzugefügt.
+
+### B-007: _count_project_files indexiert .venv, node_modules und .ruff_cache
+**Status:** Behoben (2026-09-08)
+**Dateien:** `src/core/workspace_export.py`, `tests/test_workspace_export.py`
+**Fix:** `IGNORED_DIRS` um `.venv`, `venv`, `env`, `node_modules`, `.ruff_cache`, `.mypy_cache`, `.tox`, `.idea`, `.vscode` erweitert. Performance-Optimierung: Umstellung von teurem `rglob("*")` auf `os.walk()` mit In-place Directory-Pruning (`dirs[:] = [...]`), wodurch nicht rekursiv in Drittanbieter- und Cache-Verzeichnisse abgestiegen wird (Testsuite-Laufzeit von ~26s auf ~15s beschleunigt). Regressionstest `test_count_project_files_prunes_venv_node_modules_and_caches` hinzugefügt.
+
+### B-008: _infer_frameworks erzwingt PySide6 bei reinen PyQt6-Projekten
+**Status:** Behoben (2026-09-08)
+**Dateien:** `src/core/workspace_export.py`, `tests/test_workspace_export.py`
+**Fix:** `QT_FRAMEWORKS = {"PySide6", "PyQt6", "PyQt5", "PySide2"}` definiert. `_infer_frameworks` fügt den PySide6-Fallback nur noch ein, wenn kein anderes Qt-Framework in den Abhängigkeiten erkannt wurde. Reines PyQt6 bleibt rein PyQt6. Regressionstest `test_infer_frameworks_preserves_pure_pyqt6` hinzugefügt.
 
 ### B-004: Datenverlust und Absturz in ProjectManager bei unvollständigen Metadaten und Überschreiben benutzerdefinierter Felder
 **Status:** Behoben (2026-09-07)
