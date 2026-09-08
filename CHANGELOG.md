@@ -5,6 +5,20 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### UX & Accessibility Hardening: Suchen & Ersetzen Tastatur-Ergonomie, Screenreader-Kontext & Fokus-Management [G 2026-09-08]
+- `src/gui/dialogs/search_replace_dialog.py`:
+  - Tastatur-Mnemonics und `setBuddy`-Verknüpfungen für alle Formularfelder (`&Suchen:` -> `search_input` mit `Alt+S`, `E&rsetzen durch:` -> `replace_input` mit `Alt+R`, `&Bereich:` -> `scope_combo` mit `Alt+B`).
+  - Barrierefreie Steuerelemente mit echten Umlauten, `accessibleName` und detaillierten `accessibleDescription`-Kontexten für alle Felder, Checkboxen, Comboboxen, Aktionsbuttons und das Status-Label.
+  - Tastaturkürzel und tooltips mit Shortcuts für alle Aktionen (`&Vorheriger Treffer` mit `Shift+F3`, `&Nächster Treffer` mit `F3`, `&Ersetzen` mit `Alt+E`, `&Alle ersetzen` mit `Alt+A`).
+  - `replace_input.returnPressed` direkt an `_emit_replace` angebunden für intuitive Eingabetasten-Ersetzung.
+  - Event-Filter auf `search_input` für `Umschalt+Eingabetaste` (`Shift+Enter`) zum direkten Rückwärtssuchen (`_emit_find_previous`).
+  - `reject()`-Override stellt sauberes Abbruch-Signal bei Escape sicher.
+  - Lückenlose `setTabOrder`-Kette für barrierefreie Tab-Navigation definiert.
+- `src/gui/main_window.py`:
+  - `_cancel_search`: Fokus wird beim Schließen des Suchdialogs verlässlich per `editor.setFocus()` an den aktiven Code-Editor zurückgegeben.
+- `tests/test_search_replace_accessibility.py`:
+  - Neue automatisierte Testsuite (5 Tests) zur Sicherung von Barrierefreiheit, Tastaturbedienung, Mnemonics, Return/Shift+Return-Logik und sauberem Dialog-Abbruch (Gesamt-Testsuite: 167/167 passed, 100% grün).
+
 ### GitHub Repository Hygiene, Multi-OS CI Hardening & PEP 621 Metadata Parity (Pfad A) [G 2026-08-24]
 - `.github/workflows/tests.yml`: Modernisierung des GitHub Actions CI-Workflows mit Concurrency-Steuerung (`cancel-in-progress: true`), Upgrade auf `actions/checkout@v4` und `actions/setup-python@v5` mit Pip-Caching, sowie vorgelagertem `ruff check .` Linter-Gate.
 - `pyproject.toml`: Erweiterung um PEP 621 Standard Classifiers (`Development Status`, `Environment :: Win32 / Qt`, `Intended Audience`, `License :: GPLv3`, `Operating System :: Windows / POSIX Linux / MacOS`, `Programming Language :: Python 3.11/3.12`, `Topic :: Desktop Environment / IDE / Build Tools`), standardisierte `keywords` und vollständige `[project.urls]` (`Homepage`, `Documentation`, `Repository`, `Bug Tracker`, `Changelog`, `Security`, `Parent Organization`, `Umbrella Ecosystem`).

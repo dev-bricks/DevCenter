@@ -1011,6 +1011,7 @@ class MainWindow(QMainWindow):
         editor = self._get_current_editor()
         if editor:
             editor.cancel_search()
+            editor.setFocus()
         if self._search_dialog:
             self._search_dialog.set_status("")
 
