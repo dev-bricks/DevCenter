@@ -218,6 +218,130 @@ class TestProjectManagerMetadataIntegrity(unittest.TestCase):
         self.assertNotIn("Hello from", content)
 
 
+class TestMethodAnalyzerParameterAndNameCollection(unittest.TestCase):
+    """
+    Bug B-009: MethodAnalyzer AST Name Collection & Parameter Extraction
+    - NameCollector übersieht posonlyargs, vararg (*args), kwonlyargs und kwarg (**kwargs)
+    - NameCollector übersieht Lambda-Parameter, Exception-Handler-Aliase (except ... as e) und Match-Case-Pattern-Bindings
+    - Führt zu False Positives bei undefined_names
+    - _analyze_function unterschlägt posonlyargs, *vararg, kwonlyargs und **kwargs in MethodInfo.args
+    """
+
+    def setUp(self):
+        import tempfile
+        import sys
+        self.temp_dir = tempfile.mkdtemp()
+        sys_path_src = os.path.join(PROJECT_ROOT, "src")
+        if sys_path_src not in sys.path:
+            sys.path.insert(0, sys_path_src)
+        from modules.analyzer.method_analyzer import MethodAnalyzer
+        self.analyzer = MethodAnalyzer()
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def test_varargs_and_kwargs_not_flagged_as_undefined_names(self):
+        """Funktionen mit *args, **kwargs und kwonlyargs dürfen diese nicht als undefined_names melden."""
+        code = '''
+def process_data(a: int, *args: str, timeout: int = 30, **kwargs: float):
+    if timeout > 0:
+        return a, args, kwargs
+'''
+        file_path = os.path.join(self.temp_dir, "test_params.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        self.assertNotIn("args", result.undefined_names, "*args darf nicht als undefinierter Name gemeldet werden")
+        self.assertNotIn("kwargs", result.undefined_names, "**kwargs darf nicht als undefinierter Name gemeldet werden")
+        self.assertNotIn("timeout", result.undefined_names, "kwonlyarg darf nicht als undefinierter Name gemeldet werden")
+        self.assertEqual(len(result.undefined_names), 0)
+
+    def test_posonly_and_all_argument_kinds_in_method_info_args(self):
+        """_analyze_function muss alle Parameterarten inklusive Annotationen in MethodInfo.args abbilden."""
+        code = '''
+def full_sig(pos_only: int, /, standard: str, *var_args: int, kw_only: bool = True, **extra: str) -> None:
+    pass
+'''
+        file_path = os.path.join(self.temp_dir, "test_sig.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        self.assertEqual(len(result.functions), 1)
+        func = result.functions[0]
+        self.assertEqual(
+            func.args,
+            ["pos_only: int", "/", "standard: str", "*var_args: int", "kw_only: bool", "**extra: str"]
+        )
+
+    def test_lambda_parameters_not_flagged_as_undefined_names(self):
+        """Parameter von Lambda-Ausdrücken dürfen nicht als undefined_names gemeldet werden."""
+        code = '''
+transform = lambda x, y=1: x + y
+'''
+        file_path = os.path.join(self.temp_dir, "test_lambda.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        self.assertNotIn("x", result.undefined_names)
+        self.assertNotIn("y", result.undefined_names)
+        self.assertEqual(len(result.undefined_names), 0)
+
+    def test_except_handler_alias_not_flagged_as_undefined_names(self):
+        """Exception-Alias (except ... as e) darf nicht als undefined_names gemeldet werden."""
+        code = '''
+try:
+    pass
+except Exception as err:
+    print(err)
+'''
+        file_path = os.path.join(self.temp_dir, "test_except.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        self.assertNotIn("err", result.undefined_names)
+        self.assertEqual(len(result.undefined_names), 0)
+
+    def test_match_case_pattern_bindings_not_flagged_as_undefined_names(self):
+        """Match-Case Pattern-Bindings (as-Name, MatchStar, MatchMapping rest) dürfen nicht als undefined gemeldet werden."""
+        code = '''
+data = [1, 2, 3]
+match data:
+    case [head, *tail] as seq:
+        print(head, tail, seq)
+    case {"status": s, **rest}:
+        print(s, rest)
+'''
+        file_path = os.path.join(self.temp_dir, "test_match.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        for expected in ["head", "tail", "seq", "s", "rest"]:
+            self.assertNotIn(expected, result.undefined_names)
+        self.assertEqual(len(result.undefined_names), 0)
+
+    def test_builtin_exceptions_not_flagged_as_undefined_names(self):
+        """Standard-Exceptions wie SyntaxError, PermissionError, TimeoutError dürfen nicht als undefined gelten."""
+        code = '''
+try:
+    pass
+except (SyntaxError, PermissionError, TimeoutError, UnicodeDecodeError):
+    pass
+'''
+        file_path = os.path.join(self.temp_dir, "test_builtins.py")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        self.assertEqual(len(result.undefined_names), 0)
+
+
 if __name__ == "__main__":
     unittest.main()
+
 

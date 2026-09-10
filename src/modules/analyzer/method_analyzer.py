@@ -140,21 +140,71 @@ class NameCollector(ast.NodeVisitor):
             self.imported_names.add(name)
         self.generic_visit(node)
 
+    def _collect_arguments(self, args_node: ast.arguments):
+        """Sammelt alle Parameterarten aus einem arguments-Knoten."""
+        for arg in getattr(args_node, 'posonlyargs', []):
+            self.defined_names.add(arg.arg)
+        for arg in args_node.args:
+            self.defined_names.add(arg.arg)
+        if args_node.vararg:
+            self.defined_names.add(args_node.vararg.arg)
+        for arg in args_node.kwonlyargs:
+            self.defined_names.add(arg.arg)
+        if args_node.kwarg:
+            self.defined_names.add(args_node.kwarg.arg)
+
+    def _collect_type_params(self, node):
+        """Sammelt Type-Parameter (PEP 695, Python 3.12+)."""
+        for tp in getattr(node, 'type_params', []):
+            if hasattr(tp, 'name'):
+                self.defined_names.add(tp.name)
+
     def visit_FunctionDef(self, node):
         """Sammelt Funktionsnamen und deren Argumente."""
         self.defined_names.add(node.name)
-        for arg in node.args.args:
-            self.defined_names.add(arg.arg)
+        self._collect_type_params(node)
+        self._collect_arguments(node.args)
         self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node):
         """Delegiert an visit_FunctionDef fuer async-Funktionen."""
         self.visit_FunctionDef(node)
 
+    def visit_Lambda(self, node):
+        """Sammelt Argumente aus Lambda-Ausdruecken."""
+        self._collect_arguments(node.args)
+        self.generic_visit(node)
+
     def visit_ClassDef(self, node):
         """Sammelt Klassennamen."""
         self.defined_names.add(node.name)
+        self._collect_type_params(node)
         self.generic_visit(node)
+
+    def visit_ExceptHandler(self, node):
+        """Sammelt Exception-Alias-Namen (except ... as e)."""
+        if node.name:
+            self.defined_names.add(node.name)
+        self.generic_visit(node)
+
+    def visit_MatchAs(self, node):
+        """Sammelt gebundene Namen aus Match-Case (case x as y bzw. case y)."""
+        if node.name:
+            self.defined_names.add(node.name)
+        self.generic_visit(node)
+
+    def visit_MatchStar(self, node):
+        """Sammelt Rest-Sequenznamen aus Match-Case (case [*rest])."""
+        if node.name:
+            self.defined_names.add(node.name)
+        self.generic_visit(node)
+
+    def visit_MatchMapping(self, node):
+        """Sammelt Rest-Dictionary-Namen aus Match-Case (case {**rest})."""
+        if getattr(node, 'rest', None):
+            self.defined_names.add(node.rest)
+        self.generic_visit(node)
+
 
 
 class MethodAnalyzer:
@@ -183,9 +233,11 @@ class MethodAnalyzer:
         '__doc__', '__package__', 'True', 'False', 'None', 'Ellipsis',
         'NotImplemented', 'Exception', 'BaseException', 'TypeError', 'ValueError',
         'KeyError', 'IndexError', 'AttributeError', 'ImportError', 'OSError',
-        'FileNotFoundError', 'RuntimeError', 'StopIteration', 'GeneratorExit',
-        'AssertionError', 'NameError', 'ZeroDivisionError', 'OverflowError',
-        'MemoryError', 'RecursionError', 'SystemExit', 'KeyboardInterrupt'
+        'FileNotFoundError', 'PermissionError', 'TimeoutError', 'RuntimeError',
+        'StopIteration', 'GeneratorExit', 'AssertionError', 'NameError',
+        'ZeroDivisionError', 'OverflowError', 'MemoryError', 'RecursionError',
+        'SystemExit', 'KeyboardInterrupt', 'SyntaxError', 'LookupError',
+        'UnicodeError', 'UnicodeDecodeError', 'UnicodeEncodeError', 'IOError'
     }
 
     def __init__(self):
@@ -303,11 +355,47 @@ class MethodAnalyzer:
         """Analysiert eine einzelne Funktion"""
         # Argumente
         args = []
+
+        # Positional-only Argumente (PEP 570)
+        posonly = getattr(node.args, 'posonlyargs', [])
+        for arg in posonly:
+            arg_str = arg.arg
+            if arg.annotation:
+                arg_str += f": {self._get_annotation(arg.annotation)}"
+            args.append(arg_str)
+        if posonly:
+            args.append("/")
+
+        # Standard-Positionsargumente
         for arg in node.args.args:
             arg_str = arg.arg
             if arg.annotation:
                 arg_str += f": {self._get_annotation(arg.annotation)}"
             args.append(arg_str)
+
+        # Vararg (*args)
+        if node.args.vararg:
+            arg_str = f"*{node.args.vararg.arg}"
+            if node.args.vararg.annotation:
+                arg_str += f": {self._get_annotation(node.args.vararg.annotation)}"
+            args.append(arg_str)
+        elif node.args.kwonlyargs:
+            args.append("*")
+
+        # Keyword-only Argumente
+        for arg in node.args.kwonlyargs:
+            arg_str = arg.arg
+            if arg.annotation:
+                arg_str += f": {self._get_annotation(arg.annotation)}"
+            args.append(arg_str)
+
+        # Kwarg (**kwargs)
+        if node.args.kwarg:
+            arg_str = f"**{node.args.kwarg.arg}"
+            if node.args.kwarg.annotation:
+                arg_str += f": {self._get_annotation(node.args.kwarg.annotation)}"
+            args.append(arg_str)
+
 
         # Rückgabetyp
         returns = None
