@@ -5,6 +5,20 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Security, Dependency Floors & Third-Party License Audit (v1.0.1) [G 2026-09-11]
+- `THIRD_PARTY_LICENSES.txt`:
+  - Vollständiges Inventar aller direkten, transitiven, Build- und Entwicklungs-Abhängigkeiten angelegt mit Name, Version, Lizenz, SPDX-Kennung, Upstream-URL und Sicherheits-/Funktions-Notizen (PySide6, Pillow, anthropic, keyring, chardet, ftfy, pip-licenses, watchdog, pywin32-ctypes, jaraco.classes, jaraco.context, jaraco.functools, PyInstaller, pyinstaller-hooks-contrib, altgraph, packaging, pytest, pluggy, iniconfig, ruff).
+- `pyproject.toml` & `requirements.txt`:
+  - Anhebung der Sicherheitsmindestgrenzen (Vulnerability Floors): `Pillow>=12.3.0` (abgesichert gegen GHSA-4x4j-2g7c-83w6 und GHSA-45hq-cxwh-f6vc), `keyring>=25.0.0`, `pytest>=9.1.1` (abgesichert gegen CVE-2025-7117 / GHSA-6w46-j5rx-g56g), `ruff>=0.9.0`.
+  - Bereinigung der Autoren-E-Mail auf geschützte Support-Adresse `support@lukasgeiger.com`.
+  - Ergänzung von `pythonpath = ["src"]` in `[tool.pytest.ini_options]` für standardkonforme Modulauflösung.
+- `SECURITY.md`:
+  - Härtung der zweisprachigen Meldekette um `security@dev-bricks.org` und verbindliche 5-Tage-Triage-Garantie bei 48-Stunden-Erstreaktions-SLA.
+- `.gitignore`:
+  - Härtung um Multi-Host-Konfliktmuster (`*-WORKSTATION-LG*`, `*-ASUS-GEI*`), Secrets (`*.pfx`, `secrets.*`) und Fail-Closed Lock-Muster (`LOCK.*`, `*.lock`).
+- `tests/test_security_license_contract.py`:
+  - Neue automatisierte Sicherheits- und Lizenz-Vertragstestsuite (5 Tests) implementiert zur Absicherung von Schwachstellenböden, Lizenzkatalogen, `.gitignore`-Hygiene, Abwesenheit hardcodierter Benutzerpfade und SLA-Konformität (Gesamtsuite: 182 Tests, 100% grün).
+
 ### Architecture Hardening & High-End Refactoring: Workspace-Export Parser, PEP-508 Extras & Directory Pruning [G 2026-09-08]
 - `src/core/workspace_export.py`:
   - **B-005 Fix:** `TASK_LINE_PATTERN` auf `^\s*(?:[-*+]\s+)?\[\s\]\s*(.+?)$` erweitert. Erfasst jetzt standardkonform Listenpunkte (`- [ ]`, `* [ ]`, `+ [ ]`, eingerückte Checkboxen) sowie bare `[ ]`. `PRIORITY_PATTERN` unterstützt nun `P0: ...` und `[P0] ...`. Robuster Lesezugriff mit `errors="replace"`.

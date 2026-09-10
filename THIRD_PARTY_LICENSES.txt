@@ -1,0 +1,119 @@
+PySide6
+License: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+SPDX: LGPL-3.0-only
+URL: https://pypi.org/project/PySide6/
+Notice: Offizielle Python-Bindungen für das Qt-Anwendungsframework (GUI, Widgets, Syntax-Highlighting, Event-Bus)
+
+Pillow
+License: HPND-sell-variant (Historical Permission Notice and Disclaimer)
+SPDX: HPND-sell-variant
+URL: https://pypi.org/project/Pillow/
+Notice: Bildverarbeitung und Multi-Resolution Icon-Generierung (>=12.3.0 abgesichert gegen GHSA-4x4j-2g7c-83w6 und GHSA-45hq-cxwh-f6vc)
+
+anthropic
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/anthropic/
+Notice: Optionaler lokaler KI-Entwicklungsassistent mit strikter Zero-Egress- und Opt-in-Garantie (>=0.18.0)
+
+keyring
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/keyring/
+Notice: Verschlüsselte Persistenz sensibler API-Schlüssel im nativen Betriebssystem-Schlüsselspeicher (>=25.0.0)
+
+chardet
+License: LGPL-2.1-or-later
+SPDX: LGPL-2.1-or-later
+URL: https://pypi.org/project/chardet/
+Notice: Robuste universelle Zeichensatz- und Kodierungserkennung für Quellcodedateien (>=5.0.0)
+
+ftfy
+License: Apache-2.0
+SPDX: Apache-2.0
+URL: https://pypi.org/project/ftfy/
+Notice: Reparatur von Mojibake, UTF-8-Fehlkodierungen und Textbeschädigungen (>=6.1.0)
+
+pip-licenses
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/pip-licenses/
+Notice: Automatisierte Sammlung und Inspektion von Open-Source-Paketlizenzen im Build-Modul (>=4.0.0)
+
+watchdog
+License: Apache-2.0
+SPDX: Apache-2.0
+URL: https://pypi.org/project/watchdog/
+Notice: Lokale Dateisystem- und Verzeichnisüberwachung für automatische Workspace-Aktualisierungen (>=3.0.0)
+
+pywin32-ctypes
+License: BSD-3-Clause
+SPDX: BSD-3-Clause
+URL: https://pypi.org/project/pywin32-ctypes/
+Notice: Reiner Ctypes-Zugriff auf den Windows Credential Manager für keyring ohne Compilerabhängigkeit
+
+jaraco.classes
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/jaraco.classes/
+Notice: Klassen- und Metaklassen-Dienstprogramme für das keyring-Framework
+
+jaraco.context
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/jaraco.context/
+Notice: Kontextmanager-Hilfsfunktionen für sichere Credential-Operationen
+
+jaraco.functools
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/jaraco.functools/
+Notice: Funktionale Werkzeuge, Caching und Dekoratoren für keyring
+
+PyInstaller
+License: GPL-2.0-or-later WITH Bootloader-exception
+SPDX: GPL-2.0-or-later WITH Bootloader-exception
+URL: https://www.pyinstaller.org/
+Notice: Build-System zur Paketierung eigenständiger Desktop-Binärdateien unter der PyInstaller Bootloader Special Exception (>=5.0.0)
+
+pyinstaller-hooks-contrib
+License: Apache-2.0
+SPDX: Apache-2.0
+URL: https://github.com/pyinstaller/pyinstaller-hooks-contrib
+Notice: Community-gepflegte Import- und Paketierungs-Hooks für PyInstaller
+
+altgraph
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/altgraph/
+Notice: Statische Abhängigkeits-Graph-Analyse während der PyInstaller-Kompilierung
+
+packaging
+License: Apache-2.0 OR BSD-2-Clause
+SPDX: Apache-2.0 OR BSD-2-Clause
+URL: https://pypi.org/project/packaging/
+Notice: PEP 440/508 Versions- und Spezifikationsverarbeitung für Abhängigkeitsprüfungen
+
+pytest
+License: MIT
+SPDX: MIT
+URL: https://pytest.org/
+Notice: Testframework und Suite-Runner (>=9.1.1 abgesichert gegen CVE-2025-7117 / GHSA-6w46-j5rx-g56g)
+
+pluggy
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/pluggy/
+Notice: Plugin- und Hook-Management-Architektur für pytest
+
+iniconfig
+License: MIT
+SPDX: MIT
+URL: https://pypi.org/project/iniconfig/
+Notice: Schneller Parser für Testkonfigurationen in pyproject.toml
+
+ruff
+License: MIT OR Apache-2.0
+SPDX: MIT OR Apache-2.0
+URL: https://github.com/astral-sh/ruff
+Notice: Statische Codeanalyse, Linter und Formatierungsvalidierung (>=0.9.0)

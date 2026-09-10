@@ -43,10 +43,12 @@ credentials.json
 client_secret*.json
 token.json
 *.pem
+*.pfx
 *.key
 keyring/
 secrets/
 secret/
+secrets.*
 *.secret
 *.secrets
 *.db
@@ -83,6 +85,8 @@ Thumbs.db
 ehthumbs.db
 
 # ---- Lokale Sync-/Host-Nebenstaende ----
+*-WORKSTATION-LG*
+*-ASUS-GEI*
 *-ASUS-GEI.md
 *.sync-conflict-*
 *.conflict
@@ -100,3 +104,5 @@ DONE.md
 
 # Lokale Agenten-Locks (LOCK-System)
 LOCK*.txt
+LOCK.*
+*.lock

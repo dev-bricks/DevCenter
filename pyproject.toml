@@ -2,7 +2,7 @@
 name = "devcenter-suite"
 version = "1.0.0"
 description = "Entwickler-Zentrale: Build, Analyse, Sync und AI-Assistent"
-authors = [{ name = "Lukas Geiger", email = "lukasgeiger@googlemail.com" }]
+authors = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 readme = "README.md"
@@ -43,9 +43,9 @@ classifiers = [
 dependencies = [
     "PySide6>=6.5.0,<7.0.0",
     "pyinstaller>=5.0.0,<7.0.0",
-    "Pillow>=12.2.0,<13.0.0",
+    "Pillow>=12.3.0,<13.0.0",
     "anthropic>=0.18.0,<1.0.0",
-    "keyring>=23.0.0,<26.0.0",
+    "keyring>=25.0.0,<26.0.0",
     "chardet>=5.0.0,<6.0.0",
     "ftfy>=6.1.0,<7.0.0",
     "pip-licenses>=4.0.0,<5.0.0",
@@ -63,10 +63,11 @@ Security = "https://github.com/dev-bricks/DevCenter/blob/master/SECURITY.md"
 "Umbrella Ecosystem" = "https://github.com/open-bricks"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.5"]
+dev = ["pytest>=9.1.1", "ruff>=0.9.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.ruff]
 target-version = "py311"
