@@ -133,6 +133,49 @@ def test_security_policy_sla_and_contacts() -> None:
     assert "Sicherheitsrichtlinie" in content, "German section header missing"
 
 
+def test_third_party_licenses_md_comprehensive_sbom() -> None:
+    """Verify THIRD_PARTY_LICENSES.md contains rich markdown tables, SPDX IDs, and compliance analysis."""
+    md_file = ROOT / "THIRD_PARTY_LICENSES.md"
+    assert md_file.is_file(), "THIRD_PARTY_LICENSES.md must exist in root"
+    content = md_file.read_text(encoding="utf-8")
+
+    assert "Software Bill of Materials (SBOM)" in content
+    assert "1.0.1" in content
+    assert "GPL" in content
+
+    required_packages = [
+        "PySide6",
+        "Pillow",
+        "anthropic",
+        "keyring",
+        "chardet",
+        "ftfy",
+        "pip-licenses",
+        "watchdog",
+        "pywin32-ctypes",
+        "jaraco.classes",
+        "jaraco.context",
+        "jaraco.functools",
+        "PyInstaller",
+        "pyinstaller-hooks-contrib",
+        "altgraph",
+        "packaging",
+        "pytest",
+        "pluggy",
+        "iniconfig",
+        "ruff",
+    ]
+    for pkg in required_packages:
+        assert pkg in content, f"Package {pkg} missing in THIRD_PARTY_LICENSES.md"
+
+    # Architecture assurances
+    assert "LGPL" in content
+    assert "Bootloader Special Exception" in content
+    assert "Zero-Egress" in content
+    assert "RunAsInvoker" in content
+    assert '"compliance": {' in content
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main(["-v", __file__]))

@@ -90,6 +90,10 @@ ehthumbs.db
 *-ASUS-GEI.md
 *.sync-conflict-*
 *.conflict
+* (kopie)*
+* (copy)*
+*.sync-temp-*
+*-CONFLIT-*
 
 # ---- Standard-Patterns ----
 PLAN.txt
@@ -106,3 +110,4 @@ DONE.md
 LOCK*.txt
 LOCK.*
 *.lock
+LOCK.permissions.json

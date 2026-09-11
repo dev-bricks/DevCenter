@@ -18,7 +18,7 @@ from core.settings_manager import SettingsManager
 
 SCHEMA_NAME = "devcenter-workspace-v1"
 APP_NAME = "DevCenter"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 
 # B-005: Erlaubt Standard-Markdown-Aufgabenlisten (- [ ], * [ ], + [ ]) sowie bare [ ]
 TASK_LINE_PATTERN = re.compile(r"^\s*(?:[-*+]\s+)?\[\s\]\s*(.+?)\s*$")

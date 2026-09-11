@@ -1,0 +1,139 @@
+# MARKETING-LOG: DevCenter (devcenter-suite)
+# Canonical Repository: https://github.com/dev-bricks/DevCenter
+# Ecosystem: dev-bricks | Umbrella: open-bricks
+# Initial Setup / Audit: 2026-09-12
+# Status: Active (Pfad B Discoverability, Marketing & Invariants Standard)
+
+===============================================================================
+1. POSITIONING & VALUE PROPOSITION
+===============================================================================
+DevCenter is a local-first, zero-egress Python desktop IDE and developer toolkit
+designed specifically for Windows 10/11 environments. It brings together Python code
+editing, AST static analysis, automated encoding repairs, one-click PyInstaller
+EXE compilation, icon generation, third-party license collection, full-text SQLite
+file indexing, and an optional, secure Claude AI assistant into a cohesive,
+standalone PySide6 desktop suite.
+
+Key Differentiators:
+- 100% Local-First & Zero-Egress: Operates entirely offline; no mandatory telemetry,
+  no cloud accounts, no background data leakage.
+- Python Desktop Focus: Tailored directly for building, inspecting, testing, and
+  bundling Python desktop and CLI applications.
+- One-Click EXE Packaging: Built-in PyInstaller pipeline with multi-resolution
+  Windows ICO conversion and automatic license compliance notices.
+- Non-Executing Static AST Analysis: Fast method, class, and cyclomatic complexity
+  inspections without running untrusted user scripts.
+- Secure AI Isolation: Optional Claude API integration uses native Windows Credential
+  Manager (keyring) and strictly opt-in prompt dispatch.
+
+===============================================================================
+2. TARGET PERSONAS
+===============================================================================
+[PERSONA-01] Windows Python Desktop Application Developers & GUI Builders
+- Profile: Python developers building Qt, PySide6, PyQt, or Tkinter desktop apps.
+- Pain Points: Complex PyInstaller command lines, manual ICO multi-resolution creation,
+  scattered license notices, tedious encoding corruptions (mojibake).
+- How DevCenter Wins: Integrated PyInstaller GUI, automated icon converter,
+  automated third-party license generator, and built-in ftfy encoding repair.
+
+[PERSONA-02] Solo Maintainers & Local-First Engineers
+- Profile: Open-source maintainers and indie hackers managing multiple Python packages.
+- Pain Points: Heavyweight IDE startup lag (Electron/Java), memory consumption,
+  opaque background processes, cumbersome project switching.
+- How DevCenter Wins: Lightweight PySide6 native GUI, instant startup, fast
+  SQLite full-text index, clean workspace export snapshots.
+
+[PERSONA-03] Security-Conscious Enterprise & Air-Gapped Developers
+- Profile: Engineers working in regulated, corporate, or air-gapped networks.
+- Pain Points: IDEs requiring cloud logins, intrusive telemetry, automatic code
+  exfiltration, unverified transitive dependencies.
+- How DevCenter Wins: Zero egress by default, strict fail-closed vulnerability
+  floors, unprivileged RunAsInvoker execution, full SBOM transparency.
+
+[PERSONA-04] AI-Assisted Python Prompt Engineers & Agent Builders
+- Profile: Developers pairing with LLMs (Claude, GPT, Gemini) for rapid prototyping.
+- Pain Points: Copy-pasting massive file trees, accidental leakage of API keys,
+  cluttered prompt context.
+- How DevCenter Wins: Redacted workspace export (`devcenter-workspace-v1.json`),
+  machine-readable `llms.txt`, secure keyring secret storage.
+
+===============================================================================
+3. HIGH-INTENT SEARCH QUERIES & SEO KEYWORDS
+===============================================================================
+Core Intent Queries:
+- "local-first python ide windows"
+- "pyside6 python code editor desktop"
+- "pyinstaller exe packaging gui tool"
+- "python ast code analysis complexity tool"
+- "offline python ide without cloud login"
+- "python mojibake encoding repair tool"
+- "desktop developer toolkit python open source"
+- "lightweight python ide for windows 11"
+- "python third-party license collector pyinstaller"
+- "dev-bricks devcenter python development suite"
+
+Semantic Categories:
+- IDE / Code Editor: syntax highlighting, code folding, non-modal search and replace.
+- Static Analysis: AST parser, cyclomatic complexity, unused import detection.
+- Packaging & Distribution: PyInstaller wrapper, one-file / one-dir, ICO converter.
+- Data Privacy & Security: zero-egress, local keyring, redacted workspace export.
+
+===============================================================================
+4. COMPETITIVE MATRIX
+===============================================================================
+Feature / Capability          | DevCenter    | VS Code     | PyCharm Comm | Thonny    | CLI Tools
+------------------------------+--------------+-------------+--------------+-----------+----------
+100% Offline / Zero-Egress    | YES (Strict) | Needs Config| Telemetry    | YES       | YES
+Native Qt/PySide6 Desktop UI  | YES          | NO (Electron| NO (JVM)     | NO (Tk)   | N/A
+Integrated PyInstaller GUI    | YES (Builtin)| Via Plugin  | Via Plugin   | NO        | Manual
+Auto ICO Converter (PNG->ICO) | YES (Multi)  | NO          | NO           | NO        | Separate
+License SBOM Collector        | YES (Builtin)| NO          | NO           | NO        | Separate
+AST Static Complexity Parser  | YES (Fast)   | Via Ext     | Builtin      | Basic     | CLI only
+Automated Encoding Fixer      | YES (ftfy)   | Manual      | Manual       | Basic     | CLI only
+Local Keyring Vault for AI    | YES          | Ext-dependent| Ext-dependent| NO       | N/A
+Redacted Workspace Export     | YES (JSON)   | NO          | NO           | NO        | Manual
+Unprivileged RunAsInvoker     | YES          | YES         | YES          | YES       | YES
+
+===============================================================================
+5. SIBLING ECOSYSTEM SYNERGIES & CROSS-PROMOTION
+===============================================================================
+DevCenter acts as the primary developer cockpit within the dev-bricks ecosystem,
+seamlessly interoperating with sibling tools:
+
+Ecosystem Org | Sibling Repository         | Synergy / Interoperability Role
+--------------+----------------------------+-----------------------------------
+dev-bricks    | DevCenter                  | Flagship Python IDE & Build Suite
+dev-bricks    | MethodenAnalyser           | Standalone deep AST complexity engine
+dev-bricks    | CodeBox                    | Ultra-fast single-file code viewer
+dev-bricks    | pythonbox                  | Lightweight interactive debugger
+dev-bricks    | safe-start-for-codex       | Secure preflight environment launcher
+dev-bricks    | automizer-for-claude-desktop | Claude Desktop automation bridge
+dev-bricks    | automation-master          | Flotten-Orchestrierung & Governance
+ellmos-ai     | ellmos-core                | AI coordination kernel & task broker
+ellmos-ai     | clutch                     | Subprocess management & PTY bridge
+ellmos-ai     | coma                       | Conflict resolution & state sync
+ellmos-ai     | swarm-ai                   | Swarm coordination & multi-node tasks
+ellmos-ai     | ellmos-controlcenter-mcp   | MCP fleet management & tool governance
+file-bricks   | ProFiler                   | High-speed multi-tab file explorer
+file-bricks   | ExplorerPro                | Enhanced Windows Explorer companion
+file-bricks   | ProSync                    | SQLite-aware backup & sync manager
+doc-bricks    | DokuZen                    | Markdown workspace & PDF documentation
+doc-bricks    | PDFtoPDFocr                | Local OCR layer injection for PDFs
+open-bricks   | open-bricks                | Umbrella index & ecosystem directory
+
+===============================================================================
+6. OPERATIONAL & MARKETING CAMPAIGN LOG
+===============================================================================
+2026-02-24 [REL 1.0.0] Initial public release of DevCenter suite.
+2026-08-21 [HYG P-006] Tier-2 multi-language expansion (DE, EN, ES, ZH, JA, RU).
+2026-08-24 [HYG Pfad A] CI multi-OS hardening, ruff gate, PEP 621 metadata parity.
+2026-09-08 [HYG B-005] Workspace export parser hardening & screenreader a11y.
+2026-09-11 [SEC v1.0.1] Third-party license audit, CVE floors, security contract.
+2026-09-12 [MKT Pfad B] Release 1.0.1: Full Marketing & Discoverability standard:
+            - 15-point bilingual quick navigation with 100% anchor parity.
+            - Shields.io badge suite (1.0.1, 187+ passed tests 100% green).
+            - 10 Governance & Runtime Invariants table (INV-LOCAL-01 to INV-SLA-10).
+            - THIRD_PARTY_LICENSES.md rich markdown SBOM with SPDX mapping.
+            - MARKETING-LOG.txt local marketing intelligence & personas register.
+            - Sibling ecosystem matrix expanded to 16 partner tools.
+            - Machine-readable llms.txt synchronized to 2026-09-12 baseline.

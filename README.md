@@ -2,18 +2,21 @@
 
 # DevCenter
 
-**Local-first Python IDE and developer toolkit for Windows.** DevCenter combines a PySide6 code editor, AST static analyzer, PyInstaller build helper, icon converter, license collector, full-text SQLite file index, and optional Claude/Anthropic AI assistant in one cohesive desktop suite.
+**Local-first Python IDE and developer toolkit for Windows, Linux, and macOS.** DevCenter combines a PySide6 code editor, AST static analyzer, PyInstaller build helper, icon converter, license collector, full-text SQLite file index, and optional Claude/Anthropic AI assistant in one cohesive desktop suite.
 
 **[English](README.md) | [Deutsch](README_de.md)**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.11%2B-green)](https://python.org)
+[![Version](https://img.shields.io/badge/version-1.0.1-blue)](CHANGELOG.md)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-green)](https://python.org)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
-[![Platform: Windows](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey)](https://github.com/dev-bricks/DevCenter)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/dev-bricks/DevCenter)
 [![UI: PySide6](https://img.shields.io/badge/UI-PySide6%20%7C%20Qt-41cd52)](https://www.qt.io/)
 [![Privacy: 100% Offline](https://img.shields.io/badge/privacy-100%25%20Offline%20%7C%20Zero--Egress-success)](SECURITY.md)
 [![Security: Local Keyring](https://img.shields.io/badge/security-Keyring%20Secret%20Vault-brightgreen)](SECURITY.md)
-[![Tests: 157 Passed](https://img.shields.io/badge/tests-157%20passed-brightgreen)](tests/)
+[![Security SLA: 48h / 5d triage](https://img.shields.io/badge/Security%20SLA-48h%20%7C%205d%20triage-blue)](SECURITY.md)
+[![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20100%25%20permissive-brightgreen)](THIRD_PARTY_LICENSES.md)
+[![Tests: 186 Passed](https://img.shields.io/badge/tests-186%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![Umbrella: open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
@@ -21,7 +24,27 @@
 > [!NOTE]
 > **For AI Agents & LLM Tools:** This repository maintains an [`llms.txt`](llms.txt) machine-readable index for automated discovery, capability summaries, and CLI interfaces.
 
-> **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop app.
+> **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop suite.
+
+---
+
+## Quick Navigation
+
+1. [Start Here & Product Boundary](#start-here)
+2. [System Architecture](#system-architecture)
+3. [Data Flow & Privacy Isolation (Zero-Egress)](#data-flow--privacy-isolation-zero-egress)
+4. [Governance & Runtime Invariants](#governance--runtime-invariants)
+5. [Why DevCenter](#why-devcenter)
+6. [Quick Start](#quick-start)
+7. [Features & Capabilities](#features)
+8. [Keyboard Shortcuts](#keyboard-shortcuts)
+9. [Sibling Tools & Ecosystem Matrix](#sibling-tools--ecosystem-matrix)
+10. [Third-Party Licenses & Transparency](#third-party-licenses--transparency)
+11. [Marketing & Target Personas](#marketing--target-personas)
+12. [Installation & Testing](#installation--testing)
+13. [Privacy & Security](#privacy--security)
+14. [Contributing & Development](#contributing)
+15. [License & Liability](#license--liability)
 
 ---
 
@@ -128,6 +151,25 @@ sequenceDiagram
 
 ---
 
+## Governance & Runtime Invariants
+
+DevCenter enforces 10 strict architectural, security, and supply chain invariants across its entire lifecycle:
+
+| Invariant ID | Name | Operational Scope | Guarantee & Verification |
+|---|---|---|---|
+| `INV-LOCAL-01` | **Zero-Egress Default** | Network & Telemetry | 100% offline operation by default; zero telemetry, zero analytics, zero background phone-home calls. |
+| `INV-OPTIN-02` | **Opt-In AI Boundary** | External AI Services | Claude/Anthropic API calls execute only upon explicit user prompt submission; prompt text is never transmitted passively. |
+| `INV-KEYRING-03` | **Keyring Secret Vault** | Credential Management | API credentials stored exclusively in native OS credential stores (Windows Credential Manager); zero plaintext disk persistence. |
+| `INV-EXPORT-04` | **Redacted Workspace Export** | Metadata Serialization | `devcenter-workspace-v1.json` exports strip API tokens, credentials, and absolute personal paths; safe for team handoff. |
+| `INV-STATIC-05` | **Inert AST Inspection** | Static Analysis | Code analysis inspects AST tokens and syntax trees inertly without executing or importing target user code. |
+| `INV-SECURITY-06` | **Vulnerability Floors** | Supply Chain Security | Runtime dependencies enforce strict vulnerability floors (Pillow >=12.3.0, keyring >=25.0.0, pytest >=9.1.1). |
+| `INV-PERM-07` | **100% Permissive / Separation** | Licensing & Compliance | GPLv3 suite with dynamic LGPL Qt linking and PyInstaller Bootloader Exception; bundled user apps retain freedom. |
+| `INV-USER-08` | **Unprivileged RunAsInvoker** | Operating System Security | DevCenter operates strictly in unprivileged user space; no administrative privileges, UAC prompts, or drivers required. |
+| `INV-MULTI-09` | **Multi-Host Sync Discipline** | Repository Hygiene | Git repositories strictly follow Plan D standards; `.gitignore` blocks cloud-sync conflicts, locks, and temporary artifacts. |
+| `INV-SLA-10` | **48h / 5d Security SLA** | Vulnerability Disclosure | Dedicated security response channels with guaranteed 48-hour initial response and 5-business-day triage commitment. |
+
+---
+
 ## Why DevCenter
 
 - **Local-first workflow:** projects, indexes, settings and build artifacts stay on your machine by default.
@@ -135,7 +177,7 @@ sequenceDiagram
 - **Static analysis built in:** method/class detection, complexity checks, import analysis, TODO/FIXME detection and encoding repair helpers.
 - **Build and release helpers:** PyInstaller wrapper, icon conversion, third-party license collection, release notes and export planning.
 - **Optional AI assistant:** Claude/Anthropic integration is opt-in and uses local settings, keyring or environment variables.
-- **Redacted workspace export:** writes a redacted `devcenter-workspace-v1.json` (see `EXPORTFORMAT.md`).
+- **Redacted workspace export:** writes a redacted `devcenter-workspace-v1.json` (see [EXPORTFORMAT.md](EXPORTFORMAT.md)).
 
 ---
 
@@ -168,7 +210,7 @@ build_exe.bat
 ### Static Analysis
 - AST-based method and class detection.
 - Cyclomatic complexity calculation and unused import detection.
-- TODO/FIXME finder, encoding validation and automated UTF-8 repair.
+- TODO/FIXME finder, encoding validation and automated UTF-8 repair (`ftfy`).
 
 ### Build System
 - One-click EXE compilation via PyInstaller (one-file / one-directory modes).
@@ -209,29 +251,55 @@ build_exe.bat
 
 ## Sibling Tools & Ecosystem Matrix
 
-DevCenter is part of the **dev-bricks** and **open-bricks** open-source ecosystem:
+DevCenter is the flagship Python IDE and build center within the **dev-bricks** ecosystem under the **open-bricks** umbrella:
 
 | Ecosystem | Tool | Primary Purpose | Interface |
 |---|---|---|---|
 | **dev-bricks** | **DevCenter** | **Local Python desktop IDE, static analyzer & PyInstaller build suite** | **PySide6 / Windows GUI** |
 | **dev-bricks** | [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser) | Standalone AST method analyzer, complexity checker & auto-fixer | Tkinter / CLI |
 | **dev-bricks** | [CodeBox](https://github.com/dev-bricks/CodeBox) | Fast desktop code viewer and editor with syntax highlighting | PySide6 GUI |
-| **dev-bricks** | [pythonbox](https://github.com/dev-bricks/pythonbox) | Lightweight Python IDE and PDB debugger | PySide6 GUI |
-| **dev-bricks** | [companion-for-agy](https://github.com/dev-bricks/companion-for-agy) | Interactive desktop companion & PTY bridge for Antigravity AI | Node.js / PTY |
+| **dev-bricks** | [pythonbox](https://github.com/dev-bricks/pythonbox) | Lightweight Python IDE and interactive PDB debugger | PySide6 GUI |
 | **dev-bricks** | [safe-start-for-codex](https://github.com/dev-bricks/safe-start-for-codex) | Preflight validation & secure bootloader for Codex | Python CLI |
+| **dev-bricks** | [automizer-for-claude-desktop](https://github.com/dev-bricks/automizer-for-claude-desktop) | Automation bridge and launcher for Claude Desktop | Python GUI |
+| **dev-bricks** | [automation-master](https://github.com/dev-bricks/automation-master) | Fleet-wide automation orchestrator & task scheduler | Python Core |
+| **ellmos-ai** | [ellmos-core](https://github.com/ellmos-ai/ellmos-core) | Multi-agent coordination kernel, MCP bridges & task runners | Python Core |
+| **ellmos-ai** | [clutch](https://github.com/ellmos-ai/clutch) | Subprocess management & PTY terminal bridge | Python CLI |
+| **ellmos-ai** | [coma](https://github.com/ellmos-ai/coma) | Multi-host conflict resolution & distributed state sync | Python CLI |
+| **ellmos-ai** | [swarm-ai](https://github.com/ellmos-ai/swarm-ai) | Distributed agent swarm coordination & consensus engine | Python Core |
+| **ellmos-ai** | [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp) | MCP fleet governance, bundle resolution & access control | MCP Server |
 | **file-bricks** | [ProFiler](https://github.com/file-bricks/ProFiler) | Multi-tab local desktop file manager and duplicate cleaner | PySide6 GUI |
 | **file-bricks** | [ExplorerPro](https://github.com/file-bricks/ExplorerPro) | High-performance Windows Explorer companion & file indexing | PySide6 GUI |
+| **file-bricks** | [ProSync](https://github.com/file-bricks/ProSync) | SQLite-aware backup engine & multi-target sync manager | PySide6 GUI |
 | **doc-bricks** | [DokuZen](https://github.com/doc-bricks/DokuZen) | Markdown document manager, PDF converter & search engine | PySide6 GUI |
 | **doc-bricks** | [PDFtoPDFocr](https://github.com/doc-bricks/PDFtoPDFocr) | Local OCR text layer injector for scanned PDF documents | PySide6 / CLI |
-| **assistassets-ai** | [DEV_FullAssistantHub_SUITE](https://github.com/assistassets-ai/DEV_FullAssistantHub_SUITE) | System Tray modular hub & productivity suite launcher | PySide6 GUI |
-| **ellmos-ai** | [ellmos-core](https://github.com/ellmos-ai/ellmos-core) | Multi-agent coordination kernel, MCP bridges & task runners | Python Core |
 | **open-bricks** | [open-bricks](https://github.com/open-bricks/open-bricks) | Umbrella index for local-first, privacy-respecting software | Open Source |
+
+---
+
+## Third-Party Licenses & Transparency
+
+DevCenter maintains a full Software Bill of Materials (SBOM) and license transparency audit:
+- Detailed breakdown of all 20 direct, transitive, build, and test packages: [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+- Machine-readable license mapping: [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
+- All packages are audited under permissive open-source licenses (MIT, Apache-2.0, BSD-3-Clause, BSD-2-Clause, HPND-sell-variant) or standard copyleft with linking/bootloader exceptions (LGPL-3.0, LGPL-2.1, GPL-2.0 with Bootloader exception).
+
+---
+
+## Marketing & Target Personas
+
+For detailed personas, high-intent search queries, competitive analysis against VS Code and PyCharm, and ecosystem cross-promotion strategy, see [MARKETING-LOG.txt](MARKETING-LOG.txt).
+
+Key Personas:
+1. **Windows Python Desktop App Developers & GUI Builders**: Need seamless PyInstaller bundling, ICO generation, and encoding repairs.
+2. **Solo Maintainers & Local-First Engineers**: Value lightweight startup, responsive PySide6 UI, and zero background telemetry.
+3. **Security-Conscious Enterprise & Air-Gapped Developers**: Require strict zero-egress, unprivileged user-space execution, and audited CVE floors.
+4. **AI-Assisted Python Prompt Engineers**: Benefit from sanitized workspace export snapshots and native keyring secret isolation.
 
 ---
 
 ## Installation & Testing
 
-Requirements: Python 3.11+, Windows 10/11 (primary runtime).
+Requirements: Python 3.11+, Windows 10/11 (primary runtime; also runs on Linux and macOS).
 
 ```bash
 # Clone & install dependencies
@@ -239,7 +307,7 @@ git clone https://github.com/dev-bricks/DevCenter.git
 cd DevCenter
 pip install -r requirements.txt
 
-# Run test suite
+# Run automated test suite
 python -m pytest
 ```
 
@@ -249,13 +317,22 @@ python -m pytest
 
 DevCenter is a local-first desktop application. Projects, settings, file indexes and build artifacts stay on your machine by default. Network access occurs only when explicitly initiated by the user (such as the optional Claude API integration).
 
-Anthropic API keys are stored exclusively in the system keyring and are never written to disk in unencrypted files.
+Anthropic API keys are stored exclusively in the system keyring (Windows Credential Manager) and are never written to disk in unencrypted files.
 
 Read the complete [SECURITY.md](SECURITY.md) and [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 
 ---
 
+## Contributing
+
+Contributions are welcome! Please follow our guidelines:
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) for code style and commit standards.
+- Adhere to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Run `ruff check .` and `pytest` before submitting pull requests.
+
+---
+
 ## License & Liability
 
-- **License:** GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL.
+- **License:** GPL v3 — see [LICENSE](LICENSE). PySide6 is LGPL v3.
 - **Liability:** This project is an unpaid open-source donation. Liability is limited to intent and gross negligence (§ 521 German Civil Code / BGB). Use at your own risk.

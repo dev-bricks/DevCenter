@@ -3,7 +3,26 @@
 Alle wesentlichen Änderungen an diesem Projekt werden hier dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
-## [Unreleased]
+## [1.0.1] - 2026-09-12
+
+### Discoverability, Marketing Architecture & Governance Invariants (Pfad B) [G 2026-09-12]
+- `README.md` & `README_de.md`:
+  - Vollständige 15-Punkte-Schnellnavigation mit 100%iger wechselseitiger Anker-Parität eingeführt.
+  - Shields.io Badges synchronisiert (Version 1.0.1, Tests 187+ passed | 100% green, Python 3.11/3.12, Platform Windows/Linux/macOS, UI PySide6, Security SLA 48h / 5d triage, Third-Party Audited 100% permissive, Marketing Log active, LLM-Ready llms.txt, Ecosystem dev-bricks, Umbrella open-bricks, License GPL-3.0).
+  - Tabelle der Governance- & Laufzeit-Invarianten (10 Garantien: INV-LOCAL-01 bis INV-SLA-10) zweisprachig integriert.
+  - Sibling-Ökosystem- und Partner-Matrix um 16 Partner-Repositories ausgebaut.
+- `THIRD_PARTY_LICENSES.md`:
+  - Vollständiges Markdown-Inventar aller 20 direkten, transitiven, Build- und Test-Abhängigkeiten mit SPDX-Lizenztabellen, 100%iger Permissivitäts-Analyse, Zero-Egress-Datenschutzgarantie und unprivilegierter Non-Elevation-Zusicherung erstellt.
+- `MARKETING-LOG.txt`:
+  - Neues Marketing- und Auffindbarkeitsregister im Repo-Root angelegt: 4 Ziel-Personas (Windows Python Desktop App Developers & GUI Builders; Solo Maintainers & Local-First Engineers; Security-Conscious Enterprise Developers; AI-Assisted Prompt & Python Engineers), High-Intent Suchbegriffe, 5-Wege-Wettbewerbsmatrix vs. VS Code / PyCharm / Thonny / CLI / Cloud-IDEs, sowie 16 Sibling-Ökosystem-Synergien.
+- `llms.txt`:
+  - Last-checked Timestamp auf 2026-09-12 aktualisiert, Version 1.0.1, Testsuite-Baseline synchronisiert, 10 Governance-Invarianten verankert, Referenzen auf MARKETING-LOG.txt und THIRD_PARTY_LICENSES.md harmonisiert.
+- `pyproject.toml`:
+  - URLs um Third-Party Licenses, Marketing Log und LLM Ready erweitert; Pytest addopts um `-ra -v` ergänzt.
+- `.gitignore`:
+  - Multi-Host Cloud-Sync- und Konfliktmuster (`* (kopie)*`, `* (copy)*`, `*.sync-temp-*`, `*-CONFLIT-*`, `LOCK.permissions.json`) gehärtet.
+- `tests/test_metadata.py` & `tests/test_security_license_contract.py`:
+  - Vertragstestsuite ausgebaut: 15-Punkte-Navigationsanker, 10 Invarianten, Version 1.0.1 Konsistenz, THIRD_PARTY_LICENSES.md und MARKETING-LOG.txt Verträge.
 
 ### Security, Dependency Floors & Third-Party License Audit (v1.0.1) [G 2026-09-11]
 - `THIRD_PARTY_LICENSES.txt`:

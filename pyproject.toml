@@ -1,6 +1,6 @@
 [project]
 name = "devcenter-suite"
-version = "1.0.0"
+version = "1.0.1"
 description = "Entwickler-Zentrale: Build, Analyse, Sync und AI-Assistent"
 authors = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]
 requires-python = ">=3.11"
@@ -59,6 +59,9 @@ Repository = "https://github.com/dev-bricks/DevCenter.git"
 "Bug Tracker" = "https://github.com/dev-bricks/DevCenter/issues"
 Changelog = "https://github.com/dev-bricks/DevCenter/blob/master/CHANGELOG.md"
 Security = "https://github.com/dev-bricks/DevCenter/blob/master/SECURITY.md"
+"Third-Party Licenses" = "https://github.com/dev-bricks/DevCenter/blob/master/THIRD_PARTY_LICENSES.md"
+"Marketing Log" = "https://github.com/dev-bricks/DevCenter/blob/master/MARKETING-LOG.txt"
+"LLM Ready" = "https://github.com/dev-bricks/DevCenter/blob/master/llms.txt"
 "Parent Organization" = "https://github.com/dev-bricks"
 "Umbrella Ecosystem" = "https://github.com/open-bricks"
 
@@ -68,6 +71,7 @@ dev = ["pytest>=9.1.1", "ruff>=0.9.0"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "-ra -v"
 
 [tool.ruff]
 target-version = "py311"
