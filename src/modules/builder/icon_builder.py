@@ -62,8 +62,14 @@ class IcoBuilder:
         try:
             from PIL import Image
 
+            # Zielverzeichnis anlegen wenn nötig
+            parent_dir = Path(output_path).parent
+            if str(parent_dir) and str(parent_dir) != '.':
+                parent_dir.mkdir(parents=True, exist_ok=True)
+
             # Bild laden
-            img = Image.open(input_path)
+            with Image.open(input_path) as raw_img:
+                img = raw_img.copy()
 
             # RGBA konvertieren wenn nötig
             if img.mode != 'RGBA':
@@ -76,10 +82,16 @@ class IcoBuilder:
                 icon_images.append(resized)
 
             # Als ICO speichern
+            save_kwargs = {
+                'format': 'ICO',
+                'sizes': [(s, s) for s in sizes]
+            }
+            if len(icon_images) > 1:
+                save_kwargs['append_images'] = icon_images[1:]
+
             icon_images[0].save(
                 output_path,
-                format='ICO',
-                sizes=[(s, s) for s in sizes]
+                **save_kwargs
             )
 
             return True, output_path
@@ -115,6 +127,11 @@ class IcoBuilder:
         try:
             from PIL import Image, ImageDraw, ImageFont
 
+            # Zielverzeichnis anlegen wenn nötig
+            parent_dir = Path(output_path).parent
+            if str(parent_dir) and str(parent_dir) != '.':
+                parent_dir.mkdir(parents=True, exist_ok=True)
+
             icon_images = []
 
             for size in sorted(sizes, reverse=True):
@@ -143,10 +160,16 @@ class IcoBuilder:
                 icon_images.append(img)
 
             # Als ICO speichern
+            save_kwargs = {
+                'format': 'ICO',
+                'sizes': [(s, s) for s in sizes]
+            }
+            if len(icon_images) > 1:
+                save_kwargs['append_images'] = icon_images[1:]
+
             icon_images[0].save(
                 output_path,
-                format='ICO',
-                sizes=[(s, s) for s in sizes]
+                **save_kwargs
             )
 
             return True, output_path

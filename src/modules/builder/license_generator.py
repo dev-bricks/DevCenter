@@ -5,11 +5,13 @@ Sammelt und generiert Third-Party Lizenzen
 Basierend auf ThirdPartyLicenses
 """
 
+import os
 import subprocess
 import sys
 import json
 from typing import List, Optional
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -17,10 +19,14 @@ class PackageLicense:
     """Lizenzinformationen eines Packages"""
     name: str
     version: str
-    license: str
+    license: str = "Unknown"
     license_text: Optional[str] = None
     url: Optional[str] = None
     author: Optional[str] = None
+
+    def __post_init__(self):
+        if not self.license:
+            self.license = "Unknown"
 
 
 class LicenseGenerator:
@@ -56,6 +62,24 @@ class LicenseGenerator:
         """
         licenses = []
 
+        # Vorab-Parsing von requirements.txt falls angegeben
+        req_names = None
+        if requirements_file and os.path.exists(requirements_file):
+            req_names = set()
+            import re
+            try:
+                with open(requirements_file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith(('#', '-')):
+                            continue
+                        clean = line.split(';')[0].strip()
+                        pkg_match = re.split(r'[=><~@!\s\[]', clean)[0].strip()
+                        if pkg_match:
+                            req_names.add(pkg_match.lower().replace('_', '-'))
+            except Exception:
+                req_names = None
+
         try:
             # pip-licenses verwenden wenn verfügbar
             if self._pip_licenses_available:
@@ -64,66 +88,99 @@ class LicenseGenerator:
                      '--format=json', '--with-license-file', '--with-urls'],
                     capture_output=True,
                     text=True,
-                    encoding='utf-8'
+                    encoding='utf-8',
+                    errors='replace'
                 )
 
-                if result.returncode == 0:
+                if result.returncode == 0 and result.stdout:
                     data = json.loads(result.stdout)
                     for pkg in data:
+                        pkg_name = pkg.get('Name', '')
+                        if req_names is not None and pkg_name.lower().replace('_', '-') not in req_names:
+                            continue
+                        lic_val = pkg.get('License')
                         licenses.append(PackageLicense(
-                            name=pkg.get('Name', ''),
+                            name=pkg_name,
                             version=pkg.get('Version', ''),
-                            license=pkg.get('License', 'Unknown'),
+                            license=lic_val if lic_val else 'Unknown',
                             license_text=pkg.get('LicenseText', None),
                             url=pkg.get('URL', None),
                             author=pkg.get('Author', None)
                         ))
             else:
-                # Fallback: pip show
+                # Fallback: pip list + batch pip show
                 result = subprocess.run(
                     [sys.executable, '-m', 'pip', 'list', '--format=json'],
                     capture_output=True,
                     text=True,
-                    encoding='utf-8'
+                    encoding='utf-8',
+                    errors='replace'
                 )
 
-                if result.returncode == 0:
+                if result.returncode == 0 and result.stdout:
                     packages = json.loads(result.stdout)
+                    filtered_packages = []
                     for pkg in packages:
                         name = pkg.get('name', '')
-                        version = pkg.get('version', '')
+                        if req_names is not None and name.lower().replace('_', '-') not in req_names:
+                            continue
+                        filtered_packages.append(pkg)
 
-                        # Details holen
-                        detail = subprocess.run(
-                            [sys.executable, '-m', 'pip', 'show', name],
-                            capture_output=True,
-                            text=True,
-                            encoding='utf-8'
-                        )
+                    batch_size = 40
+                    names = [p.get('name', '') for p in filtered_packages if p.get('name')]
+                    details_by_name = {}
 
-                        license_name = "Unknown"
-                        author = None
-                        url = None
+                    for i in range(0, len(names), batch_size):
+                        chunk = names[i:i + batch_size]
+                        try:
+                            detail = subprocess.run(
+                                [sys.executable, '-m', 'pip', 'show'] + chunk,
+                                capture_output=True,
+                                text=True,
+                                encoding='utf-8',
+                                errors='replace'
+                            )
+                            if detail.returncode == 0 and detail.stdout:
+                                current_pkg = {}
+                                for line in detail.stdout.splitlines():
+                                    if line.startswith('---'):
+                                        if current_pkg.get('name'):
+                                            details_by_name[current_pkg['name'].lower().replace('_', '-')] = current_pkg
+                                        current_pkg = {}
+                                    elif line.startswith('Name:'):
+                                        current_pkg['name'] = line.split(':', 1)[1].strip()
+                                    elif line.startswith('License:'):
+                                        current_pkg['license'] = line.split(':', 1)[1].strip()
+                                    elif line.startswith('Author:'):
+                                        current_pkg['author'] = line.split(':', 1)[1].strip()
+                                    elif line.startswith('Home-page:'):
+                                        current_pkg['url'] = line.split(':', 1)[1].strip()
+                                if current_pkg.get('name'):
+                                    details_by_name[current_pkg['name'].lower().replace('_', '-')] = current_pkg
+                        except Exception:
+                            pass
 
-                        if detail.returncode == 0:
-                            for line in detail.stdout.split('\n'):
-                                if line.startswith('License:'):
-                                    license_name = line.split(':', 1)[1].strip()
-                                elif line.startswith('Author:'):
-                                    author = line.split(':', 1)[1].strip()
-                                elif line.startswith('Home-page:'):
-                                    url = line.split(':', 1)[1].strip()
-
+                    for pkg in filtered_packages:
+                        raw_name = pkg.get('name', '')
+                        norm_key = raw_name.lower().replace('_', '-')
+                        info = details_by_name.get(norm_key, {})
                         licenses.append(PackageLicense(
-                            name=name,
-                            version=version,
-                            license=license_name,
-                            author=author,
-                            url=url
+                            name=raw_name,
+                            version=pkg.get('version', ''),
+                            license=info.get('license') or 'Unknown',
+                            author=info.get('author'),
+                            url=info.get('url')
                         ))
 
         except Exception as e:
             print(f"Fehler beim Sammeln der Lizenzen: {e}")
+
+        # Finale Filterung falls req_names angegeben
+        if req_names is not None:
+            licenses = [
+                lic for lic in licenses
+                if lic.name.lower().replace('_', '-') in req_names
+            ]
 
         return licenses
 
@@ -148,6 +205,10 @@ class LicenseGenerator:
             return False
 
         try:
+            parent_dir = Path(output_path).parent
+            if str(parent_dir) and str(parent_dir) != '.':
+                parent_dir.mkdir(parents=True, exist_ok=True)
+
             lines = [
                 "THIRD-PARTY SOFTWARE NOTICES AND INFORMATION",
                 "",
@@ -190,6 +251,10 @@ class LicenseGenerator:
         licenses = self.get_licenses()
 
         try:
+            parent_dir = Path(output_path).parent
+            if str(parent_dir) and str(parent_dir) != '.':
+                parent_dir.mkdir(parents=True, exist_ok=True)
+
             data = []
             for lic in licenses:
                 data.append({
@@ -238,13 +303,14 @@ class LicenseGenerator:
 
         for lic in licenses:
             license_ok = False
+            lic_str = lic.license if lic.license else 'Unknown'
             for allowed in allowed_licenses:
-                if allowed.lower() in lic.license.lower():
+                if allowed.lower() in lic_str.lower():
                     license_ok = True
                     break
 
-            if not license_ok and lic.license != 'Unknown':
-                problematic.append(f"{lic.name}: {lic.license}")
+            if not license_ok and lic_str != 'Unknown':
+                problematic.append(f"{lic.name}: {lic_str}")
 
         return problematic
 

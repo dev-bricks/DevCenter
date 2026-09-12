@@ -55,8 +55,14 @@ class BuildConfig:
             self.data_files = []
         if self.binary_files is None:
             self.binary_files = []
-        if self.name is None:
-            self.name = Path(self.script_path).stem
+        if not self.name:
+            self.name = Path(self.script_path).stem if self.script_path else "app"
+        else:
+            self.name = str(self.name).strip()
+        if self.name.lower().endswith('.exe'):
+            self.name = self.name[:-4]
+        if not self.name:
+            self.name = "app"
 
 
 @dataclass
@@ -163,6 +169,8 @@ class Kompilator:
                 error_message="PyInstaller nicht installiert. Installieren mit: pip install pyinstaller"
             )
 
+        config.script_path = os.path.abspath(config.script_path)
+
         self._emit_progress(5, "Build wird vorbereitet...")
 
         # Ausgabeverzeichnis absolut auflösen (relativ zum Skript-Verzeichnis)
@@ -173,6 +181,12 @@ class Kompilator:
             output_dir = Path(config.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         config.output_dir = str(output_dir)
+
+        # Relativen Icon-Pfad auflösen wenn nötig
+        if config.icon and not os.path.exists(config.icon):
+            rel_icon = _script_dir / config.icon
+            if rel_icon.exists():
+                config.icon = str(rel_icon)
 
         # Clean Build
         if config.clean:
@@ -330,7 +344,7 @@ class Kompilator:
 
     def _clean_build(self, config: BuildConfig):
         """Entfernt vorherige Build-Artefakte"""
-        script_dir = Path(os.path.dirname(config.script_path) or '.')
+        script_dir = Path(os.path.dirname(os.path.abspath(config.script_path)) or '.')
         build_dir = script_dir / 'build' / config.name
         if build_dir.exists():
             shutil.rmtree(build_dir, ignore_errors=True)
@@ -353,9 +367,14 @@ class Kompilator:
         if output_path is None:
             output_path = f'{config.name}.spec'
 
+        # Zielverzeichnis anlegen wenn nötig
+        parent_dir = Path(output_path).parent
+        if str(parent_dir) and str(parent_dir) != '.':
+            parent_dir.mkdir(parents=True, exist_ok=True)
+
         # Backslashes in Windows-Pfaden durch Forward-Slashes ersetzen
         # (PyInstaller akzeptiert beide; verhindert SyntaxError in .spec-Dateien)
-        script_path = str(config.script_path).replace('\\', '/')
+        script_path = str(Path(config.script_path).resolve()).replace('\\', '/')
 
         spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 # Generiert von DevCenter Kompilator

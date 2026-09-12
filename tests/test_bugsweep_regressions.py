@@ -341,6 +341,119 @@ except (SyntaxError, PermissionError, TimeoutError, UnicodeDecodeError):
         self.assertEqual(len(result.undefined_names), 0)
 
 
+class TestBuilderModuleRegressions(unittest.TestCase):
+    """
+    Bugsearch Run (2026-09-12):
+    PyInstaller-Kompilierung, Build-Prozess-Orchestrierung und Icon-/Lizenz-Generierung:
+    1. BuildConfig name normalization (.exe stripping, fallback).
+    2. Kompilator.create_spec_file parent directory creation & path resolution.
+    3. IcoBuilder directory creation & multi-frame preservation with append_images.
+    4. LicenseGenerator NoneType guard, directory creation & requirements filtering.
+    """
+
+    def setUp(self):
+        import tempfile
+        self.temp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def test_buildconfig_strips_exe_and_normalizes_empty_name(self):
+        from modules.builder.kompilator import BuildConfig
+        cfg1 = BuildConfig(script_path="src/main.py", name="MyTool.exe")
+        self.assertEqual(cfg1.name, "MyTool")
+
+        cfg2 = BuildConfig(script_path="src/main.py", name="Tool.EXE")
+        self.assertEqual(cfg2.name, "Tool")
+
+        cfg3 = BuildConfig(script_path="src/main.py", name="")
+        self.assertEqual(cfg3.name, "main")
+
+        cfg4 = BuildConfig(script_path="", name="")
+        self.assertEqual(cfg4.name, "app")
+
+    def test_create_spec_file_creates_parent_directories(self):
+        from modules.builder.kompilator import Kompilator, BuildConfig
+        komp = Kompilator()
+        script = os.path.join(self.temp_dir, "script.py")
+        open(script, "w", encoding="utf-8").close()
+
+        spec_out = os.path.join(self.temp_dir, "nested", "specs", "build.spec")
+        cfg = BuildConfig(script_path=script, name="build")
+        res_path = komp.create_spec_file(cfg, output_path=spec_out)
+
+        self.assertTrue(os.path.exists(res_path))
+        with open(res_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("Generiert von DevCenter Kompilator", content)
+
+    def test_ico_builder_creates_parent_directory_and_preserves_frames(self):
+        from modules.builder.icon_builder import IcoBuilder
+        from PIL import Image
+
+        builder = IcoBuilder()
+        ico_path = os.path.join(self.temp_dir, "sub", "icons", "app.ico")
+        success, msg = builder.create_placeholder(
+            ico_path, text="DC", sizes=[16, 32, 64, 128, 256]
+        )
+        self.assertTrue(success, f"create_placeholder fehlgeschlagen: {msg}")
+        self.assertTrue(os.path.exists(ico_path))
+
+        with Image.open(ico_path) as im:
+            if hasattr(im, "ico") and hasattr(im.ico, "entry"):
+                sizes = [e[0:2] for e in im.ico.entry]
+                self.assertEqual(len(sizes), 5)
+                self.assertIn((16, 16), sizes)
+                self.assertIn((256, 256), sizes)
+
+    def test_license_compatibility_with_none_or_missing_license(self):
+        from modules.builder.license_generator import LicenseGenerator, PackageLicense
+
+        gen = LicenseGenerator()
+        gen.get_licenses = lambda **kwargs: [
+            PackageLicense(name="pkg_none", version="1.0.0", license=None),
+            PackageLicense(name="pkg_unknown", version="1.0.0", license="Unknown"),
+            PackageLicense(name="pkg_gpl", version="1.0.0", license="GPL-3.0"),
+            PackageLicense(name="pkg_mit", version="1.0.0", license="MIT")
+        ]
+
+        problematic = gen.check_license_compatibility()
+        self.assertEqual(len(problematic), 1)
+        self.assertIn("pkg_gpl", problematic[0])
+
+    def test_license_files_create_parent_directories(self):
+        from modules.builder.license_generator import LicenseGenerator, PackageLicense
+
+        gen = LicenseGenerator()
+        gen.get_licenses = lambda **kwargs: [
+            PackageLicense(name="dummy", version="1.0.0", license="MIT")
+        ]
+
+        notice_file = os.path.join(self.temp_dir, "nested", "notices", "THIRD-PARTY.txt")
+        json_file = os.path.join(self.temp_dir, "nested", "json", "licenses.json")
+
+        self.assertTrue(gen.generate_notice_file(notice_file))
+        self.assertTrue(os.path.exists(notice_file))
+
+        self.assertTrue(gen.generate_json(json_file))
+        self.assertTrue(os.path.exists(json_file))
+
+    def test_get_licenses_filters_by_requirements_file(self):
+        from modules.builder.license_generator import LicenseGenerator
+
+        gen = LicenseGenerator()
+        # Mock subproces run to return sample json
+        req_file = os.path.join(self.temp_dir, "requirements.txt")
+        with open(req_file, "w", encoding="utf-8") as f:
+            f.write("# comment\nrequests>=2.28.0\nurllib3==1.26.15\n")
+
+        licenses = gen.get_licenses(requirements_file=req_file)
+        # Wenn packages gefunden wurden, sollten alle gefilterten Namen in requirements stehen
+        for lic in licenses:
+            self.assertIn(lic.name.lower().replace('_', '-'), {"requests", "urllib3"})
+
+
 if __name__ == "__main__":
     unittest.main()
 
