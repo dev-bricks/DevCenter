@@ -29,7 +29,7 @@ description: |
 
 **DevCenter** — Lokale Desktop-Entwicklungsumgebung und Suite für Python-Projekte (Code schreiben, analysieren, testen, kompilieren und exportieren). Integriert Code-Editor, AST-Analyzer, PyInstaller-Builder, Lizenzsammler, SQLite/FTS5-Dateiindex, optionalen Claude-KI-Assistenten und statischen Web-Companion.
 
-- **Pfad (OneDrive-Deploykopie):** `C:\Users\User\OneDrive\.TOPICS\.SOFTWARE\CODING\REL-PUB_DevCenter_SUITE`
+- **Pfad (OneDrive-Deploykopie):** `<OneDrive>\.TOPICS\.SOFTWARE\CODING\REL-PUB_DevCenter_SUITE` (`<OneDrive>` = der OneDrive-Ordner des jeweiligen Hosts)
 - **Klon (Plan-D-Arbeitskopie):** `C:\_Local_DEV\repos\DevCenter`
 - **Repository:** https://github.com/dev-bricks/DevCenter (Kanonischer Branch: `master`)
 - **Sprache/Stack:** Python 3.10+, PySide6 (Qt6 GUI), PyInstaller, Pillow, SQLite (FTS5 / WAL), Anthropic API (optional), HTML5/JS (PWA Viewer in `web_companion/`)
