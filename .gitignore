@@ -17,7 +17,15 @@ build/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
+coverage/
 htmlcov/
+.tox/
+.hypothesis/
+.turbo/
+.nyc_output/
+wheelhouse/
+.wheel-smoke/
 
 # ---- Virtuelle Umgebungen ----
 venv/
@@ -69,6 +77,7 @@ logs/
 *.tmp
 *.bak
 *.orig
+*.rej
 
 # ---- IDE & Editoren ----
 .claude/
@@ -85,13 +94,20 @@ Thumbs.db
 ehthumbs.db
 
 # ---- Lokale Sync-/Host-Nebenstaende ----
+*-WORKSTATION*
 *-WORKSTATION-LG*
+*-ASUS*
 *-ASUS-GEI*
 *-ASUS-GEI.md
+*-LAPTOP*
+*-Mac Studio*
 *.sync-conflict-*
 *.conflict
+*conflicted copy*
 * (kopie)*
 * (copy)*
+* (Kopie)*
+* (Copy)*
 *.sync-temp-*
 *-CONFLIT-*
 
@@ -107,7 +123,10 @@ TODO.md
 DONE.md
 
 # Lokale Agenten-Locks (LOCK-System)
+LOCK
 LOCK*.txt
 LOCK.*
 *.lock
+uv.lock
+!package-lock.json
 LOCK.permissions.json

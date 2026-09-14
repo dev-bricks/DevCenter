@@ -6,7 +6,7 @@
 
 **[English](README.md) | [Deutsch](README_de.md)**
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue)](CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-green)](https://python.org)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/dev-bricks/DevCenter)
@@ -15,7 +15,7 @@
 [![Security: Local Keyring](https://img.shields.io/badge/security-Keyring%20Secret%20Vault-brightgreen)](SECURITY.md)
 [![Security SLA: 48h / 5d triage](https://img.shields.io/badge/Security%20SLA-48h%20%7C%205d%20triage-blue)](SECURITY.md)
 [![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20100%25%20permissive-brightgreen)](THIRD_PARTY_LICENSES.md)
-[![Tests: 186 Passed](https://img.shields.io/badge/tests-186%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Tests: 197 Passed](https://img.shields.io/badge/tests-197%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)

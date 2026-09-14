@@ -3,6 +3,25 @@
 Alle wesentlichen Änderungen an diesem Projekt werden hier dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## [1.0.2] - 2026-09-14
+
+### Repository Hygiene, CI Timeout Hardening & Multi-Host Security (Pfad A) [G 2026-09-14]
+- `.github/workflows/`:
+  - `tests.yml`: Job-Level `timeout-minutes: 15` Guardrails auf allen Jobs (`lint`, `test`, `linux-platform-smoke`, `macos-platform-smoke`) verankert; Pytest-Aufrufe mit standardisiertem `-ra -v` Flag harmonisiert.
+  - `stale.yml`: Concurrency-Gruppe `${{ github.workflow }}-${{ github.ref }}` mit `cancel-in-progress: true` und Job-Level `timeout-minutes: 10` Guardrail nachgerüstet.
+  - `welcome.yml`: Concurrency-Gruppe `${{ github.workflow }}-${{ github.ref }}` mit `cancel-in-progress: true` und Job-Level `timeout-minutes: 5` Guardrail nachgerüstet.
+- `.gitignore`:
+  - Umfassende Härtung gegen Multi-Host-Cloud-Sync-Konflikte (`* (Kopie)*`, `* (Copy)*`, `*conflicted copy*`, `*-WORKSTATION*`, `*-ASUS*`, `*-LAPTOP*`, `*-Mac Studio*`), kanonische Fail-Closed Lock-Muster (`LOCK`, `LOCK.*`, `LOCK*.txt`, `LOCK.permissions.json`, `uv.lock`, Whitelist `!package-lock.json`), und Cache-/Test-Artefakte (`.coverage.*`, `coverage/`, `.tox/`, `.hypothesis/`, `.turbo/`, `.nyc_output/`, `wheelhouse/`, `.wheel-smoke/`, `*.orig`, `*.rej`).
+- Versionsharmonisierung auf 1.0.2:
+  - `pyproject.toml`: Version auf `1.0.2` angehoben.
+  - `src/__init__.py`, `src/core/project_manager.py`, `src/core/workspace_export.py`, `src/gui/main_window.py`, `src/modules/builder/license_generator.py`: Anwendungs- und Modul-Versionen auf `1.0.2` synchronisiert.
+  - `THIRD_PARTY_LICENSES.md`: Versionskopf und JSON-SBOM-Mapping auf `1.0.2` und Audit-Datum `2026-09-14` aktualisiert.
+  - `README.md` & `README_de.md`: Versionsbadge auf `1.0.2` und Testsuite-Badge auf 197 Tests grün synchronisiert; Banner-Asset-Verlinkung harmonisiert.
+  - `llms.txt`: Last-checked Timestamp auf `2026-09-14` und Version auf `1.0.2` aktualisiert.
+  - `MARKETING-LOG.txt`: Neuer Pfad-A-Hygiene- und CI-Audit-Eintrag Stand `2026-09-14` ergänzt.
+- `tests/test_metadata.py` & `tests/test_security_license_contract.py`:
+  - Vertragstestsuite erweitert um automatisierte Prüfungen für CI-Job-Timeouts, Workflow-Concurrency, Stale/Welcome-Guardrails, erweiterte Multi-Host- und Lock-Muster in `.gitignore`, sowie Versions- und Datums-Parität für 1.0.2 / 2026-09-14. (197 Tests, 100% grün)
+
 ## [1.0.1] - 2026-09-12
 
 ### Discoverability, Marketing Architecture & Governance Invariants (Pfad B) [G 2026-09-12]

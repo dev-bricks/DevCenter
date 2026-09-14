@@ -7,6 +7,15 @@ on:
     branches: [master]
 
 concurrency:
+name: DevCenter CI & Smoke Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -16,6 +25,7 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -35,6 +45,7 @@ jobs:
   test:
     needs: [lint]
     runs-on: windows-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -61,11 +72,12 @@ jobs:
       - name: Run unit tests
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python -m pytest -v
+        run: python -m pytest -ra -v
 
   linux-platform-smoke:
     needs: [lint]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Check out repository
@@ -94,7 +106,7 @@ jobs:
       - name: Run unit tests
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python -m pytest -v
+        run: python -m pytest -ra -v
 
       - name: Run Linux platform smoke
         env:
@@ -104,6 +116,7 @@ jobs:
   macos-platform-smoke:
     needs: [lint]
     runs-on: macos-latest
+    timeout-minutes: 15
     env:
       QT_QPA_PLATFORM: offscreen
       PYTHONIOENCODING: utf-8
@@ -127,7 +140,7 @@ jobs:
         run: python -m compileall -q main.py manage_translations.py translator.py src tests
 
       - name: Run unit tests
-        run: python -m pytest -v
+        run: python -m pytest -ra -v
 
       - name: Run macOS platform smoke
         run: python tests/macos_platform_smoke.py

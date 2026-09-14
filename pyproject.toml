@@ -1,6 +1,6 @@
 [project]
 name = "devcenter-suite"
-version = "1.0.1"
+version = "1.0.2"
 description = "Entwickler-Zentrale: Build, Analyse, Sync und AI-Assistent"
 authors = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]
 requires-python = ">=3.11"

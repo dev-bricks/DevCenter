@@ -140,7 +140,7 @@ def test_third_party_licenses_md_comprehensive_sbom() -> None:
     content = md_file.read_text(encoding="utf-8")
 
     assert "Software Bill of Materials (SBOM)" in content
-    assert "1.0.1" in content
+    assert "1.0.2" in content
     assert "GPL" in content
 
     required_packages = [

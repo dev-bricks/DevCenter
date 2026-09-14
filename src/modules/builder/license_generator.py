@@ -187,7 +187,7 @@ class LicenseGenerator:
     def generate_notice_file(self,
                              output_path: str,
                              app_name: str = "Application",
-                             app_version: str = "1.0.1") -> bool:
+                             app_version: str = "1.0.2") -> bool:
         """
         Generiert eine THIRD-PARTY-NOTICES Datei
 

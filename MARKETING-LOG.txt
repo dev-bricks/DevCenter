@@ -137,3 +137,9 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - MARKETING-LOG.txt local marketing intelligence & personas register.
             - Sibling ecosystem matrix expanded to 16 partner tools.
             - Machine-readable llms.txt synchronized to 2026-09-12 baseline.
+2026-09-14 [HYG Pfad A] Release 1.0.2: CI timeout guardrails & multi-host defense:
+            - Multi-OS CI tests.yml job timeout-minutes: 15 & standardized pytest -ra -v.
+            - Stale & Welcome workflows hardened with concurrency and timeout guardrails.
+            - Extended .gitignore multi-host cloud-sync conflict and lock defense.
+            - PEP 621 version bump to 1.0.2 across all modules, manifests and docs.
+            - Contract tests expanded (197 passed tests, 100% green).

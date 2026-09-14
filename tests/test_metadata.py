@@ -24,12 +24,12 @@ def test_readme_and_readme_de_existence_and_language_links():
 
 
 def test_badges_parity():
-    """Prüft, dass beide README-Dateien synchronisierte Badges für Version 1.0.1 und Kernmetriken enthalten."""
+    """Prüft, dass beide README-Dateien synchronisierte Badges für Version 1.0.2 und Kernmetriken enthalten."""
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "badge/version-1.0.1-blue" in content_en
-    assert "badge/version-1.0.1-blue" in content_de
+    assert "badge/version-1.0.2-blue" in content_en
+    assert "badge/version-1.0.2-blue" in content_de
 
     assert "badge/python-3.11" in content_en
     assert "badge/python-3.11" in content_de
@@ -70,15 +70,15 @@ def test_security_policy_bilingual_and_contacts():
 
 
 def test_llms_txt_currency_and_structure():
-    """Prüft, dass llms.txt aktuell ist, Version 1.0.1, 10 Invarianten und Referenzen enthält."""
+    """Prüft, dass llms.txt aktuell ist, Version 1.0.2, 10 Invarianten und Referenzen enthält."""
     llms_file = REPO_ROOT / "llms.txt"
     assert llms_file.is_file(), "llms.txt fehlt im Repo-Root"
 
     content = llms_file.read_text(encoding="utf-8")
 
     assert "https://github.com/dev-bricks/DevCenter" in content
-    assert "2026-09-12" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-12 stehen"
-    assert "Version: 1.0.1" in content
+    assert "2026-09-14" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-14 stehen"
+    assert "Version: 1.0.2" in content
     assert "local-first Python IDE" in content
     assert "dev-bricks" in content
     assert "open-bricks" in content.lower()
@@ -87,14 +87,14 @@ def test_llms_txt_currency_and_structure():
 
 
 def test_pyproject_version_and_pep621_metadata():
-    """Prüft die Gültigkeit von pyproject.toml, Version 1.0.1, URLs und Pytest-Konfiguration."""
+    """Prüft die Gültigkeit von pyproject.toml, Version 1.0.2, URLs und Pytest-Konfiguration."""
     pyproject_file = REPO_ROOT / "pyproject.toml"
     assert pyproject_file.is_file(), "pyproject.toml fehlt im Repo-Root"
 
     content = pyproject_file.read_text(encoding="utf-8")
 
     assert 'name = "devcenter-suite"' in content
-    assert 'version = "1.0.1"' in content
+    assert 'version = "1.0.2"' in content
     assert "classifiers = [" in content
     assert "keywords = [" in content
     assert "[project.urls]" in content
@@ -120,11 +120,13 @@ def test_sibling_ecosystem_matrix_presence():
 
 
 def test_changelog_currency():
-    """Prüft, dass CHANGELOG.md einen aktuellen Eintrag für 1.0.1 und 2026-09-12 enthält."""
+    """Prüft, dass CHANGELOG.md aktuelle Einträge für 1.0.2 und 1.0.1 enthält."""
     changelog_file = REPO_ROOT / "CHANGELOG.md"
     assert changelog_file.is_file(), "CHANGELOG.md fehlt im Repo-Root"
 
     content = changelog_file.read_text(encoding="utf-8")
+    assert "## [1.0.2] - 2026-09-14" in content
+    assert "Pfad A" in content
     assert "## [1.0.1] - 2026-09-12" in content
     assert "Pfad B" in content
 
@@ -207,6 +209,7 @@ def test_marketing_log_contract():
     assert "COMPETITIVE MATRIX" in content
     assert "HIGH-INTENT SEARCH QUERIES" in content
     assert "2026-09-12" in content
+    assert "2026-09-14" in content
 
 
 def test_cross_platform_smoke_scripts_and_ci():
@@ -250,3 +253,60 @@ def test_gitignore_hygiene_and_lock_exclusion():
     assert "LOCK*.txt" in content
     assert "*.sync-conflict-*" in content or "*.conflict" in content
     assert "* (kopie)*" in content or "* (copy)*" in content
+
+
+def test_ci_workflow_timeout_and_concurrency_guardrails():
+    """Prüft Job-Level Timeouts (15 min) und standardisiertes pytest -ra -v in tests.yml."""
+    tests_workflow = REPO_ROOT / ".github" / "workflows" / "tests.yml"
+    assert tests_workflow.is_file()
+    content = tests_workflow.read_text(encoding="utf-8")
+
+    assert "timeout-minutes: 15" in content
+    assert "python -m pytest -ra -v" in content
+    assert "concurrency:" in content
+    assert "cancel-in-progress: true" in content
+
+
+def test_stale_workflow_timeout_and_concurrency():
+    """Prüft Concurrency und Job-Timeout (10 min) in stale.yml."""
+    stale_workflow = REPO_ROOT / ".github" / "workflows" / "stale.yml"
+    assert stale_workflow.is_file()
+    content = stale_workflow.read_text(encoding="utf-8")
+
+    assert "concurrency:" in content
+    assert "cancel-in-progress: true" in content
+    assert "timeout-minutes: 10" in content
+
+
+def test_welcome_workflow_timeout_and_concurrency():
+    """Prüft Concurrency und Job-Timeout (5 min) in welcome.yml."""
+    welcome_workflow = REPO_ROOT / ".github" / "workflows" / "welcome.yml"
+    assert welcome_workflow.is_file()
+    content = welcome_workflow.read_text(encoding="utf-8")
+
+    assert "concurrency:" in content
+    assert "cancel-in-progress: true" in content
+    assert "timeout-minutes: 5" in content
+
+
+def test_extended_gitignore_multi_host_and_lock_defense():
+    """Prüft erweiterte Multi-Host-Konflikt- und Fail-Closed-Lock-Muster in .gitignore."""
+    content = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8")
+
+    for host_pat in ["*-WORKSTATION*", "*-ASUS*", "*-LAPTOP*", "*-Mac Studio*"]:
+        assert host_pat in content, f"{host_pat} fehlt in .gitignore"
+
+    for conflict_pat in ["*conflicted copy*", "* (Kopie)*", "* (Copy)*"]:
+        assert conflict_pat in content, f"{conflict_pat} fehlt in .gitignore"
+
+    for lock_pat in ["LOCK", "LOCK*.txt", "LOCK.*", "*.lock", "uv.lock", "!package-lock.json"]:
+        assert lock_pat in content, f"{lock_pat} fehlt in .gitignore"
+
+    for cache_pat in [".coverage.*", "coverage/", ".tox/", ".hypothesis/", ".turbo/", ".nyc_output/", "*.rej"]:
+        assert cache_pat in content, f"{cache_pat} fehlt in .gitignore"
+
+
+def test_marketing_log_recent_hygiene_entry():
+    """Prüft, dass der Pfad-A-Audit-Eintrag für 1.0.2 in MARKETING-LOG.txt vorliegt."""
+    content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-09-14 [HYG Pfad A] Release 1.0.2" in content

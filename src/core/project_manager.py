@@ -28,7 +28,7 @@ class ProjectConfig:
     python_version: str = "3.12"
     description: str = ""
     author: str = ""
-    version: str = "1.0.1"
+    version: str = "1.0.2"
     build_config: Dict[str, Any] = None
 
     def __post_init__(self):

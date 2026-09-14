@@ -1,9 +1,9 @@
 # Third-Party Licenses & Software Bill of Materials (SBOM)
 
-**Project:** DevCenter (`devcenter-suite`)  
-**Version:** 1.0.1  
-**Audit Date:** 2026-09-12  
-**Ecosystem:** dev-bricks (open-bricks umbrella)  
+**Project:** DevCenter (`devcenter-suite`)<br>
+**Version:** 1.0.2<br>
+**Audit Date:** 2026-09-14<br>
+**Ecosystem:** dev-bricks (open-bricks umbrella)<br>
 **Primary License:** GNU General Public License v3.0 ([LICENSE](LICENSE))
 
 This document provides a comprehensive inventory of all third-party open-source libraries, transitive dependencies, build tools, and development frameworks used by DevCenter. Every dependency has been audited for license compatibility, vulnerability floors, zero-egress compliance, and unprivileged user-space execution.
@@ -97,8 +97,8 @@ DevCenter and all bundled tools run strictly in unprivileged user space (`RunAsI
 ```json
 {
   "project": "devcenter-suite",
-  "version": "1.0.1",
-  "audit_date": "2026-09-12",
+  "version": "1.0.2",
+  "audit_date": "2026-09-14",
   "spdx_matrix": {
     "PySide6": "LGPL-3.0-only",
     "Pillow": "HPND-sell-variant",

@@ -1,4 +1,4 @@
-<img src="assets/banner.svg" width="100%" alt="DevCenter Banner"/>
+<img src="assets/banner.png" width="100%" alt="DevCenter Banner"/>
 
 # DevCenter
 
@@ -6,7 +6,7 @@
 
 **[English](README.md) | [Deutsch](README_de.md)**
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue)](CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-green)](https://python.org)
 [![Lizenz: GPL v3](https://img.shields.io/badge/Lizenz-GPL%20v3-blue)](LICENSE)
 [![Plattform](https://img.shields.io/badge/Plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/dev-bricks/DevCenter)
@@ -15,7 +15,7 @@
 [![Sicherheit: Lokaler Keyring](https://img.shields.io/badge/Sicherheit-Keyring%20Secret%20Vault-brightgreen)](SECURITY.md)
 [![Sicherheits-SLA: 48h / 5d Triage](https://img.shields.io/badge/Sicherheits--SLA-48h%20%7C%205d%20Triage-blue)](SECURITY.md)
 [![Drittanbieter: Geprüft](https://img.shields.io/badge/Drittanbieter-Gepr%C3%BCft%20%7C%20100%25%20permissiv-brightgreen)](THIRD_PARTY_LICENSES.md)
-[![Tests: 186 Bestanden](https://img.shields.io/badge/tests-186%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
+[![Tests: 197 Bestanden](https://img.shields.io/badge/tests-197%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-aktiv-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
 [![Ökosystem: dev-bricks](https://img.shields.io/badge/%C3%96kosystem-dev--bricks-purple)](https://github.com/dev-bricks)
