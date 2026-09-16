@@ -1213,7 +1213,7 @@ class MainWindow(QMainWindow):
             self,
             "Über DevCenter",
             """<h2>🚀 DevCenter</h2>
-            <p><b>Version 1.0.2</b></p>
+            <p><b>Version 1.0.3</b></p>
             <p>Python Development Suite</p>
             <p>Eine integrierte Entwicklungsumgebung für den<br>
             kompletten Python-Entwicklungszyklus.</p>

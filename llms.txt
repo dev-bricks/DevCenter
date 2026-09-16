@@ -3,8 +3,8 @@
 Canonical repository: https://github.com/dev-bricks/DevCenter
 Ecosystem: dev-bricks
 Umbrella: open-bricks
-Version: 1.0.2
-Last-checked: 2026-09-14
+Version: 1.0.3
+Last-checked: 2026-09-16
 
 DevCenter is a local-first, zero-egress Python desktop IDE and developer toolkit from dev-bricks under the open-bricks umbrella. It combines a PySide6 code editor, static AST analysis, automated encoding repair (ftfy), PyInstaller build helpers, icon conversion, third-party license collection, SQLite full-text file indexing, backup-oriented sync helpers, and an optional Claude/Anthropic AI assistant in a standalone desktop suite.
 

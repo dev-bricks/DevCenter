@@ -143,3 +143,8 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - Extended .gitignore multi-host cloud-sync conflict and lock defense.
             - PEP 621 version bump to 1.0.2 across all modules, manifests and docs.
             - Contract tests expanded (197 passed tests, 100% green).
+2026-09-16 [HYG Pfad A] Release 1.0.3: CI workflow header deduplication & pytest guardrails:
+            - Deduplicated CI workflow top-level triggers & permissions in tests.yml.
+            - Hardened pytest.ini_options in pyproject.toml with minversion and norecursedirs.
+            - Bumped PEP 621 version to 1.0.3 across codebase, manifests, and documentation.
+            - Contract tests expanded (199 passed tests, 100% green).

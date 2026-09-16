@@ -3,6 +3,23 @@
 Alle wesentlichen Änderungen an diesem Projekt werden hier dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## [1.0.3] - 2026-09-16
+
+### Repository Hygiene, CI Header Deduplication & Pytest Standardization (Pfad A) [G 2026-09-16]
+- `.github/workflows/`:
+  - `tests.yml`: Duplizierten Top-Level-Header- und Concurrency-Block bereinigt; saubere Concurrency-Gruppe `${{ github.workflow }}-${{ github.ref }}` mit `cancel-in-progress: true` und `permissions: contents: read` sichergestellt.
+- `pyproject.toml`:
+  - `[tool.pytest.ini_options]`: `minversion = "7.0"` und standardisierte `norecursedirs = [".git", ".pytest_cache", "__pycache__", "build", "dist"]` Guardrails verankert.
+- Versionsharmonisierung auf 1.0.3:
+  - `pyproject.toml`: Version auf `1.0.3` angehoben.
+  - `src/__init__.py`, `src/core/project_manager.py`, `src/core/workspace_export.py`, `src/gui/main_window.py`, `src/modules/builder/license_generator.py`: Anwendungs- und Modul-Versionen auf `1.0.3` synchronisiert.
+  - `THIRD_PARTY_LICENSES.md`: Versionskopf und JSON-SBOM-Mapping auf `1.0.3` und Re-Audit-Datum `2026-09-16` aktualisiert.
+  - `README.md` & `README_de.md`: Versionsbadge auf `1.0.3` und Testsuite-Badge auf 199 bestandene Tests (100% grün) synchronisiert.
+  - `llms.txt`: Last-checked Timestamp auf `2026-09-16` und Version auf `1.0.3` aktualisiert.
+  - `MARKETING-LOG.txt`: Neuer Pfad-A-Hygiene- und CI-Audit-Eintrag Stand `2026-09-16` ergänzt.
+- `tests/test_metadata.py` & `tests/test_security_license_contract.py`:
+  - Vertragstests um `test_ci_workflow_no_duplicate_headers` und `test_pytest_ini_options_guardrails` erweitert; Version 1.0.3 und Datumsstempel 2026-09-16 validiert. (199 Tests, 100% grün)
+
 ## [1.0.2] - 2026-09-14
 
 ### Repository Hygiene, CI Timeout Hardening & Multi-Host Security (Pfad A) [G 2026-09-14]

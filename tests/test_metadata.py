@@ -28,8 +28,8 @@ def test_badges_parity():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "badge/version-1.0.2-blue" in content_en
-    assert "badge/version-1.0.2-blue" in content_de
+    assert "badge/version-1.0.3-blue" in content_en
+    assert "badge/version-1.0.3-blue" in content_de
 
     assert "badge/python-3.11" in content_en
     assert "badge/python-3.11" in content_de
@@ -77,8 +77,8 @@ def test_llms_txt_currency_and_structure():
     content = llms_file.read_text(encoding="utf-8")
 
     assert "https://github.com/dev-bricks/DevCenter" in content
-    assert "2026-09-14" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-14 stehen"
-    assert "Version: 1.0.2" in content
+    assert "2026-09-16" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-16 stehen"
+    assert "Version: 1.0.3" in content
     assert "local-first Python IDE" in content
     assert "dev-bricks" in content
     assert "open-bricks" in content.lower()
@@ -87,14 +87,14 @@ def test_llms_txt_currency_and_structure():
 
 
 def test_pyproject_version_and_pep621_metadata():
-    """Prüft die Gültigkeit von pyproject.toml, Version 1.0.2, URLs und Pytest-Konfiguration."""
+    """Prüft die Gültigkeit von pyproject.toml, Version 1.0.3, URLs und Pytest-Konfiguration."""
     pyproject_file = REPO_ROOT / "pyproject.toml"
     assert pyproject_file.is_file(), "pyproject.toml fehlt im Repo-Root"
 
     content = pyproject_file.read_text(encoding="utf-8")
 
     assert 'name = "devcenter-suite"' in content
-    assert 'version = "1.0.2"' in content
+    assert 'version = "1.0.3"' in content
     assert "classifiers = [" in content
     assert "keywords = [" in content
     assert "[project.urls]" in content
@@ -120,11 +120,12 @@ def test_sibling_ecosystem_matrix_presence():
 
 
 def test_changelog_currency():
-    """Prüft, dass CHANGELOG.md aktuelle Einträge für 1.0.2 und 1.0.1 enthält."""
+    """Prüft, dass CHANGELOG.md aktuelle Einträge für 1.0.3, 1.0.2 und 1.0.1 enthält."""
     changelog_file = REPO_ROOT / "CHANGELOG.md"
     assert changelog_file.is_file(), "CHANGELOG.md fehlt im Repo-Root"
 
     content = changelog_file.read_text(encoding="utf-8")
+    assert "## [1.0.3] - 2026-09-16" in content
     assert "## [1.0.2] - 2026-09-14" in content
     assert "Pfad A" in content
     assert "## [1.0.1] - 2026-09-12" in content
@@ -307,6 +308,29 @@ def test_extended_gitignore_multi_host_and_lock_defense():
 
 
 def test_marketing_log_recent_hygiene_entry():
-    """Prüft, dass der Pfad-A-Audit-Eintrag für 1.0.2 in MARKETING-LOG.txt vorliegt."""
+    """Prüft, dass die Pfad-A-Audit-Einträge für 1.0.3 und 1.0.2 in MARKETING-LOG.txt vorliegen."""
     content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-09-16 [HYG Pfad A] Release 1.0.3" in content
     assert "2026-09-14 [HYG Pfad A] Release 1.0.2" in content
+
+
+def test_ci_workflow_no_duplicate_headers():
+    """Prüft, dass workflows/tests.yml keine duplizierten Top-Level-Blöcke oder Header aufweist."""
+    workflow = REPO_ROOT / ".github" / "workflows" / "tests.yml"
+    assert workflow.is_file()
+    content = workflow.read_text(encoding="utf-8")
+
+    assert content.count("name: DevCenter CI & Smoke Tests") == 1
+    assert content.count("concurrency:") == 1
+    assert "permissions:\n  contents: read" in content
+
+
+def test_pytest_ini_options_guardrails():
+    """Prüft standardisierte minversion, norecursedirs und addopts in pyproject.toml."""
+    pyproject = REPO_ROOT / "pyproject.toml"
+    assert pyproject.is_file()
+    content = pyproject.read_text(encoding="utf-8")
+
+    assert 'minversion = "7.0"' in content
+    assert 'addopts = "-ra -v"' in content
+    assert "norecursedirs = [" in content
