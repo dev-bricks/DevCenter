@@ -37,6 +37,27 @@ def get_file_index_path() -> Path:
     return get_app_data_dir() / "file_index.db"
 
 
+def get_logs_dir() -> Path:
+    """Liefert den plattformgerechten Log-Ordner für DevCenter."""
+    if sys.platform.startswith("win"):
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        base_dir = Path(local_app_data) if local_app_data else get_app_data_dir()
+        return base_dir / APP_DIR_NAME / "logs"
+
+    xdg_state = os.environ.get("XDG_STATE_HOME")
+    if xdg_state:
+        xdg_path = Path(xdg_state).expanduser()
+        if xdg_path.is_absolute():
+            return xdg_path / APP_DIR_NAME / "logs"
+
+    return get_app_data_dir() / "logs"
+
+
+def get_log_file_path() -> Path:
+    """Liefert den Standardpfad zur Anwendungs-Logdatei."""
+    return get_logs_dir() / "app.log"
+
+
 def get_project_root() -> Path:
     """Liefert das Root-Verzeichnis des Projekts."""
     return Path(__file__).resolve().parents[2]

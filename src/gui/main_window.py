@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
     └─────────────────────────────────────────────────────────────┘
     """
 
-    def __init__(self):
+    def __init__(self, initial_project: Optional[str] = None):
         super().__init__()
 
         # Manager initialisieren
@@ -95,8 +95,11 @@ class MainWindow(QMainWindow):
         self._setup_connections()
         self._restore_state()
 
-        # Welcome oder letztes Projekt
-        self._show_welcome()
+        # Welcome oder initiales Projekt
+        if initial_project and os.path.exists(initial_project):
+            self._open_project_path(initial_project)
+        else:
+            self._show_welcome()
 
     def _apply_dark_theme(self):
         """Wendet das dunkle Theme an"""
@@ -1294,8 +1297,13 @@ class MainWindow(QMainWindow):
         event.accept()
 
 
-def main():
-    """Haupteinstiegspunkt"""
+def main(argv: Optional[list[str]] = None) -> int:
+    """Haupteinstiegspunkt mit CLI- und GUI-Dispatch"""
+    from core.cli import run_cli
+    cli_result = run_cli(argv)
+    if isinstance(cli_result, int):
+        return cli_result
+
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     icon_path = get_app_icon_path()
@@ -1303,13 +1311,14 @@ def main():
     if not icon.isNull():
         app.setWindowIcon(icon)
 
-    window = MainWindow()
+    initial_proj = getattr(cli_result, "open", None) if cli_result else None
+    window = MainWindow(initial_project=initial_proj)
     if not icon.isNull():
         window.setWindowIcon(icon)
     window.show()
 
-    sys.exit(app.exec())
+    return app.exec()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -18,7 +18,7 @@ if errorlevel 1 (
 
 echo Starte Anwendung...
 echo.
-python main.py
+python main.py %*
 
 if errorlevel 1 (
     echo.

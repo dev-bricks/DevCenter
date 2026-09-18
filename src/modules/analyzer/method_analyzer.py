@@ -253,19 +253,33 @@ class MethodAnalyzer:
         Returns:
             AnalysisResult mit allen Analysedaten
         """
-        self.current_file = file_path
-        result = AnalysisResult(file_path=file_path)
-
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
+            result = AnalysisResult(file_path=file_path)
             result.errors.append({
                 'type': 'FileError',
                 'message': f"Datei konnte nicht gelesen werden: {e}",
                 'line': 0
             })
             return result
+
+        return self.analyze_code(source, file_path=file_path)
+
+    def analyze_code(self, source: str, file_path: str = "<string>") -> AnalysisResult:
+        """
+        Analysiert Python-Quellcode direkt aus einem String
+
+        Args:
+            source: Quellcode-Text
+            file_path: Optionaler Dateipfad zur Identifikation
+
+        Returns:
+            AnalysisResult mit allen Analysedaten
+        """
+        self.current_file = file_path
+        result = AnalysisResult(file_path=file_path)
 
         # Zeilen-Statistiken
         lines = source.split('\n')

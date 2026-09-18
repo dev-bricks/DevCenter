@@ -5,6 +5,27 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [1.0.3] - 2026-09-16
 
+### Launcher, CLI Interface & Runtime Logging System (TASKPLAN #870) [G 2026-09-18]
+- `src/core/cli.py`:
+  - Vollständiges CLI-Interface mit `build_parser()` und Dispatch für `--version`, `--help`, `--debug`, `--log-level`, `--check`, `--open`, `--analyze`, `--export-workspace`, `--headless`.
+  - Strukturierte Systemdiagnose `run_health_check()`: prüft Python-Version (>=3.10), PySide6-Framework, AST-Analyzer, SQLite3 FTS5 Volltextindex und AppData/Log-Pfade.
+  - Headless AST-Code-Analyse `run_ast_analysis()` für Dateien und Verzeichnisse mit optionalem JSON-Export (`--output`).
+  - Headless Workspace-Export `run_workspace_export()` nach `devcenter-workspace-v1.json` mit automatischem Fallback für Projekte ohne vorherige `devcenter.json`.
+- `src/core/runtime_logging.py`:
+  - Zentrales Runtime-Logging mit `RotatingFileHandler` (max. 5 MB, 3 Backups) nach `%LOCALAPPDATA%/DevCenter/logs/app.log` und konfigurierbarem Konsolen-StreamHandler.
+  - Sichere Verzeichniserstellung und Graceful-Degradation bei restriktiven Dateisystemen.
+- `src/core/app_paths.py`:
+  - `get_logs_dir()` und `get_log_file_path()` für standardisierte Log-Pfad-Ermittlung unter Windows (`%LOCALAPPDATA%`) und POSIX (`XDG_STATE_HOME`).
+- `src/modules/analyzer/method_analyzer.py`:
+  - Neue Methode `analyze_code(source, file_path)` für direkte AST-Analyse aus String-Puffern und In-Memory-Analysen.
+- `main.py` & `src/gui/main_window.py`:
+  - CLI-Dispatch im Haupteinstiegspunkt integriert: direkte Parameterübernahme (`sys.argv[1:]`), CLI-Befehle beenden mit entsprechendem Exit-Code, GUI startet nahtlos mit vorselektiertem Projekt (`--open`).
+- Starter- & Diagnose-Skripte:
+  - `START_DevCenter.bat`: Argumentweitergabe (`%*`) hinzugefügt.
+  - `debug.bat`: Neues kanonisches Diagnose- und Debug-Startskript mit UTF-8-Codepage und Log-Pfad-Anzeige.
+- Tests:
+  - `tests/test_cli_and_logging.py`: 8 neue automatisierte Unit-Tests für Pfade, Logging, CLI-Flags, Health-Check, AST-Analyse, Workspace-Export und Headless-Modus (207 Tests, 100% grün).
+
 ### Repository Hygiene, CI Header Deduplication & Pytest Standardization (Pfad A) [G 2026-09-16]
 - `.github/workflows/`:
   - `tests.yml`: Duplizierten Top-Level-Header- und Concurrency-Block bereinigt; saubere Concurrency-Gruppe `${{ github.workflow }}-${{ github.ref }}` mit `cancel-in-progress: true` und `permissions: contents: read` sichergestellt.

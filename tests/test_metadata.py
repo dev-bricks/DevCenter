@@ -242,6 +242,8 @@ def test_offline_and_zero_egress_invariants():
     assert hasattr(core.app_paths, "get_app_data_dir")
     assert hasattr(core.app_paths, "get_settings_path")
     assert hasattr(core.app_paths, "get_app_icon_path")
+    assert hasattr(core.app_paths, "get_logs_dir")
+    assert hasattr(core.app_paths, "get_log_file_path")
     assert hasattr(core.settings_manager, "SettingsManager")
 
 
