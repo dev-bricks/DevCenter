@@ -15,50 +15,62 @@ import os
 import importlib
 
 # ------------------------------------------------------------
-# 0. Auto-Installation fehlender Pakete (Bootstrapper)
+# 0. Reproduzierbarer Dependency-Check (Bootstrapper)
 # ------------------------------------------------------------
+RUNTIME_DEPENDENCIES = {
+    "Pillow": "PIL",
+    "pygetwindow": "pygetwindow",
+    "keyring": "keyring",
+}
+
+
 def install_and_import(package_name, import_name=None):
     """
-    Versucht ein Modul zu importieren. Falls es fehlt, wird es per pip installiert.
+    Prüft ein Modul ohne unkontrollierte Laufzeit- oder Netzwerkveränderungen.
+    Explizite Installation erfolgt vorab kontrolliert über requirements.txt bzw. pip.
     """
     if import_name is None:
         import_name = package_name
 
     try:
         importlib.import_module(import_name)
+        return True
     except ImportError:
-        print(f"⚠️  Modul '{import_name}' fehlt. Installiere '{package_name}'...")
-        try:
-            # sys.executable garantiert, dass wir das pip des aktuellen Interpreters nutzen
-            subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-            print(f"✅ '{package_name}' erfolgreich installiert.")
-        except Exception as e:
-            print(f"❌ Fehler bei der Installation von {package_name}: {e}")
-            print("Bitte führen Sie das Skript als Administrator aus oder installieren Sie manuell.")
-            input("Drücken Sie Enter zum Beenden...")
-            sys.exit(1)
+        return False
 
-        # Cache invalidieren und neu importieren
-        try:
-            importlib.invalidate_caches()
-            importlib.import_module(import_name)
-        except ImportError:
-            print(f"❌ Import von '{import_name}' nach Installation immer noch nicht möglich.")
-            sys.exit(1)
 
-# --- Abhängigkeiten prüfen & installieren ---
-print("--- Prüfe Abhängigkeiten ---")
-install_and_import("Pillow", "PIL")        # Für Icon-Resizing
-install_and_import("pygetwindow")          # Für Screenshots
-install_and_import("keyring")              # Für sichere Passwort-Speicherung
-print("--- Abhängigkeiten OK ---")
+def ensure_dependencies():
+    """Prüft deklarierte Abhängigkeiten ohne Netzwerk- oder pip-Seiteneffekt."""
+    missing = [
+        pkg for pkg, mod in RUNTIME_DEPENDENCIES.items()
+        if not install_and_import(pkg, mod)
+    ]
+    if missing:
+        names = ", ".join(missing)
+        print(f"❌ Fehlende Abhängigkeiten: {names}")
+        print("Bitte vorab installieren: pip install " + " ".join(missing))
+        return False
+    return True
+
 
 # ------------------------------------------------------------
 # 1. Imports der nachgeladenen Module & Standard-Libs
 # ------------------------------------------------------------
-from PIL import Image, ImageGrab
-import pygetwindow as gw
-import keyring
+try:
+    from PIL import Image, ImageGrab
+except ImportError:
+    Image = ImageGrab = None
+
+try:
+    import pygetwindow as gw
+except ImportError:
+    gw = None
+
+try:
+    import keyring
+except ImportError:
+    keyring = None
+
 
 # Standard Libs
 import json
@@ -297,10 +309,11 @@ class StorePackagerApp(tk.Tk):
                 self.category.set(data.get("category", "Productivity"))
                 self.age_rating.set(data.get("age_rating", "3+"))
 
-                # Kein Try/Except mehr nötig, da keyring oben installiert wurde
-                pwd = keyring.get_password(KEYRING_SERVICE, "pfx_password")
-                if pwd:
-                    self.pfx_password.set(pwd)
+                # Keyring optional prüfen
+                if keyring:
+                    pwd = keyring.get_password(KEYRING_SERVICE, "pfx_password")
+                    if pwd:
+                        self.pfx_password.set(pwd)
 
             except Exception as e:
                 # Fallback für alte Settings-Files oder Keyring-Fehler
@@ -308,7 +321,7 @@ class StorePackagerApp(tk.Tk):
                 pass
 
     def save_settings(self):
-        if self.pfx_password.get():
+        if self.pfx_password.get() and keyring:
             try:
                 keyring.set_password(KEYRING_SERVICE, "pfx_password", self.pfx_password.get())
             except Exception as e:
@@ -705,6 +718,9 @@ class StorePackagerApp(tk.Tk):
 
     # ---------- Helpers ----------
     def build_icons(self, icon_src, icon_dir):
+        if not Image:
+            messagebox.showerror("Fehler", "Pillow nicht verfügbar. Bitte vorab installieren: pip install Pillow")
+            return
         img = Image.open(icon_src)
         os.makedirs(icon_dir, exist_ok=True)
 
@@ -1380,5 +1396,6 @@ def patch_widgets(translator):
 
 # ---------- main ----------
 if __name__ == "__main__":
+    ensure_dependencies()
     app = StorePackagerApp()
     app.mainloop()

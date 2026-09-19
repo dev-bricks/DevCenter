@@ -14,14 +14,6 @@ Format: `[Status] Titel — Kurzbeschreibung`
 `LICENSE` GPL-3.0-only festlegen. Vor MSIX-/Store-Einreichung müssen Store-Metadaten,
 Listing und Tests auf GPL-3.0 korrigiert und gegen den kanonischen Klon verifiziert werden.
 
-### SEC-AUDIT-2026-08-14-02: Lizenzinventar fehlt im kanonischen Repository
-**Status:** Offen
-**Fundort:** Repository-Root
-**Befund:** `THIRD_PARTY_LICENSES.txt` ist im kanonischen Checkout nicht vorhanden.
-Die OneDrive-Kopie vom 2026-07-02 ist kein freigegebener Ersatz und enthält inzwischen
-driftende Metadaten außerhalb der deklarierten Versionsbereiche. In einem eigenen Slice
-aus dem exakt aufgelösten Build-Environment neu erzeugen, prüfen und mit Guard committen.
-
 ### SEC-AUDIT-2026-08-14-03: Dependency-Vertrag ist nicht reproduzierbar
 **Status:** Offen
 **Fundort:** `requirements.txt`, `pyproject.toml`, `_sources/CROSSCHECK.md`
@@ -30,16 +22,19 @@ keine Obergrenzen, während `pyproject.toml` Major-Grenzen setzt. Der aktuelle
 `pip-audit`-Resolver fand keine bekannte Schwachstelle, attestiert damit aber keinen
 eingefrorenen Produktstand. Verträge angleichen und einen verifizierten Lock-/SBOM-Stand
 für Releases erzeugen.
-
-### SEC-AUDIT-2026-08-14-04: Historischer Packager installiert ungepinnte Pakete
-**Status:** Offen
-**Fundort:** `resources/WinStorePackager/WindowsStorePublisher_3.py`
-**Befund:** Das mitgeführte Hilfsskript installiert Pillow, pygetwindow und keyring bei
-Import automatisch ohne Versionsbindung. Vor erneuter Nutzung oder Distribution auf
-explizite, vorab installierte und geprüfte Abhängigkeiten umstellen.
 ---
 
 ## Behoben
+
+### SEC-AUDIT-2026-08-14-04: Historischer Packager installiert ungepinnte Pakete
+**Status:** Behoben (2026-09-20)
+**Dateien:** `resources/WinStorePackager/WindowsStorePublisher_3.py`, `tests/test_security_license_contract.py`
+**Fix:** Unkontrollierte `subprocess.check_call`-Aufrufe von `pip install` bei Modulimport vollständig eliminiert. Umstellung auf seiteneffektfreie Vorabprüfung `ensure_dependencies()` unter `if __name__ == '__main__':` sowie robuste `try...except ImportError`-Guards für optionale Bibliotheken (`PIL`, `pygetwindow`, `keyring`). Verifiziert durch Regressionstest `test_winstorepackager_resource_no_unpinned_pip_install`.
+
+### SEC-AUDIT-2026-08-14-02: Lizenzinventar fehlt im kanonischen Repository
+**Status:** Behoben (2026-09-16)
+**Dateien:** `THIRD_PARTY_LICENSES.txt`, `THIRD_PARTY_LICENSES.md`, `tests/test_security_license_contract.py`
+**Fix:** Umfassendes Lizenzinventar (SPDX-identifiziert für alle Runtime-, Transitive-, Build- und Test-Abhängigkeiten) und SBOM im kanonischen Repository angelegt und committet. Automatisierte Absicherung über Regressionstests `test_third_party_licenses_complete_and_accurate` und `test_third_party_licenses_md_comprehensive_sbom`.
 
 ### B-005: AUFGABEN.txt Markdown-Parsing ignoriert Standard-Aufgabenlisten
 **Status:** Behoben (2026-09-08)

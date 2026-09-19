@@ -176,6 +176,21 @@ def test_third_party_licenses_md_comprehensive_sbom() -> None:
     assert '"compliance": {' in content
 
 
+def test_winstorepackager_resource_no_unpinned_pip_install() -> None:
+    """Verify resources/WinStorePackager does not auto-run unpinned pip install on import (SEC-AUDIT-2026-08-14-04)."""
+    packager_script = ROOT / "resources" / "WinStorePackager" / "WindowsStorePublisher_3.py"
+    assert packager_script.is_file(), "WindowsStorePublisher_3.py must exist"
+    content = packager_script.read_text(encoding="utf-8")
+
+    # Verify no unpinned automatic pip installation on module import
+    assert 'subprocess.check_call([sys.executable, "-m", "pip", "install"' not in content, (
+        "WindowsStorePublisher_3.py must not contain unpinned pip auto-installer"
+    )
+    assert "ensure_dependencies" in content, (
+        "WindowsStorePublisher_3.py must define reproducible ensure_dependencies check"
+    )
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main(["-v", __file__]))

@@ -5,6 +5,16 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [1.0.3] - 2026-09-16
 
+### Security Hardening & WinStorePackager Isolation (TASKPLAN #866 / SEC-AUDIT-2026-08-14-04) [G 2026-09-20]
+- `resources/WinStorePackager/WindowsStorePublisher_3.py`:
+  - Ungepinnte, unkontrollierte `subprocess.check_call`-Aufrufe von `pip install` bei Modulimport vollständig eliminiert.
+  - Implementierung einer seiteneffektfreien `ensure_dependencies()`-Prüfung, die erst unter `if __name__ == '__main__':` ausgeführt wird.
+  - Optionale Module (`PIL`, `pygetwindow`, `keyring`) mit sicheren `try...except ImportError`-Guards gekapselt und Methoden gegen `None`-Referenzen gehärtet (Zero-Egress- und Offline-Konformität).
+- `tests/test_security_license_contract.py`:
+  - Neuer Regressionstest `test_winstorepackager_resource_no_unpinned_pip_install` stellt sicher, dass keine Subprozess-Installationen bei Import ausgeführt werden können (208 Tests, 100% grün).
+- `BUGS.md` & `AUFGABEN.txt`:
+  - `SEC-AUDIT-2026-08-14-04` und `SEC-AUDIT-2026-08-14-02` als behoben markiert und dokumentiert.
+
 ### Launcher, CLI Interface & Runtime Logging System (TASKPLAN #870) [G 2026-09-18]
 - `src/core/cli.py`:
   - Vollständiges CLI-Interface mit `build_parser()` und Dispatch für `--version`, `--help`, `--debug`, `--log-level`, `--check`, `--open`, `--analyze`, `--export-workspace`, `--headless`.
