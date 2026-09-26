@@ -5,6 +5,11 @@
 > offenen Features und MIT-Lizenz bleiben als Planungsarchiv erhalten. Für den
 > aktuellen Stand gelten `README.md`, `ARCHITEKTUR_DevCenter.md`,
 > `pyproject.toml`, `src/` und `tests/`.
+>
+> **Pfadgrenze:** Die Pfade in der folgenden historischen Modulübersicht sind
+> ausschließlich als navigierbare Gegenstücke zum heutigen Checkout angegeben.
+> Die übrigen historischen Struktur-, Reifegrad- und Technologieaussagen werden
+> dadurch nicht zum aktuellen Architekturvertrag.
 
 ## 1. Überblick
 
@@ -170,18 +175,18 @@ Die Suite vereint 11 spezialisierte Entwicklertools zu einer kohärenten IDE mit
 
 | Modul | Pfad | Beschreibung |
 |-------|------|--------------|
-| **ProjectManager** | `core/project_manager.py` | Projektverwaltung, Recent Projects |
-| **SettingsManager** | `core/settings_manager.py` | Zentrale Einstellungen (Singleton) |
-| **EventBus** | `core/event_bus.py` | Pub/Sub Event-System |
-| **CodeEditor** | `modules/editor/code_editor.py` | QScintilla-basierter Editor |
-| **MethodAnalyzer** | `modules/analyzer/method_analyzer.py` | AST-basierte Analyse |
-| **EncodingFixer** | `modules/analyzer/encoding_fixer.py` | Encoding-Tools |
-| **Kompilator** | `modules/builder/kompilator.py` | PyInstaller-Wrapper |
-| **IconBuilder** | `modules/builder/icon_builder.py` | ICO-Konvertierung |
-| **LicenseGenerator** | `modules/builder/license_generator.py` | pip-licenses |
-| **AIService** | `modules/ai_assistant/ai_service.py` | Claude API |
-| **SyncManager** | `modules/filemanager/sync_manager.py` | Backup-Sync |
-| **ProfilerBridge** | `modules/filemanager/profiler_bridge.py` | Datei-Index |
+| **ProjectManager** | `src/core/project_manager.py` | Projektverwaltung, Recent Projects |
+| **SettingsManager** | `src/core/settings_manager.py` | Zentrale Einstellungen (Singleton) |
+| **EventBus** | `src/core/event_bus.py` | Pub/Sub Event-System |
+| **CodeEditor** | `src/modules/editor/code_editor.py` | QScintilla-basierter Editor |
+| **MethodAnalyzer** | `src/modules/analyzer/method_analyzer.py` | AST-basierte Analyse |
+| **EncodingFixer** | `src/modules/analyzer/encoding_fixer.py` | Encoding-Tools |
+| **Kompilator** | `src/modules/builder/kompilator.py` | PyInstaller-Wrapper |
+| **IconBuilder** | `src/modules/builder/icon_builder.py` | ICO-Konvertierung |
+| **LicenseGenerator** | `src/modules/builder/license_generator.py` | pip-licenses |
+| **AIService** | `src/modules/ai_assistant/ai_service.py` | Claude API |
+| **SyncManager** | `src/modules/filemanager/sync_manager.py` | Backup-Sync |
+| **ProfilerBridge** | `src/modules/filemanager/profiler_bridge.py` | Datei-Index |
 
 ### 4.3 Datenfluss
 

@@ -15,7 +15,7 @@
 [![Security: Local Keyring](https://img.shields.io/badge/security-Keyring%20Secret%20Vault-brightgreen)](SECURITY.md)
 [![Security SLA: 48h / 5d triage](https://img.shields.io/badge/Security%20SLA-48h%20%7C%205d%20triage-blue)](SECURITY.md)
 [![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20100%25%20permissive-brightgreen)](THIRD_PARTY_LICENSES.md)
-[![Tests: 199 Passed](https://img.shields.io/badge/tests-199%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Tests: 208 Passed](https://img.shields.io/badge/tests-208%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
@@ -310,6 +310,11 @@ pip install -r requirements.txt
 # Run automated test suite
 python -m pytest
 ```
+
+Current local verification (2026-09-20): `python -m pytest -q` collected and
+passed 208 tests. CI runs the suite on Python 3.11 and 3.12, with additional
+Python 3.11 platform-smoke jobs on Linux and macOS. This local count is a test
+readback, not a release-readiness claim.
 
 ---
 

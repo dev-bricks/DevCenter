@@ -2,16 +2,16 @@
 name: "DevCenter"
 type: project-docs
 profile: "STANDARD"
-version: 1.0.0
+version: 1.0.1
 created: "2026-08-17"
-updated: 2026-08-17
-reason_last_change: "Bootstrap-Check: projektlokales CLAUDE.md aus project-docs-Template abgeleitet und für DevCenter Suite zugeschnitten."
-last_verified: 2026-08-17
+updated: 2026-09-20
+reason_last_change: "TASKPLAN #2181: aktive Versions-, Test-, CI- und Produktgrenzen gegen den aktuellen Checkout synchronisiert."
+last_verified: 2026-09-20
 author: "Gemini"
 anthropic_compatible: true
 description: |
   Project-specific instructions for AI coding agents in DevCenter Suite.
-  Fokus: lokale Python/PySide6 Desktop-IDE, Code-Analyse, PyInstaller-Builds, i18n, Web-Companion und Plan-D-Repository-Grenzen.
+  Fokus: lokale Python/PySide6 Desktop-IDE, Code-Analyse, PyInstaller-Builds, i18n, redigierter Export und Plan-D-Repository-Grenzen.
 ---
 
 # CLAUDE.md — Instructions für AI Coding Agents
@@ -27,12 +27,12 @@ description: |
 
 ## Projekt
 
-**DevCenter** — Lokale Desktop-Entwicklungsumgebung und Suite für Python-Projekte (Code schreiben, analysieren, testen, kompilieren und exportieren). Integriert Code-Editor, AST-Analyzer, PyInstaller-Builder, Lizenzsammler, SQLite/FTS5-Dateiindex, optionalen Claude-KI-Assistenten und statischen Web-Companion.
+**DevCenter** — Lokale Desktop-Entwicklungsumgebung und Suite für Python-Projekte (Code schreiben, analysieren, testen, kompilieren und exportieren). Integriert Code-Editor, AST-Analyzer, PyInstaller-Builder, Lizenzsammler, SQLite/FTS5-Dateiindex, optionalen Claude-KI-Assistenten und einen redigierten lokalen Workspace-Export.
 
 - **Pfad (OneDrive-Deploykopie):** `<OneDrive>\.TOPICS\.SOFTWARE\CODING\REL-PUB_DevCenter_SUITE` (`<OneDrive>` = der OneDrive-Ordner des jeweiligen Hosts)
 - **Klon (Plan-D-Arbeitskopie):** `C:\_Local_DEV\repos\DevCenter`
 - **Repository:** https://github.com/dev-bricks/DevCenter (Kanonischer Branch: `master`)
-- **Sprache/Stack:** Python 3.10+, PySide6 (Qt6 GUI), PyInstaller, Pillow, SQLite (FTS5 / WAL), Anthropic API (optional), HTML5/JS (PWA Viewer in `web_companion/`)
+- **Sprache/Stack:** Python 3.11+, PySide6 (Qt6 GUI), PyInstaller, Pillow, SQLite (FTS5 / WAL), Anthropic API (optional); der frühere Web/PWA-Companion ist kein Bestandteil der aktuellen Runtime.
 
 ## Rolle & Stil
 
@@ -52,7 +52,7 @@ python main.py
 # oder via Starter
 START_DevCenter.bat
 
-# Python-Testsuite ausführen (114+ Tests)
+# Python-Testsuite ausführen (208 Tests; lokaler Readback 2026-09-20)
 python -m pytest tests
 
 # Alternativ via unittest
@@ -77,7 +77,7 @@ python manage_translations.py
 ## Soft Guidelines
 
 - **Internationalisierung (i18n):** Neue sichtbare UI-Texte zweisprachig (DE/EN) in `locales/` und `translator.py` pflegen.
-- **Web Companion:** Der statische PWA-Viewer unter `web_companion/` ist ein lokaler, reiner Read-Only-Viewer für redigierte JSON-Workspaces (`devcenter-workspace-v1.json`). Keine Upload-Server oder Backend-Endpunkte hinzufügen.
+- **Web/PWA-Grenze:** Der frühere Companion ist aus der aktuellen Runtime entfernt. Das `web`-Feld in Schema-v1-Exporten bleibt ausschließlich als Legacy-Kompatibilitätsfeld erhalten; keinen Hosted-Importer oder Upload-Endpunkt hinzufügen.
 - **Icon-Artefakte:** `mobile_icons/` und generierte Icon-Sätze dienen der Multi-Plattform-Bereitstellung, begründen aber keinen separaten mobilen Release-Status.
 
 ## Aktive Statusquellen & Dokumente
@@ -92,6 +92,9 @@ python manage_translations.py
 | [`THIRD_PARTY_LICENSES.txt`](./THIRD_PARTY_LICENSES.txt) | Drittanbieter-Lizenzen |
 | [`PRIVACY_POLICY.md`](./PRIVACY_POLICY.md) | Lokale Datenhaltung und Datenschutz |
 | [`README.md`](./README.md) | Zweisprachige Projektübersicht |
+| [`README_de.md`](./README_de.md) | Deutsche Projektübersicht mit synchronisierten aktiven Vertragswerten |
+| [`DOCUMENTATION_STATUS.md`](./DOCUMENTATION_STATUS.md) | Quellenhierarchie und historische Grenze |
+| [`llms.txt`](./llms.txt) | Maschinenlesbarer Projekt- und Verifikationsindex |
 
 ## Projekt-Struktur
 
@@ -109,8 +112,7 @@ REL-PUB_DevCenter_SUITE/
 │       ├── builder/          # PyInstaller-Kompilator, Icon-Builder, Lizenzsammler
 │       ├── ai_assistant/     # Claude/Anthropic-Service & Worker
 │       └── filemanager/      # ProfilerBridge (SQLite/FTS5), BackupSync
-├── tests/                    # Pytest- & Unittest-Suite (114+ Tests)
-├── web_companion/            # Lokale statische PWA für Workspace-Viewer
+├── tests/                    # Pytest- & Unittest-Suite (208 Tests im Readback 2026-09-20)
 ├── assets/ / resources/      # Icons, Banner, Bilder
 ├── locales/                  # Übersetzungsdateien (DE / EN)
 └── releases/                 # Lokale Build-Artefakte

@@ -188,7 +188,7 @@ GUI Update
 
 ---
 
-**Version**: 1.0.0 | **Stand**: 2026-08-11 | **Quelle**: `src/`, `pyproject.toml`, `tests/`
+**Version**: 1.0.3 | **Stand**: 2026-09-20 | **Quelle**: `src/`, `pyproject.toml`, `tests/`
 
 Der frühere Web/PWA-Companion gehört nicht zur aktuellen Laufzeit. Der
 redigierte Workspace-Export bleibt eine lokale Desktop-Funktion; siehe

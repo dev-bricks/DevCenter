@@ -1,6 +1,6 @@
 # Exportformat DevCenter
 
-Stand: 2026-08-11
+Stand: 2026-09-20
 Status: implementierter Desktop-Export, Schema `devcenter-workspace-v1`
 
 ## Zweck und Produktgrenze
@@ -29,7 +29,7 @@ keinen Upload-Dienst und keine `web_companion/`-Laufzeit.
   "schema_version": 1,
   "app": {
     "name": "DevCenter",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "exported_at": "2026-05-27T00:00:00Z"
   },
   "project": {
@@ -72,7 +72,10 @@ keinen Upload-Dienst und keine `web_companion/`-Laufzeit.
 ```
 
 The `web` value remains in schema-v1 payloads for compatibility with existing
-exports. It is a legacy field, not an implemented release channel.
+exports. It is a legacy field, not an implemented release channel. The
+`release.targets` values are schema-compatible metadata labels, not evidence of
+an active release or authorization to publish: the Windows Store path is
+currently suspended and the `web` label remains legacy compatibility data.
 
 ## Redaktionsregeln
 

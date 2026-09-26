@@ -14,6 +14,8 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
   - Neuer Regressionstest `test_winstorepackager_resource_no_unpinned_pip_install` stellt sicher, dass keine Subprozess-Installationen bei Import ausgeführt werden können (208 Tests, 100% grün).
 - `BUGS.md` & `AUFGABEN.txt`:
   - `SEC-AUDIT-2026-08-14-04` und `SEC-AUDIT-2026-08-14-02` als behoben markiert und dokumentiert.
+- Dokumentations- & Test-Parität:
+  - `README.md`, `README_de.md`, `DOCUMENTATION_STATUS.md`, `EXPORTFORMAT.md`, `ARCHITEKTUR_DevCenter.md`, `SUITE_DEVCENTER_TEMPLATE.md` und `llms.txt` auf 208 verifizierte Tests, Versionsstand 1.0.3 und den aktuellen Quellenvertrag synchronisiert.
 
 ### Launcher, CLI Interface & Runtime Logging System (TASKPLAN #870) [G 2026-09-18]
 - `src/core/cli.py`:

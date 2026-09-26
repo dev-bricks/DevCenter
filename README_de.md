@@ -15,7 +15,7 @@
 [![Sicherheit: Lokaler Keyring](https://img.shields.io/badge/Sicherheit-Keyring%20Secret%20Vault-brightgreen)](SECURITY.md)
 [![Sicherheits-SLA: 48h / 5d Triage](https://img.shields.io/badge/Sicherheits--SLA-48h%20%7C%205d%20Triage-blue)](SECURITY.md)
 [![Drittanbieter: Geprüft](https://img.shields.io/badge/Drittanbieter-Gepr%C3%BCft%20%7C%20100%25%20permissiv-brightgreen)](THIRD_PARTY_LICENSES.md)
-[![Tests: 199 Bestanden](https://img.shields.io/badge/tests-199%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
+[![Tests: 208 Bestanden](https://img.shields.io/badge/tests-208%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-aktiv-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
 [![Ökosystem: dev-bricks](https://img.shields.io/badge/%C3%96kosystem-dev--bricks-purple)](https://github.com/dev-bricks)
@@ -310,6 +310,12 @@ pip install -r requirements.txt
 # Automatisierte Testsuite ausführen
 python -m pytest
 ```
+
+Aktueller lokaler Readback (2026-09-20): `python -m pytest -q` hat 208 Tests
+gesammelt und erfolgreich ausgeführt. Die CI führt die Suite unter Python 3.11
+und 3.12 aus; zusätzliche Plattform-Smokes laufen unter Python 3.11 auf Linux
+und macOS. Diese lokale Testzahl ist ein Prüf-Readback und keine
+Release-Reifeaussage.
 
 ---
 
