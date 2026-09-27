@@ -148,3 +148,13 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - Hardened pytest.ini_options in pyproject.toml with minversion and norecursedirs.
             - Bumped PEP 621 version to 1.0.3 across codebase, manifests, and documentation.
             - Contract tests expanded (199 passed tests, 100% green).
+2026-09-28 [MKT Pfad B] Release 1.0.3 Discoverability & Design Parity Overhaul:
+            - Upgraded bilateral quick navigation to 18 points with reciprocal dual HTML anchors (<a id="sec-01"></a> to <a id="sec-18"></a>).
+            - 20/20 saturated GitHub topics verified on remote via gh repo edit & readback.
+            - Canonical repository Homepage URL set to https://github.com/dev-bricks/DevCenter#readme.
+            - Formal canonical open-source NOTICE attribution file created in repository root.
+            - Level 1 SBOM Invariant Cross-Reference Matrix (INV-LOCAL-01..INV-SLA-10) in THIRD_PARTY_LICENSES.md.
+            - PEP 621 standardization: license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"], Notice URL, and 20 keywords.
+            - Statutory liability disclaimer under § 521 BGB and binding 48h Security Response SLA anchored in Section 18.
+            - llms.txt, README.md, and README_de.md badges synchronized (NOTICE attribution, Verified-2026--09--28, 208+ passed tests).
+            - Automated metadata contract suite in tests/test_metadata.py expanded to validate 18-point dual-anchor parity.

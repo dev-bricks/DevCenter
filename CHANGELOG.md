@@ -3,6 +3,27 @@
 Alle wesentlichen Änderungen an diesem Projekt werden hier dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## [Unreleased]
+
+### Discoverability, Visual Architecture, Level 1 SBOM & Design Parity (Pfad B) [G 2026-09-28]
+- Bilaterale Schnellnavigation:
+  - 18-Punkte bilaterale Schnellnavigation in `README.md` und `README_de.md` mit reziproken dualen HTML-Ankern (`<a id="sec-01"></a>` bis `<a id="sec-18"></a>`) für 100% Sprachparität etabliert.
+- Remote GitHub Metadaten:
+  - 20/20 GitHub Topics via GitHub CLI (`gh repo edit`) remote gesättigt und Homepage URL auf `https://github.com/dev-bricks/DevCenter#readme` verankert.
+- Formelle Open-Source NOTICE Attribution:
+  - Kanonische `NOTICE`-Datei für Urheberrecht Lukas Geiger / dev-bricks / open-bricks im Repository-Root erstellt.
+- Level 1 SBOM & Lizenz-Transparenz:
+  - `THIRD_PARTY_LICENSES.md` Re-Audit Stand 2026-09-28 mit Level 1 SBOM Invariant Cross-Reference Matrix Tabelle (`INV-LOCAL-01` bis `INV-SLA-10`), `RunAsInvoker` Non-Elevation Zertifizierung und Verknüpfung zur `NOTICE`-Datei.
+- Gesetzlicher Haftungshinweis & Security SLA:
+  - Gesetzlicher Haftungsausschluss gem. § 521 BGB (Gefälligkeitsrecht) und verbindliche 48h Security Response SLA in Section 18 von `README.md`, `README_de.md`, `llms.txt` und `SECURITY.md` verankert.
+- PEP 621 Standardisierung & Pytest Guardrails:
+  - `pyproject.toml`: `license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"]`, Notice URL in `[project.urls]`, 20 Keywords synchronisiert mit GitHub Topics, `addopts = "-ra -v --basetemp=.pytest_temp"` und `.pytest_temp` in `norecursedirs` und `.gitignore`.
+- Maschinenlesbarer Kontext & Badges:
+  - `llms.txt` auf Stand 2026-09-28, 208+ Tests Baseline, NOTICE-Verweis und 18-Punkte-Navigation aktualisiert.
+  - Shields.io Badges in beiden READMEs synchronisiert (Attribution-NOTICE, Last-Checked 2026-09-28, 208 passed tests, 48h SLA).
+- Vertragstestsuite:
+  - `tests/test_metadata.py` erweitert um Prüfungen für 18-Punkte Navigation, duale HTML-Anker, NOTICE-Datei, Level 1 SBOM Invarianten-Matrix, 20 PEP 621 Keywords und § 521 BGB Haftungsausschluss.
+
 ## [1.0.3] - 2026-09-16
 
 ### Security Hardening & WinStorePackager Isolation (TASKPLAN #866 / SEC-AUDIT-2026-08-14-04) [G 2026-09-20]

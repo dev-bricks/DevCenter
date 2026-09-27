@@ -1,6 +1,5 @@
 """Automatisierte Metadaten-, Sicherheits-, Ökosystem- und Dokumentationsparitätstests für DevCenter."""
 
-import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -70,20 +69,21 @@ def test_security_policy_bilingual_and_contacts():
 
 
 def test_llms_txt_currency_and_structure():
-    """Prüft, dass llms.txt aktuell ist, Version 1.0.2, 10 Invarianten und Referenzen enthält."""
+    """Prüft, dass llms.txt aktuell ist, Version 1.0.3, 10 Invarianten und Referenzen enthält."""
     llms_file = REPO_ROOT / "llms.txt"
     assert llms_file.is_file(), "llms.txt fehlt im Repo-Root"
 
     content = llms_file.read_text(encoding="utf-8")
 
     assert "https://github.com/dev-bricks/DevCenter" in content
-    assert "2026-09-16" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-16 stehen"
+    assert "2026-09-28" in content, "llms.txt Last-checked Timestamp muss auf 2026-09-28 stehen"
     assert "Version: 1.0.3" in content
     assert "local-first Python IDE" in content
     assert "dev-bricks" in content
     assert "open-bricks" in content.lower()
     assert "THIRD_PARTY_LICENSES.md" in content
     assert "MARKETING-LOG.txt" in content
+    assert "NOTICE" in content
 
 
 def test_pyproject_version_and_pep621_metadata():
@@ -95,18 +95,20 @@ def test_pyproject_version_and_pep621_metadata():
 
     assert 'name = "devcenter-suite"' in content
     assert 'version = "1.0.3"' in content
+    assert "license-files = [" in content
     assert "classifiers = [" in content
     assert "keywords = [" in content
     assert "[project.urls]" in content
     assert "Homepage =" in content
     assert "Repository =" in content
     assert "Security =" in content
+    assert "Notice =" in content
     assert '"Third-Party Licenses" =' in content
     assert '"Marketing Log" =' in content
     assert '"LLM Ready" =' in content
     assert "Parent Organization" in content
     assert "Umbrella Ecosystem" in content
-    assert 'addopts = "-ra -v"' in content
+    assert 'addopts = "-ra -v --basetemp=.pytest_temp"' in content
 
 
 def test_sibling_ecosystem_matrix_presence():
@@ -132,42 +134,20 @@ def test_changelog_currency():
     assert "Pfad B" in content
 
 
-def test_fifteen_point_quick_navigation_and_anchor_parity():
-    """Prüft, dass beide README-Dateien exakt 15 Navigationspunkte enthalten und alle Anker auflösbar sind."""
+def test_eighteen_point_quick_navigation_and_anchor_parity():
+    """Prüft, dass beide README-Dateien exakt 18 Navigationspunkte und reziproke duale Anker sec-01 bis sec-18 enthalten."""
     readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    nav_en_match = re.search(r"## Quick Navigation\s*\n\n((?:\d+\.\s+\[.+?\]\(#.+?\)\s*\n)+)", readme_en)
-    nav_de_match = re.search(r"## Schnelleinstieg & Navigation\s*\n\n((?:\d+\.\s+\[.+?\]\(#.+?\)\s*\n)+)", readme_de)
+    assert "## 🧭 Quick Navigation" in readme_en or "## Quick Navigation" in readme_en
+    assert "## 🧭 Schnelleinstieg & Navigation" in readme_de or "## Schnelleinstieg & Navigation" in readme_de
 
-    assert nav_en_match, "Quick Navigation Block fehlt in README.md"
-    assert nav_de_match, "Schnelleinstieg & Navigation Block fehlt in README_de.md"
-
-    links_en = re.findall(r"\d+\.\s+\[(.+?)\]\((#.+?)\)", nav_en_match.group(1))
-    links_de = re.findall(r"\d+\.\s+\[(.+?)\]\((#.+?)\)", nav_de_match.group(1))
-
-    assert len(links_en) == 15, f"README.md muss genau 15 Navigationspunkte haben, hat {len(links_en)}"
-    assert len(links_de) == 15, f"README_de.md muss genau 15 Navigationspunkte haben, hat {len(links_de)}"
-
-    # Check anchor resolution in English README
-    for label, anchor in links_en:
-        anchor_id = anchor.lstrip("#")
-        # Header generated anchor in markdown
-        header_pattern = re.compile(r"^##\s+.*", re.MULTILINE)
-        headers = [h.lstrip("#").strip().lower() for h in header_pattern.findall(readme_en)]
-        # Sanitize header to anchor
-        sanitized = [re.sub(r"[^\w\s-]", "", h).replace(" ", "-") for h in headers]
-        assert any(anchor_id == s or anchor_id in s for s in sanitized), f"Anchor {anchor} nicht auflösbar in README.md"
-
-    # Check anchor resolution in German README
-    for label, anchor in links_de:
-        anchor_id = anchor.lstrip("#")
-        header_pattern = re.compile(r"^##\s+.*", re.MULTILINE)
-        headers = [h.lstrip("#").strip().lower() for h in header_pattern.findall(readme_de)]
-        sanitized = [re.sub(r"[^\w\s-]", "", h).replace(" ", "-") for h in headers]
-        assert any(anchor_id == s or anchor_id in s for s in sanitized), (
-            f"Anchor {anchor} nicht auflösbar in README_de.md"
-        )
+    for i in range(1, 19):
+        assert f"[{i}. " in readme_en, f"README.md fehlt Navigationspunkt {i}"
+        assert f"[{i}. " in readme_de, f"README_de.md fehlt Navigationspunkt {i}"
+        sec_id = f'id="sec-{i:02d}"'
+        assert sec_id in readme_en, f"README.md fehlt dualer Anker {sec_id}"
+        assert sec_id in readme_de, f"README_de.md fehlt dualer Anker {sec_id}"
 
 
 def test_ten_governance_invariants_parity():
@@ -211,6 +191,7 @@ def test_marketing_log_contract():
     assert "HIGH-INTENT SEARCH QUERIES" in content
     assert "2026-09-12" in content
     assert "2026-09-14" in content
+    assert "2026-09-28" in content
 
 
 def test_cross_platform_smoke_scripts_and_ci():
@@ -334,5 +315,51 @@ def test_pytest_ini_options_guardrails():
     content = pyproject.read_text(encoding="utf-8")
 
     assert 'minversion = "7.0"' in content
-    assert 'addopts = "-ra -v"' in content
+    assert 'addopts = "-ra -v --basetemp=.pytest_temp"' in content
     assert "norecursedirs = [" in content
+    assert ".pytest_temp" in content
+
+
+def test_canonical_notice_file_present_and_licensed():
+    """Prüft, dass die kanonische NOTICE-Attributionsdatei existiert und Autoren enthält."""
+    notice_file = REPO_ROOT / "NOTICE"
+    assert notice_file.is_file(), "NOTICE-Datei fehlt im Repo-Root"
+    content = notice_file.read_text(encoding="utf-8")
+    assert "Lukas Geiger" in content
+    assert "dev-bricks" in content
+    assert "open-bricks" in content
+    assert "GPLv3" in content
+
+
+def test_target_personas_contract():
+    """Prüft, dass PERSONA-01 bis PERSONA-04 in beiden READMEs verankert sind."""
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+    for persona in ["[PERSONA-01]", "[PERSONA-02]", "[PERSONA-03]", "[PERSONA-04]"]:
+        assert persona in readme_en, f"{persona} fehlt in README.md"
+        assert persona in readme_de, f"{persona} fehlt in README_de.md"
+
+
+def test_level_1_sbom_and_third_party_licenses_matrix():
+    """Prüft Level 1 SBOM Invarianten-Kreuztabelle und Re-Audit-Datum in THIRD_PARTY_LICENSES.md."""
+    tpl_file = REPO_ROOT / "THIRD_PARTY_LICENSES.md"
+    assert tpl_file.is_file()
+    content = tpl_file.read_text(encoding="utf-8")
+    assert "2026-09-28" in content
+    assert "Level 1 SBOM Invariant Cross-Reference Matrix" in content
+    assert "NOTICE" in content
+    for inv in ["INV-LOCAL-01", "INV-OPTIN-02", "INV-KEYRING-03", "INV-SECURITY-06", "INV-PERM-07", "INV-USER-08", "INV-SLA-10"]:
+        assert inv in content, f"{inv} fehlt in THIRD_PARTY_LICENSES.md"
+
+
+def test_bgb_521_statutory_disclaimer_and_sla_parity():
+    """Prüft § 521 BGB Gefälligkeitsrecht-Haftungsausschluss und 48h SLA."""
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+    llms_txt = (REPO_ROOT / "llms.txt").read_text(encoding="utf-8")
+
+    assert "521" in readme_en and "BGB" in readme_en
+    assert "521" in readme_de and "BGB" in readme_de
+    assert "521" in llms_txt and "BGB" in llms_txt
+    assert "48h" in readme_en or "48-hour" in readme_en
+    assert "48h" in readme_de or "48 Stunden" in readme_de

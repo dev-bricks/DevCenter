@@ -4,7 +4,7 @@ Canonical repository: https://github.com/dev-bricks/DevCenter
 Ecosystem: dev-bricks
 Umbrella: open-bricks
 Version: 1.0.3
-Last-checked: 2026-09-20 (previous source-index check: 2026-09-16)
+Last-checked: 2026-09-28 (previous source-index check: 2026-09-20)
 
 DevCenter is a local-first, zero-egress Python desktop IDE and developer toolkit from dev-bricks under the open-bricks umbrella. It combines a PySide6 code editor, static AST analysis, automated encoding repair (ftfy), PyInstaller build helpers, icon conversion, third-party license collection, SQLite full-text file indexing, backup-oriented sync helpers, and an optional Claude/Anthropic AI assistant in a standalone desktop suite.
 
@@ -26,6 +26,7 @@ Privacy and Safety:
 - API keys are encrypted via the native system keyring (Windows Credential Manager); never stored in plain text.
 - Redacted workspace export (`devcenter-workspace-v1.json`) strips secrets, API keys, and private file paths.
 - Unprivileged user-space execution (`RunAsInvoker`); no administrator elevation or drivers required.
+- Statutory liability disclaimer: Open-source community project; liability is limited to intent and gross negligence (§ 521 BGB).
 
 ## Governance & Runtime Invariants
 
@@ -42,16 +43,17 @@ Privacy and Safety:
 
 ## Important Files
 
-- `README.md`: English overview, 15-point quick navigation, architecture diagrams, invariants, and ecosystem matrix.
-- `README_de.md`: German overview with 100% mutual anchor and feature parity.
+- `NOTICE`: Canonical open-source attribution notice (Lukas Geiger, dev-bricks, open-bricks).
+- `README.md`: English overview, 18-point bilateral quick navigation, dual Mermaid architecture diagrams, invariants, and ecosystem matrix.
+- `README_de.md`: German overview with 100% mutual dual-anchor and feature parity.
 - `SECURITY.md`: Bilingual security policy detailing zero-egress invariants, keyring isolation, and 48h/5d SLA.
 - `PRIVACY_POLICY.md`: Privacy scope for local settings, indexes, build artifacts, and optional API usage.
-- `THIRD_PARTY_LICENSES.md`: Comprehensive Software Bill of Materials (SBOM) covering all 20 packages with SPDX tags.
+- `THIRD_PARTY_LICENSES.md`: Comprehensive Level 1 Software Bill of Materials (SBOM) with Invariant Cross-Reference Matrix and SPDX tags.
 - `THIRD_PARTY_LICENSES.txt`: Machine-readable license mapping and dependency floor audit.
 - `MARKETING-LOG.txt`: Local marketing intelligence register, 4 target personas, and 5-way competitive matrix.
 - `EXPORTFORMAT.md`: Implemented redacted desktop-export specification (`devcenter-workspace-v1`).
 - `DOCUMENTATION_STATUS.md`: Source hierarchy and historical boundary documentation.
-- `pyproject.toml`: PEP 621 package manifest, standard classifiers, dependency floors, and repository URLs.
+- `pyproject.toml`: PEP 621 package manifest, 20 keywords, dependency floors, and repository URLs.
 - `.github/workflows/tests.yml`: Multi-OS CI workflow (Windows, Linux, macOS) with concurrency control and ruff gate.
 - `src/core/app_paths.py`: Platform-specific path resolver for local settings and SQLite databases.
 - `translator.py`: Tier-2 multi-language translation engine supporting DE, EN, ES, ZH, JA, RU with 4-stage fallback.

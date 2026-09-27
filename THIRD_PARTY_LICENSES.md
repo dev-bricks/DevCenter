@@ -2,9 +2,10 @@
 
 **Project:** DevCenter (`devcenter-suite`)<br>
 **Version:** 1.0.3<br>
-**Audit Date:** 2026-09-16<br>
+**Audit Date:** 2026-09-28<br>
 **Ecosystem:** dev-bricks (open-bricks umbrella)<br>
-**Primary License:** GNU General Public License v3.0 ([LICENSE](LICENSE))
+**Primary License:** GNU General Public License v3.0 ([LICENSE](LICENSE))<br>
+**Attribution:** Canonical Open Source Notice ([NOTICE](NOTICE))
 
 This document provides a comprehensive inventory of all third-party open-source libraries, transitive dependencies, build tools, and development frameworks used by DevCenter. Every dependency has been audited for license compatibility, vulnerability floors, zero-egress compliance, and unprivileged user-space execution.
 
@@ -92,13 +93,31 @@ DevCenter and all bundled tools run strictly in unprivileged user space (`RunAsI
 
 ---
 
-## 7. Machine-Readable License Mapping
+## 7. Level 1 SBOM Invariant Cross-Reference Matrix
+
+| Invariant ID | Name | Audited Packages & Scope | Architectural Guarantee & Verification |
+|---|---|---|---|
+| `INV-LOCAL-01` | **Zero-Egress Default** | All packages (PySide6, Pillow, ftfy, chardet, watchdog) | Zero network sockets created; zero background telemetry, phone-home, or update pingbacks. |
+| `INV-OPTIN-02` | **Opt-In AI Boundary** | `anthropic>=0.18.0` | Client initialized only on explicit user query; prompt text dispatched over HTTPS only with user intent. |
+| `INV-KEYRING-03` | **Keyring Secret Vault** | `keyring>=25.0.0`, `pywin32-ctypes` | Credentials stored exclusively in native OS credential store (Windows Credential Manager); zero plaintext disk storage. |
+| `INV-EXPORT-04` | **Redacted Workspace Export** | Standard library `json`, `pathlib` | `devcenter-workspace-v1.json` serialization strictly redacts API keys, passwords, and absolute user paths. |
+| `INV-STATIC-05` | **Inert AST Inspection** | Standard library `ast` | Inspects code structures inertly; target files are never imported, executed, or compiled in the analyzer. |
+| `INV-SECURITY-06` | **Vulnerability Floors** | `Pillow>=12.3.0`, `keyring>=25.0.0`, `pytest>=9.1.1` | Patched dependency floors enforced; hardened against GHSA-4x4j-2g7c-83w6 and CVE-2025-7117. |
+| `INV-PERM-07` | **100% Permissive / Separation** | `PySide6` (LGPL-3.0), `PyInstaller` (Bootloader Exception) | Dynamic Qt linking preserves user upgrade freedom; PyInstaller Bootloader Exception avoids relicensing user code. |
+| `INV-USER-08` | **Unprivileged RunAsInvoker** | Standard library, `PySide6` | Strictly unprivileged user space; zero administrative privileges, UAC elevation prompts, or kernel drivers. |
+| `INV-MULTI-09` | **Multi-Host Sync Discipline** | Git repository, `.gitignore` | Cloud-sync conflict copies (`*.sync-conflict-*`, `*-CONFLIT-*`) and agent locks (`LOCK.*`) barred from tree. |
+| `INV-SLA-10` | **48h / 5d Security SLA** | Security contacts & `SECURITY.md` | Binding 48-hour response acknowledgement and 5-business-day triage commitment. |
+
+---
+
+## 8. Machine-Readable License Mapping
 
 ```json
 {
   "project": "devcenter-suite",
   "version": "1.0.3",
-  "audit_date": "2026-09-16",
+  "audit_date": "2026-09-28",
+  "notice_file": "NOTICE",
   "spdx_matrix": {
     "PySide6": "LGPL-3.0-only",
     "Pillow": "HPND-sell-variant",
