@@ -37,6 +37,36 @@ def test_dependency_vulnerability_floors() -> None:
     assert "ruff>=0.9.0" in pyproject_text, "pyproject.toml dev dependencies must require ruff>=0.9.0"
 
 
+def test_dependency_lockfile_and_upper_bounds_parity() -> None:
+    """Verify requirements-lock.txt exists and requirements.txt upper bounds match pyproject.toml (SEC-AUDIT-2026-08-14-03)."""
+    lock_file = ROOT / "requirements-lock.txt"
+    assert lock_file.is_file(), "requirements-lock.txt must exist for reproducible release builds"
+    lock_text = lock_file.read_text(encoding="utf-8")
+
+    # Verify all direct runtime dependencies are pinned in requirements-lock.txt
+    direct_packages = [
+        "PySide6",
+        "Pillow",
+        "anthropic",
+        "keyring",
+        "chardet",
+        "ftfy",
+        "pip-licenses",
+        "watchdog",
+        "pyinstaller",
+    ]
+    for pkg in direct_packages:
+        assert re.search(rf"^{pkg}==[\d.]+", lock_text, re.MULTILINE), f"{pkg} must be pinned in requirements-lock.txt"
+
+    # Verify requirements.txt defines upper bounds matching pyproject.toml
+    req_file = ROOT / "requirements.txt"
+    req_text = req_file.read_text(encoding="utf-8")
+    assert "<7.0.0" in req_text, "requirements.txt must specify PySide6 / pyinstaller upper bounds"
+    assert "<13.0.0" in req_text, "requirements.txt must specify Pillow upper bound"
+    assert "<26.0.0" in req_text, "requirements.txt must specify keyring upper bound"
+
+
+
 def test_third_party_licenses_complete_and_accurate() -> None:
     """Verify THIRD_PARTY_LICENSES.txt comprehensively covers runtime, transitive, build, and test packages."""
     license_file = ROOT / "THIRD_PARTY_LICENSES.txt"

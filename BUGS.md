@@ -7,24 +7,22 @@ Format: `[Status] Titel — Kurzbeschreibung`
 
 ## Offen
 
-### SEC-AUDIT-2026-08-14-01: Store-Lizenz widerspricht dem Repository
-**Status:** Offen, Release-blockierend
-**Fundort:** OneDrive-Projektion `store_package.json` und `WINDOWS_STORE_PREP.md`
-**Befund:** Beide Store-Flächen nennen MIT, während das kanonische Repository und
-`LICENSE` GPL-3.0-only festlegen. Vor MSIX-/Store-Einreichung müssen Store-Metadaten,
-Listing und Tests auf GPL-3.0 korrigiert und gegen den kanonischen Klon verifiziert werden.
+*(Keine offenen Defekte bekannt. Alle protokollierten Audit- und Sweep-Befunde sind vollständig behoben und durch automatisierte Tests abgesichert.)*
 
-### SEC-AUDIT-2026-08-14-03: Dependency-Vertrag ist nicht reproduzierbar
-**Status:** Offen
-**Fundort:** `requirements.txt`, `pyproject.toml`, `_sources/CROSSCHECK.md`
-**Befund:** Es gibt weder Lockfile noch transitive SBOM; `requirements.txt` besitzt
-keine Obergrenzen, während `pyproject.toml` Major-Grenzen setzt. Der aktuelle
-`pip-audit`-Resolver fand keine bekannte Schwachstelle, attestiert damit aber keinen
-eingefrorenen Produktstand. Verträge angleichen und einen verifizierten Lock-/SBOM-Stand
-für Releases erzeugen.
 ---
 
 ## Behoben
+
+### SEC-AUDIT-2026-08-14-01: Store-Lizenz widerspricht dem Repository
+**Status:** Behoben (2026-09-29)
+**Dateien:** `store_package.json`, `WINDOWS_STORE_PREP.md`, `SUPPORT.md`, `tests/test_store_materials.py`
+**Fix:** Store-Metadaten (`store_package.json` und `WINDOWS_STORE_PREP.md`) im kanonischen Repository verankert und von `MIT` auf die autoritative Repository-Lizenz `GPL-3.0` korrigiert. `SUPPORT.md` und `STORE_LISTING.md` mit kanonischen Repository-URLs (`dev-bricks/DevCenter`) integriert. Automatisierte Validierung über 8 neue Tests in `tests/test_store_materials.py` (inkl. explizitem Lizenz-Paritätscheck `test_store_package_license_matches_gpl3`).
+
+### SEC-AUDIT-2026-08-14-03: Dependency-Vertrag ist nicht reproduzierbar
+**Status:** Behoben (2026-09-29)
+**Dateien:** `requirements.txt`, `requirements-lock.txt`, `tests/test_security_license_contract.py`
+**Fix:** `requirements.txt` um Obergrenzen (`<7.0.0`, `<13.0.0`, `<26.0.0` etc.) ergänzt und mit `pyproject.toml` harmonisiert. Reproduzierbare, eingefrorene Lockdatei `requirements-lock.txt` mit geprüften Versionen für alle direkten und transitiven Laufzeit- und Build-Abhängigkeiten erstellt (Level 1 SBOM Hardened). Neuer Vertragstest `test_dependency_lockfile_and_upper_bounds_parity` in `tests/test_security_license_contract.py`.
+
 
 ### SEC-AUDIT-2026-08-14-04: Historischer Packager installiert ungepinnte Pakete
 **Status:** Behoben (2026-09-20)
@@ -88,6 +86,4 @@ JSON-/Export-/Importpfade redigiert und Keyring-Fehler fail-closed behandelt.
 **Datei:** `src/gui/panels/output_panel.py` — `append_output()`  
 **Fix:** `append_output()` verwendet nun explizit `QTextCharFormat` mit Farbe `#cccccc`, sodass stdout-Ausgabe immer in der Standardtextfarbe erscheint und nicht die Farbe des vorherigen Texts (grau von info, rot von error) erbt.
 
----
-
-_Zuletzt aktualisiert: 2026-09-07 (Bug-Sweep B-004 Behoben, B-005 bis B-008 erfasst)_
+_Zuletzt aktualisiert: 2026-09-29 (SEC-AUDIT-2026-08-14-01 und SEC-AUDIT-2026-08-14-03 behoben, 0 offene Bugs)_

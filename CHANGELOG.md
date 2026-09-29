@@ -5,7 +5,21 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Dependency Lockfile, Store-Lizenz-Harmonisierung & Testmatrix (2026-09-29) [G 2026-09-29]
+- SEC-AUDIT-2026-08-14-01 (Store-Lizenz-Parität & Store-Materialien):
+  - Store-Metadaten (`store_package.json`, `WINDOWS_STORE_PREP.md`, `SUPPORT.md`, `STORE_LISTING.md`) in das kanonische Repository übernommen.
+  - Lizenzwiderspruch behoben: `license` in `store_package.json` und `WINDOWS_STORE_PREP.md` von `MIT` auf die autoritative Repository-Lizenz `GPL-3.0` korrigiert.
+  - 8 automatisierte Vertragstests in `tests/test_store_materials.py` integriert, inklusive expliziter Lizenzprüfung `test_store_package_license_matches_gpl3`.
+- SEC-AUDIT-2026-08-14-03 (Reproduzierbarer Dependency-Vertrag & Lockfile):
+  - `requirements.txt` um Obergrenzen ergänzt und 1:1 mit `pyproject.toml` harmonisiert (`<7.0.0`, `<13.0.0`, `<26.0.0` etc.).
+  - Reproduzierbare Lockdatei `requirements-lock.txt` mit geprüften Versionsnummern für 20+ direkte und transitive Abhängigkeiten erstellt.
+  - Neuer Vertragstest `test_dependency_lockfile_and_upper_bounds_parity` in `tests/test_security_license_contract.py`.
+- Testmatrix & Chronik (TASKPLAN #865 / TW-DC-04):
+  - Testsuite wuchs von 212 auf 221 Tests (100% grün via pytest in ~56s).
+  - `DOCUMENTATION_STATUS.md` und Dokumentationsstände aktualisiert.
+
 ### Discoverability, Visual Architecture, Level 1 SBOM & Design Parity (Pfad B) [G 2026-09-28]
+
 - Bilaterale Schnellnavigation:
   - 18-Punkte bilaterale Schnellnavigation in `README.md` und `README_de.md` mit reziproken dualen HTML-Ankern (`<a id="sec-01"></a>` bis `<a id="sec-18"></a>`) für 100% Sprachparität etabliert.
 - Remote GitHub Metadaten:

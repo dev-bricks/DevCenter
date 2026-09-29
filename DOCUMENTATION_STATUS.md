@@ -14,7 +14,8 @@ an unchecked plan item or an old release note into a feature or release claim.
 | Runtime architecture and modules | `src/`, `ARCHITEKTUR_DevCenter.md` | The PySide6 desktop application is the only shipped runtime. |
 | User-facing installation and features | `README.md` | Windows-first desktop; Linux/macOS are source-smoke targets. |
 | Agent/project orientation | `llms.txt` | Describes the local desktop and redacted export; no Web/PWA companion. |
-| Tests and CI | `tests/`, `.github/workflows/tests.yml` | The local 2026-09-20 readback is 208 passed; CI runs the test matrix on Python 3.11/3.12 and platform-smoke jobs on Python 3.11 for Linux/macOS. |
+| Tests and CI | `tests/`, `.github/workflows/tests.yml` | The local 2026-09-29 readback is 221 passed; CI runs the test matrix on Python 3.11/3.12 and platform-smoke jobs on Python 3.11 for Linux/macOS. |
+
 | Redacted workspace export | `src/core/workspace_export.py`, `EXPORTFORMAT.md` | Schema `devcenter-workspace-v1`; local artifact only, with paths/secrets/source content redacted. |
 | Project license | `LICENSE`, `README.md`, `THIRD_PARTY_LICENSES.txt` when present in the checkout | GPL-3.0 for DevCenter; dependency licenses are separate notices. |
 | Change history | `CHANGELOG.md` | Historical entries remain history; they do not assert that removed components still ship. |
@@ -62,11 +63,12 @@ or platform certification.
 
 ## Fresh verification
 
-The 2026-09-20 local readback against the current checkout recorded 208 passed
+The 2026-09-29 local readback against the current checkout recorded 221 passed
 tests, a successful compileall run and a clean Ruff result. The readback covers
 the active source and documentation contract only; historical changelog counts,
 planning estimates and external deployment copies remain historical or
 owner-controlled evidence.
+
 
 ## Maintenance rule
 
