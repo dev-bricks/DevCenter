@@ -29,13 +29,13 @@ class TestAppAssetsAndIcons(unittest.TestCase):
         self.assertTrue(icon_path.exists(), f"App-Icon {icon_path} existiert nicht.")
 
     def test_master_png_icon(self):
-        """Testet das 512x512 Master-PNG in assets/ und im Root."""
+        """Testet das Master-PNG (512x512 oder 1024x1024) in assets/ und im Root."""
         root = get_project_root()
         for p in [root / "assets" / "icon.png", root / "icon.png"]:
             self.assertTrue(p.exists(), f"{p} existiert nicht.")
             with Image.open(p) as img:
                 self.assertEqual(img.format, "PNG")
-                self.assertEqual(img.size, (512, 512))
+                self.assertIn(img.size, [(512, 512), (1024, 1024)])
                 self.assertIn(img.mode, ["RGBA", "RGB"])
 
     def test_multi_resolution_ico_files(self):
