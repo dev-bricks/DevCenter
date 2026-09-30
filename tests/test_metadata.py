@@ -363,3 +363,112 @@ def test_bgb_521_statutory_disclaimer_and_sla_parity():
     assert "521" in llms_txt and "BGB" in llms_txt
     assert "48h" in readme_en or "48-hour" in readme_en
     assert "48h" in readme_de or "48 Stunden" in readme_de
+
+
+def test_ci_workflows_auto_assign_and_label_sync():
+    """Prüft Bereitstellung und Härtung von auto-assign.yml, label-sync.yml und labels.yml."""
+    auto_assign = REPO_ROOT / ".github" / "workflows" / "auto-assign.yml"
+    label_sync = REPO_ROOT / ".github" / "workflows" / "label-sync.yml"
+    labels_file = REPO_ROOT / ".github" / "labels.yml"
+
+    assert auto_assign.is_file(), "auto-assign.yml fehlt"
+    assert label_sync.is_file(), "label-sync.yml fehlt"
+    assert labels_file.is_file(), "labels.yml fehlt"
+
+    aa_content = auto_assign.read_text(encoding="utf-8")
+    assert "concurrency:" in aa_content
+    assert "cancel-in-progress: true" in aa_content
+    assert "timeout-minutes: 5" in aa_content
+    assert "actions/github-script@v7" in aa_content
+
+    ls_content = label_sync.read_text(encoding="utf-8")
+    assert "concurrency:" in ls_content
+    assert "cancel-in-progress: true" in ls_content
+    assert "timeout-minutes: 5" in ls_content
+    assert "EndBug/label-sync@v2" in ls_content
+
+    lbl_content = labels_file.read_text(encoding="utf-8")
+    for standard_label in ["bug", "enhancement", "good first issue", "help wanted", "documentation", "duplicate", "wontfix", "priority: high", "priority: low", "needs-triage", "stale"]:
+        assert standard_label in lbl_content, f"Standard-Label '{standard_label}' fehlt in labels.yml"
+
+
+def test_third_party_licenses_plain_text_companion():
+    """Prüft Level 1 SBOM plain-text companion file und alle 10 Governance-Invarianten."""
+    txt_path = REPO_ROOT / "THIRD_PARTY_LICENSES.txt"
+    assert txt_path.is_file(), "THIRD_PARTY_LICENSES.txt fehlt"
+    text = txt_path.read_text(encoding="utf-8")
+
+    assert "Third-Party Licenses & Level 1 SBOM - DevCenter" in text
+    assert "Canonical Notice: NOTICE" in text
+    assert "THIRD_PARTY_LICENSES.md" in text
+    assert "2026-09-30" in text
+    assert "RunAsInvoker" in text
+
+    invariants = [
+        "INV-LOCAL-01",
+        "INV-OPTIN-02",
+        "INV-KEYRING-03",
+        "INV-EXPORT-04",
+        "INV-STATIC-05",
+        "INV-SECURITY-06",
+        "INV-PERM-07",
+        "INV-USER-08",
+        "INV-MULTI-09",
+        "INV-SLA-10",
+    ]
+    for inv in invariants:
+        assert f"{inv}: PASS" in text, f"{inv} fehlt oder ist nicht mit PASS zertifiziert in THIRD_PARTY_LICENSES.txt"
+
+
+def test_contributing_quality_gates_and_version_freeze():
+    """Prüft Quality Gates, Invarianten und Version-Freeze Disziplin in CONTRIBUTING.md."""
+    contrib_path = REPO_ROOT / "CONTRIBUTING.md"
+    assert contrib_path.is_file(), "CONTRIBUTING.md fehlt"
+    text = contrib_path.read_text(encoding="utf-8")
+
+    assert "INV-LOCAL-01" in text
+    assert "INV-SLA-10" in text
+    assert "RunAsInvoker" in text
+    assert "T-20260920-167562623" in text
+    assert "1.0.3" in text
+    assert "pytest" in text
+    assert "ruff check" in text
+    assert "compileall" in text
+
+
+def test_pep621_plain_text_licenses_and_urls():
+    """Prüft PEP 621 Standardisierung für Plain-Text Licenses und zusätzliche URLs."""
+    pyproject_file = REPO_ROOT / "pyproject.toml"
+    assert pyproject_file.is_file()
+    content = pyproject_file.read_text(encoding="utf-8")
+
+    assert "THIRD_PARTY_LICENSES.txt" in content
+    assert '"Third-Party Licenses (Text)" =' in content
+    assert '"Plain-Text Licenses" =' in content
+    assert '"Level 1 SBOM" =' in content
+    assert "Contributing =" in content
+    assert ".pytest_tmp*" in content
+
+
+def test_extended_gitignore_ideapad_and_canonical_locks():
+    """Prüft erweiterte Multi-Host-Tokens und kanonische Locks in .gitignore."""
+    content = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8")
+
+    for pat in ["*-IDEAPAD*", "*-IDEAPAD-GEI*", "*-WORKSTATION.*", "*-WORKSTATION-LG.*", "*-MacBook*", "Desktop.ini", ".pytest_tmp*/", "TASKPLAN_*.md"]:
+        assert pat in content, f"{pat} fehlt in .gitignore"
+
+    for lock_pat in ["LOCK.user.*", "LOCK.until.*", "LOCK.condition.*"]:
+        assert lock_pat in content, f"{lock_pat} fehlt in .gitignore"
+
+
+def test_changelog_recent_pfad_a_unreleased_entry_20260930():
+    """Prüft, dass CHANGELOG.md den Pfad A Hygiene-Eintrag vom 2026-09-30 unter [Unreleased] führt."""
+    content = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "### Pfad A Repository Hygiene, CI Lifecycle Workflows, PEP 621 Standardisierung & Level 1 SBOM (2026-09-30) [G 2026-09-30]" in content
+    assert "T-20260920-167562623" in content
+
+
+def test_marketing_log_recent_pfad_a_entry_20260930():
+    """Prüft, dass MARKETING-LOG.txt den Pfad A Hygiene-Eintrag vom 2026-09-30 führt."""
+    content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-09-30 [HYG Pfad A] Repository Hygiene, CI Lifecycle Workflows & Level 1 SBOM:" in content

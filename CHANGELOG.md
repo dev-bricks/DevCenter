@@ -5,6 +5,32 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Pfad A Repository Hygiene, CI Lifecycle Workflows, PEP 621 Standardisierung & Level 1 SBOM (2026-09-30) [G 2026-09-30]
+- Version-Freeze-Disziplin (T-20260920-167562623):
+  - Version `1.0.3` in `pyproject.toml`, Quellcode und Manifesten unverändert beibehalten.
+  - Alle Neuerungen unter `## [Unreleased]` im Changelog dokumentiert.
+- CI/CD Lifecycle Workflow Provisioning & Hardening:
+  - `.github/workflows/auto-assign.yml` neu angelegt mit `actions/github-script@v7`, `timeout-minutes: 5`, Concurrency `group: ${{ github.workflow }}-${{ github.ref }}`, `cancel-in-progress: true` und least-privilege permissions `issues: write`, `pull-requests: write`.
+  - `.github/workflows/label-sync.yml` neu angelegt mit `EndBug/label-sync@v2`, `timeout-minutes: 5`, Concurrency `group: ${{ github.workflow }}-${{ github.ref }}`, `cancel-in-progress: true` und least-privilege permissions `issues: write`.
+  - Kanonische `.github/labels.yml` mit 11 Standard-Labels gemäß GOVERNANCE.md §4.2 angelegt.
+  - `stale.yml`, `welcome.yml` und `tests.yml` verifiziert.
+- Multi-Host Cloud-Sync-, Lock- und Cache-Härtung in `.gitignore`:
+  - Multi-Host Sync-Muster (`*-IDEAPAD*`, `*-IDEAPAD-GEI*`, `*-WORKSTATION.*`, `*-WORKSTATION-LG.*`, `*-MacBook*`), kanonische Locks (`LOCK.user.*`, `LOCK.until.*`, `LOCK.condition.*`), Test-/Coverage-Caches (`.pytest_tmp*/`), OS-/Editor-Artefakte (`Desktop.ini`) und `TASKPLAN_*.md`.
+- PEP 621 Standardisierung in `pyproject.toml`:
+  - `license-files` Whitelist um `THIRD_PARTY_LICENSES.txt` erweitert (`["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md", "THIRD_PARTY_LICENSES.txt"]`).
+  - URLs für `Third-Party Licenses (Text)`, `Plain-Text Licenses`, `Level 1 SBOM` und `Contributing` unter `[project.urls]` registriert.
+  - `[tool.pytest.ini_options]` mit `norecursedirs` um `.pytest_tmp*` gehärtet.
+- Level 1 SBOM Drittanbieter-Lizenzaudit in `THIRD_PARTY_LICENSES.txt`:
+  - Plain-Text Level 1 SBOM Companion mit Header und Bestätigung aller 10 Governance- und Laufzeitinvarianten (`INV-LOCAL-01` bis `INV-SLA-10`), `RunAsInvoker` Non-Elevation und Querverweis auf kanonische `NOTICE` Attributionsdatei.
+- Beitragsrichtlinien & Quality Gates:
+  - `CONTRIBUTING.md` um Quality Gates (`pytest`, `ruff`, `compileall`), Governance-Invarianten und Version-Freeze-Disziplin erweitert.
+- Dokumentations- & Kontext-Parität:
+  - `README.md` und `README_de.md` Badges für verifizierte Tests, `Last-Checked 2026-09-30` und Level 1 SBOM Companion synchronisiert (alle 18 bilateralen Schnellnavigations-Anker `sec-01` bis `sec-18` exakt beibehalten).
+  - `llms.txt` Stand 2026-09-30 mit neuer Test-Baseline, Level 1 SBOM und Workflows synchronisiert.
+  - Lokales Marketing- und Governance-Register `MARKETING-LOG.txt` Section 6 Pfad A Revisionsbericht Stand 2026-09-30.
+- Vertragstest-Erweiterung:
+  - `tests/test_metadata.py` um umfassende Contract-Tests für CI Lifecycle Workflows, Standard-Labels, Level 1 SBOM Companion Invarianten, CONTRIBUTING.md, PEP 621 URLs/license-files und erweiterte .gitignore Guardrails erweitert.
+
 ### Dependency Lockfile, Store-Lizenz-Harmonisierung & Testmatrix (2026-09-29) [G 2026-09-29]
 - SEC-AUDIT-2026-08-14-01 (Store-Lizenz-Parität & Store-Materialien):
   - Store-Metadaten (`store_package.json`, `WINDOWS_STORE_PREP.md`, `SUPPORT.md`, `STORE_LISTING.md`) in das kanonische Repository übernommen.

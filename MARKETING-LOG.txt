@@ -158,3 +158,12 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - Statutory liability disclaimer under § 521 BGB and binding 48h Security Response SLA anchored in Section 18.
             - llms.txt, README.md, and README_de.md badges synchronized (NOTICE attribution, Verified-2026--09--28, 208+ passed tests).
             - Automated metadata contract suite in tests/test_metadata.py expanded to validate 18-point dual-anchor parity.
+2026-09-30 [HYG Pfad A] Repository Hygiene, CI Lifecycle Workflows & Level 1 SBOM:
+            - Provisioned automated CI lifecycle workflows: .github/workflows/auto-assign.yml and .github/workflows/label-sync.yml.
+            - Deployed canonical .github/labels.yml with standard 11 governance labels (GOVERNANCE.md §4.2).
+            - Hardened .gitignore with multi-host tokens (*-IDEAPAD*, *-IDEAPAD-GEI*, *-WORKSTATION.*, *-WORKSTATION-LG.*, *-MacBook*), canonical locks (LOCK.user.*, LOCK.until.*, LOCK.condition.*), and .pytest_tmp*/.
+            - Standardized pyproject.toml PEP 621: license-files whitelist with THIRD_PARTY_LICENSES.txt, URLs for Plain-Text Licenses, Level 1 SBOM, and Contributing.
+            - Created Level 1 SBOM companion header and invariant compliance verification (INV-LOCAL-01..INV-SLA-10) in THIRD_PARTY_LICENSES.txt.
+            - Updated CONTRIBUTING.md with Quality Gates (pytest, ruff, compileall) and strict Version-Freeze policy (T-20260920-167562623 / 1.0.3).
+            - Synchronized llms.txt, README.md, and README_de.md badges and documentation parity.
+            - Expanded contract test suite in tests/test_metadata.py.

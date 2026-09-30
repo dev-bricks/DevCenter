@@ -15,6 +15,7 @@ dist/
 build/
 .pytest_cache/
 .pytest_temp/
+.pytest_tmp*/
 .mypy_cache/
 .ruff_cache/
 .coverage
@@ -90,6 +91,7 @@ logs/
 
 # ---- Betriebssystem ----
 desktop.ini
+Desktop.ini
 Thumbs.db
 .DS_Store
 ehthumbs.db
@@ -97,11 +99,16 @@ ehthumbs.db
 # ---- Lokale Sync-/Host-Nebenstaende ----
 *-WORKSTATION*
 *-WORKSTATION-LG*
+*-WORKSTATION.*
+*-WORKSTATION-LG.*
 *-ASUS*
 *-ASUS-GEI*
 *-ASUS-GEI.md
+*-IDEAPAD*
+*-IDEAPAD-GEI*
 *-LAPTOP*
 *-Mac Studio*
+*-MacBook*
 *.sync-conflict-*
 *.conflict
 *conflicted copy*
@@ -127,7 +134,11 @@ DONE.md
 LOCK
 LOCK*.txt
 LOCK.*
+LOCK.user.*
+LOCK.until.*
+LOCK.condition.*
 *.lock
 uv.lock
 !package-lock.json
 LOCK.permissions.json
+TASKPLAN_*.md

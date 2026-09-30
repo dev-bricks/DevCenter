@@ -18,15 +18,16 @@
 [![Sicherheits-SLA: 48h / 5d Triage](https://img.shields.io/badge/Sicherheits--SLA-48h%20%7C%205d%20Triage-blue)](SECURITY.md)
 [![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 [![Drittanbieter: Geprüft](https://img.shields.io/badge/Drittanbieter-Gepr%C3%BCft%20%7C%20Level%201%20SBOM-brightgreen)](THIRD_PARTY_LICENSES.md)
-[![Tests: 208 Bestanden](https://img.shields.io/badge/tests-208%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
+[![Level 1 SBOM: Plain Text](https://img.shields.io/badge/Level%201%20SBOM-Plain--Text%20Companion-brightgreen)](THIRD_PARTY_LICENSES.txt)
+[![Tests: 228 Bestanden](https://img.shields.io/badge/tests-228%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-aktiv-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
-[![Zuletzt geprüft](https://img.shields.io/badge/Zuletzt%20gepr%C3%BCft-2026--09--28-blue)](CHANGELOG.md)
+[![Zuletzt geprüft](https://img.shields.io/badge/Zuletzt%20gepr%C3%BCft-2026--09--30-blue)](CHANGELOG.md)
 [![Ökosystem: dev-bricks](https://img.shields.io/badge/%C3%96kosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![Dachverband: open-bricks](https://img.shields.io/badge/Dachverband-open--bricks-blueviolet)](https://github.com/open-bricks)
 
 > [!NOTE]
-> **Für KI-Agenten & LLM-Tools:** Dieses Repository stellt mit [`llms.txt`](llms.txt) einen maschinenlesbaren Index für automatisierte Erkennung, Funktionsübersichten und CLI-Schnittstellen bereit. Letzte Prüfung: **2026-09-28**.
+> **Für KI-Agenten & LLM-Tools:** Dieses Repository stellt mit [`llms.txt`](llms.txt) einen maschinenlesbaren Index für automatisierte Erkennung, Funktionsübersichten und CLI-Schnittstellen bereit. Letzte Prüfung: **2026-09-30** (Baseline: 2026-09-28).
 
 > **Nicht identisch** mit Azure DevCenter, Microsoft Dev Box, Moderne DevCenter oder Devbox. Dies ist `dev-bricks/DevCenter` — eine quelloffene Python Desktop-Suite.
 

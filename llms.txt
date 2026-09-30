@@ -4,7 +4,7 @@ Canonical repository: https://github.com/dev-bricks/DevCenter
 Ecosystem: dev-bricks
 Umbrella: open-bricks
 Version: 1.0.3
-Last-checked: 2026-09-28 (previous source-index check: 2026-09-20)
+Last-checked: 2026-09-30 (previous check: 2026-09-28)
 
 DevCenter is a local-first, zero-egress Python desktop IDE and developer toolkit from dev-bricks under the open-bricks umbrella. It combines a PySide6 code editor, static AST analysis, automated encoding repair (ftfy), PyInstaller build helpers, icon conversion, third-party license collection, SQLite full-text file indexing, backup-oriented sync helpers, and an optional Claude/Anthropic AI assistant in a standalone desktop suite.
 
@@ -47,14 +47,18 @@ Privacy and Safety:
 - `README.md`: English overview, 18-point bilateral quick navigation, dual Mermaid architecture diagrams, invariants, and ecosystem matrix.
 - `README_de.md`: German overview with 100% mutual dual-anchor and feature parity.
 - `SECURITY.md`: Bilingual security policy detailing zero-egress invariants, keyring isolation, and 48h/5d SLA.
+- `CONTRIBUTING.md`: Contribution guidelines, Developer Certificate of Origin (DCO), Quality Gates, and Version Freeze discipline.
 - `PRIVACY_POLICY.md`: Privacy scope for local settings, indexes, build artifacts, and optional API usage.
 - `THIRD_PARTY_LICENSES.md`: Comprehensive Level 1 Software Bill of Materials (SBOM) with Invariant Cross-Reference Matrix and SPDX tags.
-- `THIRD_PARTY_LICENSES.txt`: Machine-readable license mapping and dependency floor audit.
+- `THIRD_PARTY_LICENSES.txt`: Plain-text Level 1 SBOM companion file and dependency floor audit.
 - `MARKETING-LOG.txt`: Local marketing intelligence register, 4 target personas, and 5-way competitive matrix.
 - `EXPORTFORMAT.md`: Implemented redacted desktop-export specification (`devcenter-workspace-v1`).
 - `DOCUMENTATION_STATUS.md`: Source hierarchy and historical boundary documentation.
 - `pyproject.toml`: PEP 621 package manifest, 20 keywords, dependency floors, and repository URLs.
 - `.github/workflows/tests.yml`: Multi-OS CI workflow (Windows, Linux, macOS) with concurrency control and ruff gate.
+- `.github/workflows/auto-assign.yml`: PR auto-assign workflow with least-privilege permissions.
+- `.github/workflows/label-sync.yml`: Canonical label synchronization workflow with least-privilege permissions.
+- `.github/labels.yml`: Standard 11 repository labels per GOVERNANCE.md §4.2.
 - `src/core/app_paths.py`: Platform-specific path resolver for local settings and SQLite databases.
 - `translator.py`: Tier-2 multi-language translation engine supporting DE, EN, ES, ZH, JA, RU with 4-stage fallback.
 - `tests/test_metadata.py`: Automated contract suite for documentation anchors, badges, invariants, and metadata.
