@@ -14,8 +14,12 @@ from translator import (
     detect_system_language,
     SUPPORTED_LANGUAGES,
     LANGUAGE_NAMES,
-    DEFAULT_LANGUAGE
+    LANGUAGE_DISPLAY_NAMES,
+    DEFAULT_LANGUAGE,
+    get_translator,
+    t,
 )
+from manage_translations import manage_translations
 
 
 class TestDevCenterI18N(unittest.TestCase):
@@ -161,6 +165,24 @@ class TestDevCenterI18N(unittest.TestCase):
         """Prüft, ob die Systemsprachenerkennung einen gültigen Sprachcode liefert."""
         lang = detect_system_language()
         self.assertIn(lang, SUPPORTED_LANGUAGES)
+
+    def test_language_display_names_parity(self):
+        """Prüft, ob alle unterstützten Sprachen in LANGUAGE_DISPLAY_NAMES vorhanden sind."""
+        for code in SUPPORTED_LANGUAGES:
+            self.assertIn(code, LANGUAGE_DISPLAY_NAMES)
+            display = LANGUAGE_DISPLAY_NAMES[code]
+            self.assertIn(f"({code})", display)
+
+    def test_global_translator_singleton_and_t_helper(self):
+        """Prüft die globale Translator-Instanz und die t()-Hilfsfunktion."""
+        ts = get_translator()
+        self.assertIsInstance(ts, TranslationSystem)
+        self.assertEqual(t("Abbrechen"), "Abbrechen")
+
+    def test_manage_translations_check_mode_success(self):
+        """Audit-Gate: manage_translations im check_mode muss 0 liefern (100% Parität)."""
+        code = manage_translations(source_dir=str(self.app_dir), check_mode=True)
+        self.assertEqual(code, 0, "manage_translations --check hat unvollständige Übersetzungen gemeldet")
 
 
 if __name__ == "__main__":

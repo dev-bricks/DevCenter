@@ -325,6 +325,29 @@ class DevCenterSettingsTests(unittest.TestCase):
         self.assertTrue(settings.reset_to_defaults())
         self.assertIsNone(settings.get("custom.plugin_field"))
 
+    def test_settings_dialog_loads_and_saves_language(self):
+        """Prüft, ob der SettingsDialog die Sprache korrekt anzeigt und speichert."""
+        settings = self._temp_settings()
+        settings.set("language", "es")
+
+        dialog = SettingsDialog(settings)
+        self.assertEqual(dialog.language_combo.currentData(), "es")
+
+        idx = dialog.language_combo.findData("ja")
+        self.assertGreaterEqual(idx, 0)
+        dialog.language_combo.setCurrentIndex(idx)
+        dialog._save_settings()
+
+        self.assertEqual(settings.get("language"), "ja")
+
+    def test_settings_dialog_language_combo_items_match_supported_languages(self):
+        """Prüft, ob alle unterstützten Sprachen in der Combobox vorhanden sind."""
+        settings = self._temp_settings()
+        dialog = SettingsDialog(settings)
+
+        combo_codes = [dialog.language_combo.itemData(i) for i in range(dialog.language_combo.count())]
+        self.assertEqual(combo_codes, ["de", "en", "es", "zh", "ja", "ru"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -5,6 +5,20 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Tier-2 Mehrsprachigkeit (P-006), SettingsDialog-Integration & Scanner-Auditing (2026-10-01) [G 2026-10-01]
+- Tier-2 6-Sprachen-Ausbau (P-006):
+  - `locales/translations.json` um 24 neue Einträge (unter anderem Such-/Ersetzendialog, Tab-Optionen, Checkboxen, Spracheinstellungen) auf 100 Schlüssel ausgebaut mit 100% lückenloser Parität über alle 6 Sprachen (DE, EN, ES, ZH, JA, RU).
+  - Modernisierung von `translator.py`: `LANGUAGE_DISPLAY_NAMES` definiert, `detect_system_language()` auf modernes `locale.getlocale()` umgestellt (verhindert DeprecationWarning unter Python 3.12+), globale `get_translator()`- und `t()`-Hilfsfunktionen bereitgestellt.
+- SettingsDialog-Sprachauswahl (`src/gui/dialogs/settings_dialog.py`):
+  - Neue Gruppe "Sprache" mit ComboBox im Tab "Allgemein" integriert (`language_combo`).
+  - Persistenz von `language` in `_load_settings()` und `_save_settings()` verdrahtet (nutzt `self.settings.get('language')` / `set('language')`).
+- Auto-Scanner & CLI-Auditor (`manage_translations.py`):
+  - Mit `argparse`, `--dir` und `--check`-Prüfmodus ausgerüstet; UTF-8-Encoding für Windows-Terminals (`sys.stdout.reconfigure`) abgesichert.
+  - Erweiterte GUI-Regex-Muster (`QCheckBox`, `setStatusTip`, etc.); `python manage_translations.py --check` validiert 100% Parität ohne fehlende Übersetzungsschlüssel.
+- Testabdeckung & Verifikation:
+  - 5 neue Vertragstests: `test_settings_dialog_loads_and_saves_language`, `test_settings_dialog_language_combo_items_match_supported_languages` in `tests/test_settings_application.py`; `test_language_display_names_parity`, `test_global_translator_singleton_and_t_helper`, `test_manage_translations_check_mode_success` in `tests/test_i18n.py`.
+  - Gesamtsuite wuchs von 233 auf 238 Tests (100% grün via pytest in 17.13s).
+
 ### Pfad A Repository Hygiene, CI Lifecycle Workflows, PEP 621 Standardisierung & Level 1 SBOM (2026-09-30) [G 2026-09-30]
 - Version-Freeze-Disziplin (T-20260920-167562623):
   - Version `1.0.3` in `pyproject.toml`, Quellcode und Manifesten unverändert beibehalten.

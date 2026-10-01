@@ -30,6 +30,15 @@ LANGUAGE_NAMES = {
     "ru": "Русский",
 }
 
+LANGUAGE_DISPLAY_NAMES: Dict[str, str] = {
+    "de": "Deutsch (de)",
+    "en": "English (en)",
+    "es": "Español (es)",
+    "zh": "简体中文 (zh)",
+    "ja": "日本語 (ja)",
+    "ru": "Русский (ru)",
+}
+
 
 def detect_system_language() -> str:
     """
@@ -59,19 +68,11 @@ def detect_system_language() -> str:
         pass
     try:
         import locale
-        loc = (locale.getdefaultlocale()[0] or "").lower()
-        if loc.startswith("de"):
-            return "de"
-        if loc.startswith("es"):
-            return "es"
-        if loc.startswith("zh"):
-            return "zh"
-        if loc.startswith("ja"):
-            return "ja"
-        if loc.startswith("ru"):
-            return "ru"
-        if loc.startswith("en"):
-            return "en"
+        loc = (locale.getlocale()[0] or "").lower()
+        if loc:
+            code = loc.split("_")[0].lower()
+            if code in SUPPORTED_LANGUAGES:
+                return code
     except Exception:
         pass
     return "de"
@@ -79,6 +80,11 @@ def detect_system_language() -> str:
 
 class TranslationSystem:
     """Multi-Language Support System v2.0 (DE, EN, ES, ZH, JA, RU)"""
+
+    SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES
+    DEFAULT_LANGUAGE = DEFAULT_LANGUAGE
+    LANGUAGE_NAMES = LANGUAGE_NAMES
+    LANGUAGE_DISPLAY_NAMES = LANGUAGE_DISPLAY_NAMES
 
     def __init__(self, default_lang: str = 'de', app_dir: Optional[Path] = None, auto_register: bool = False):
         """
@@ -260,6 +266,22 @@ class TranslationSystem:
     def get_missing_translations(self, lang: str = "en") -> List[str]:
         """Liefert alle Keys, für die in der angegebenen Sprache keine Übersetzung existiert."""
         return [k for k, v in self.translations.items() if not v.get(lang)]
+
+
+_GLOBAL_TRANSLATOR: Optional[TranslationSystem] = None
+
+
+def get_translator(default_lang: str = DEFAULT_LANGUAGE, app_dir: Optional[Path] = None) -> TranslationSystem:
+    """Gibt die globale TranslationSystem-Instanz zurück oder erstellt sie."""
+    global _GLOBAL_TRANSLATOR
+    if _GLOBAL_TRANSLATOR is None:
+        _GLOBAL_TRANSLATOR = TranslationSystem(default_lang=default_lang, app_dir=app_dir)
+    return _GLOBAL_TRANSLATOR
+
+
+def t(key: str, **kwargs) -> str:
+    """Übersetzt einen Key über die globale TranslationSystem-Instanz."""
+    return get_translator().t(key, **kwargs)
 
 
 if __name__ == "__main__":
