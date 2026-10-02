@@ -98,17 +98,20 @@ class SyncManager:
 
     def _should_exclude(self, path: str, excludes: List[str]) -> bool:
         """Prüft ob ein Pfad ausgeschlossen werden soll"""
-        name = os.path.basename(path)
+        norm_path = path.replace('/', os.sep).replace('\\', os.sep)
+        posix_path = norm_path.replace(os.sep, '/')
+        name = os.path.basename(norm_path)
+        parts = [p for p in norm_path.split(os.sep) if p]
 
         for pattern in excludes:
-            # Direkter Match
+            # Direkter Match auf Dateinamen
             if fnmatch.fnmatch(name, pattern):
                 return True
-            # Pfad-Match
-            if fnmatch.fnmatch(path, pattern):
+            # Pfad-Match (sowohl mit OS-Separator als auch POSIX-Slash)
+            if fnmatch.fnmatch(norm_path, pattern) or fnmatch.fnmatch(posix_path, pattern):
                 return True
-            # Verzeichnis im Pfad
-            if pattern in path.split(os.sep):
+            # Verzeichnis/Komponenten-Match im Pfad
+            if pattern in parts:
                 return True
 
         return False
@@ -131,7 +134,7 @@ class SyncManager:
         Wichtig für konsistente Backups von SQLite-DBs!
         """
         try:
-            conn = sqlite3.connect(db_path)
+            conn = sqlite3.connect(db_path, timeout=5.0)
             try:
                 conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
             finally:
@@ -141,14 +144,23 @@ class SyncManager:
             print(f"SQLite Checkpoint fehlgeschlagen für {db_path}: {e}")
             return False
 
-    def _find_sqlite_databases(self, directory: str) -> List[str]:
-        """Findet alle SQLite-Datenbanken in einem Verzeichnis"""
+    def _find_sqlite_databases(self, directory: str, excludes: Optional[List[str]] = None) -> List[str]:
+        """Findet alle SQLite-Datenbanken in einem Verzeichnis unter Berücksichtigung von Ausschlüssen"""
         db_files = []
+        excludes = excludes or []
 
         for root, dirs, files in os.walk(directory):
+            if excludes:
+                dirs[:] = [d for d in dirs if not self._should_exclude(
+                    os.path.join(root, d), excludes
+                )]
             for file in files:
                 if file.endswith(('.db', '.sqlite', '.sqlite3')):
-                    db_files.append(os.path.join(root, file))
+                    full_path = os.path.join(root, file)
+                    if excludes and self._should_exclude(full_path, excludes):
+                        continue
+                    if os.path.isfile(full_path):
+                        db_files.append(full_path)
 
         return db_files
 
@@ -172,8 +184,15 @@ class SyncManager:
 
         # Prüfungen
         if not source.exists():
+            result.duration = (datetime.now() - start_time).total_seconds()
             result.success = False
             result.errors.append(f"Quellverzeichnis existiert nicht: {source}")
+            return result
+
+        if not source.is_dir():
+            result.duration = (datetime.now() - start_time).total_seconds()
+            result.success = False
+            result.errors.append(f"Quellpfad ist kein Verzeichnis: {source}")
             return result
 
         # Zielverzeichnis erstellen
@@ -182,7 +201,7 @@ class SyncManager:
         # SQLite Checkpoint
         if config.checkpoint_sqlite:
             self._emit_progress(5, "SQLite-Datenbanken werden vorbereitet...")
-            db_files = self._find_sqlite_databases(str(source))
+            db_files = self._find_sqlite_databases(str(source), config.excludes)
             for db_file in db_files:
                 self._checkpoint_sqlite_db(db_file)
 
@@ -263,8 +282,22 @@ class SyncManager:
 
                         if source_hash is None or target_hash is None:
                             result.errors.append(f"Verifikation nicht möglich (Lesefehler): {rel_path}")
+                            try:
+                                if target_file.exists():
+                                    target_file.unlink()
+                            except OSError:
+                                pass
+                            result.files_copied = max(0, result.files_copied - 1)
+                            result.bytes_copied = max(0, result.bytes_copied - source_file.stat().st_size)
                         elif source_hash != target_hash:
                             result.errors.append(f"Verifikation fehlgeschlagen: {rel_path}")
+                            try:
+                                if target_file.exists():
+                                    target_file.unlink()
+                            except OSError:
+                                pass
+                            result.files_copied = max(0, result.files_copied - 1)
+                            result.bytes_copied = max(0, result.bytes_copied - source_file.stat().st_size)
 
             except Exception as e:
                 result.errors.append(f"Fehler bei {rel_path}: {e}")
@@ -371,7 +404,14 @@ class BackupScheduler:
                    project_path: str,
                    backup_path: str,
                    interval_minutes: int = 60):
-        """Fügt ein automatisches Backup hinzu"""
+        """Fügt ein automatisches Backup hinzu oder aktualisiert ein bestehendes"""
+        norm_proj = os.path.normpath(str(project_path))
+        for c in self.backup_configs:
+            if os.path.normpath(str(c['project'])) == norm_proj:
+                c['backup'] = backup_path
+                c['interval'] = interval_minutes
+                return
+
         self.backup_configs.append({
             'project': project_path,
             'backup': backup_path,
@@ -381,9 +421,10 @@ class BackupScheduler:
 
     def remove_backup(self, project_path: str):
         """Entfernt ein automatisches Backup"""
+        norm_proj = os.path.normpath(str(project_path))
         self.backup_configs = [
             c for c in self.backup_configs
-            if c['project'] != project_path
+            if os.path.normpath(str(c['project'])) != norm_proj
         ]
 
     def check_and_run(self):

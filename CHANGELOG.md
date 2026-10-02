@@ -5,6 +5,21 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Bugsweep #13: Resilienz-Härtung von Projektverwaltung & Datei-Synchronisation (2026-10-02) [G 2026-10-02]
+- `ProjectManager` (`src/core/project_manager.py`):
+  - Robuste Absicherung von `_load_recent_projects()`, `_save_recent_projects()`, `create_project()`, `open_project()` und `save_project()` gegen nicht-dict JSON-Dateien (z. B. Arrays `[]`, Skalare oder `null` in `settings.json` und `devcenter.json`), wodurch bisher unhandled `AttributeError` und `TypeError` auftraten.
+  - Sichere Fallbacks bei fehlendem, leerem oder reinem Whitespace-Projektnamen/-pfad in `open_project()` auf den Basisordnernamen.
+  - Defensive Filterung ungültiger oder nicht-dict Einträge in `get_recent_projects()`.
+- `SyncManager` (`src/modules/filemanager/sync_manager.py`):
+  - Normalisierung von Pfadtrennern in `_should_exclude()` für verlässliches Matching von Ausschlussmustern auch bei POSIX-Forward-Slashes auf Windows.
+  - Ausschlussfilter in `_find_sqlite_databases()` integriert, sodass ausgeschlossene Ordner (z. B. `venv`, `.git`) nicht durchsucht werden; Verzeichnis-Filterung für reguläre SQLite-Dateien.
+  - Schutz vor dauerhaft korrupten Synchronisationszielen in `sync()`: Schlägt `verify_copy` fehl (Prüfsummen-Mismatch), wird die beschädigte Zieldatei sofort vom Ziel gelöscht und Zähler werden korrigiert, statt das beschädigte Ziel im Folgezyklus fälschlich als aktuell zu überspringen.
+  - Vorab-Prüfung `source.is_dir()` in `sync()` mit Dauer-Erfassung und Fehlerreport bei Nicht-Verzeichnis-Quellpfaden.
+  - Normalisierung und Deduplizierung von Projektpfaden in `BackupScheduler.add_backup()` und `remove_backup()`.
+- Testabdeckung & Verifikation:
+  - 12 neue hermetische Regressionstests in `tests/test_bugsweep_project_and_sync_resilience_20261002.py` (100% bestanden).
+  - Testsuite auf 250 Tests erhöht (100% grün via pytest in 11.31s); `ruff check` und `compileall` fehlerfrei.
+
 ### Tier-2 Mehrsprachigkeit (P-006), SettingsDialog-Integration & Scanner-Auditing (2026-10-01) [G 2026-10-01]
 - Tier-2 6-Sprachen-Ausbau (P-006):
   - `locales/translations.json` um 24 neue Einträge (unter anderem Such-/Ersetzendialog, Tab-Optionen, Checkboxen, Spracheinstellungen) auf 100 Schlüssel ausgebaut mit 100% lückenloser Parität über alle 6 Sprachen (DE, EN, ES, ZH, JA, RU).
