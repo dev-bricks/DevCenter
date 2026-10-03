@@ -55,7 +55,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements.txt pytest
 
       - name: Compile sources
         run: python -m compileall -q main.py manage_translations.py translator.py src tests
@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements.txt pytest
 
       - name: Compile sources
         run: python -m compileall -q main.py manage_translations.py translator.py src tests
@@ -125,7 +125,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements.txt pytest
 
       - name: Compile sources
         run: python -m compileall -q main.py manage_translations.py translator.py src tests
