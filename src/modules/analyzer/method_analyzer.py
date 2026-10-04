@@ -167,11 +167,11 @@ class NameCollector(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node):
-        """Delegiert an visit_FunctionDef fuer async-Funktionen."""
+        """Delegiert an visit_FunctionDef für async-Funktionen."""
         self.visit_FunctionDef(node)
 
     def visit_Lambda(self, node):
-        """Sammelt Argumente aus Lambda-Ausdruecken."""
+        """Sammelt Argumente aus Lambda-Ausdrücken."""
         self._collect_arguments(node.args)
         self.generic_visit(node)
 

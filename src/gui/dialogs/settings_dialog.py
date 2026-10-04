@@ -4,11 +4,30 @@ DevCenter - Settings Dialog
 Einstellungen für Editor, Build, AI und mehr
 """
 
+import sys
+from pathlib import Path
+
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QTabWidget, QWidget,
     QFormLayout, QLineEdit, QSpinBox, QCheckBox, QComboBox,
     QPushButton, QLabel, QFileDialog, QGroupBox, QMessageBox
 )
+
+try:
+    from translator import (
+        DEFAULT_LANGUAGE,
+        LANGUAGE_DISPLAY_NAMES,
+        SUPPORTED_LANGUAGES,
+    )
+except ImportError:
+    root_dir = Path(__file__).resolve().parents[3]
+    if str(root_dir) not in sys.path:
+        sys.path.insert(0, str(root_dir))
+    from translator import (
+        DEFAULT_LANGUAGE,
+        LANGUAGE_DISPLAY_NAMES,
+        SUPPORTED_LANGUAGES,
+    )
 
 
 class SettingsDialog(QDialog):
@@ -127,6 +146,19 @@ class SettingsDialog(QDialog):
         """Allgemeine Einstellungen"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
+
+        # Sprache
+        lang_group = QGroupBox("Sprache")
+        lang_layout = QFormLayout(lang_group)
+
+        self.language_combo = QComboBox()
+        self.language_combo.setObjectName("languageCombo")
+        for code in SUPPORTED_LANGUAGES:
+            display_name = LANGUAGE_DISPLAY_NAMES.get(code, code)
+            self.language_combo.addItem(display_name, code)
+        lang_layout.addRow("Sprache:", self.language_combo)
+
+        layout.addWidget(lang_group)
 
         startup_group = QGroupBox("Startverhalten")
         startup_layout = QFormLayout(startup_group)
@@ -408,6 +440,12 @@ class SettingsDialog(QDialog):
         """Lädt Einstellungen in die UI"""
         # General
         self.open_last_project.setChecked(self.settings.get('general.open_last_project', False))
+        current_lang = self.settings.get('language', DEFAULT_LANGUAGE)
+        idx = self.language_combo.findData(current_lang)
+        if idx >= 0:
+            self.language_combo.setCurrentIndex(idx)
+        else:
+            self.language_combo.setCurrentIndex(0)
 
         # Editor
         self.font_family.setCurrentText(self.settings.get('editor.font_family', 'Consolas'))
@@ -457,6 +495,8 @@ class SettingsDialog(QDialog):
 
         # General
         self.settings.set('general.open_last_project', self.open_last_project.isChecked())
+        selected_lang = self.language_combo.currentData() or DEFAULT_LANGUAGE
+        self.settings.set('language', selected_lang)
 
         # Editor
         self.settings.set('editor.font_family', self.font_family.currentText())

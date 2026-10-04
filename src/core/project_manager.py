@@ -80,8 +80,14 @@ class ProjectManager(QObject):
             try:
                 with open(settings_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
+                if isinstance(data, dict):
                     recent = data.get('recent_projects', [])
-                    self.recent_projects = recent if isinstance(recent, list) else []
+                    self.recent_projects = [
+                        p for p in recent
+                        if isinstance(p, dict) and isinstance(p.get('path'), str)
+                    ] if isinstance(recent, list) else []
+                else:
+                    self.recent_projects = []
             except (json.JSONDecodeError, IOError) as e:
                 logger.warning("Konnte Recent Projects aus '%s' nicht laden: %s", self.settings_path, e)
                 self.recent_projects = []
@@ -97,11 +103,13 @@ class ProjectManager(QObject):
             if settings_file.exists():
                 try:
                     with open(settings_file, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                except (json.JSONDecodeError, ValueError):
+                        loaded = json.load(f)
+                        if isinstance(loaded, dict):
+                            data = loaded
+                except (json.JSONDecodeError, ValueError, OSError):
                     data = {}
 
-            data['recent_projects'] = self.recent_projects
+            data['recent_projects'] = [p for p in self.recent_projects if isinstance(p, dict)]
 
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
@@ -171,7 +179,9 @@ class ProjectManager(QObject):
             if project_file.exists():
                 try:
                     with open(project_file, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
+                        loaded = json.load(f)
+                        if isinstance(loaded, dict):
+                            data = loaded
                 except (json.JSONDecodeError, OSError):
                     data = {}
             data.update(asdict(config))
@@ -281,15 +291,21 @@ python src/main.py
 
         try:
             with open(project_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                loaded = json.load(f)
+            if not isinstance(loaded, dict):
+                logger.warning("Ungültiges JSON-Wurzelelement in '%s' (erwartet dict, erhalten %s)", project_file, type(loaded).__name__)
+                return None
 
+            data = loaded
             now = datetime.now().isoformat()
             valid_fields = {f.name for f in fields(ProjectConfig)}
             filtered = {k: v for k, v in data.items() if k in valid_fields}
 
             # Pflichtfelder absichern (Fallbacks bei unvollständigen JSON-Metadaten)
-            filtered.setdefault("name", project_path.name or "Projekt")
-            filtered.setdefault("path", str(project_path))
+            if not filtered.get("name") or not str(filtered["name"]).strip():
+                filtered["name"] = project_path.name or "Projekt"
+            if not filtered.get("path") or not str(filtered["path"]).strip():
+                filtered["path"] = str(project_path)
             filtered.setdefault("created", now)
             filtered.setdefault("last_opened", now)
 
@@ -335,7 +351,9 @@ python src/main.py
             if project_file.exists():
                 try:
                     with open(project_file, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
+                        loaded = json.load(f)
+                        if isinstance(loaded, dict):
+                            data = loaded
                 except (json.JSONDecodeError, OSError):
                     data = {}
 
@@ -352,6 +370,8 @@ python src/main.py
         # Prüfen, ob Projekte noch existieren (leere oder reine Whitespace-Pfade ausschließen)
         valid_projects = []
         for project in self.recent_projects:
+            if not isinstance(project, dict):
+                continue
             raw_path = project.get('path', '')
             p_path = raw_path.strip() if isinstance(raw_path, str) else ''
             if p_path and Path(p_path).exists():

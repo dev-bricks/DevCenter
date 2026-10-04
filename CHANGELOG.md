@@ -5,6 +5,35 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Bugsweep #13: Resilienz-Härtung von Projektverwaltung & Datei-Synchronisation (2026-10-02) [G 2026-10-02]
+- `ProjectManager` (`src/core/project_manager.py`):
+  - Robuste Absicherung von `_load_recent_projects()`, `_save_recent_projects()`, `create_project()`, `open_project()` und `save_project()` gegen nicht-dict JSON-Dateien (z. B. Arrays `[]`, Skalare oder `null` in `settings.json` und `devcenter.json`), wodurch bisher unhandled `AttributeError` und `TypeError` auftraten.
+  - Sichere Fallbacks bei fehlendem, leerem oder reinem Whitespace-Projektnamen/-pfad in `open_project()` auf den Basisordnernamen.
+  - Defensive Filterung ungültiger oder nicht-dict Einträge in `get_recent_projects()`.
+- `SyncManager` (`src/modules/filemanager/sync_manager.py`):
+  - Normalisierung von Pfadtrennern in `_should_exclude()` für verlässliches Matching von Ausschlussmustern auch bei POSIX-Forward-Slashes auf Windows.
+  - Ausschlussfilter in `_find_sqlite_databases()` integriert, sodass ausgeschlossene Ordner (z. B. `venv`, `.git`) nicht durchsucht werden; Verzeichnis-Filterung für reguläre SQLite-Dateien.
+  - Schutz vor dauerhaft korrupten Synchronisationszielen in `sync()`: Schlägt `verify_copy` fehl (Prüfsummen-Mismatch), wird die beschädigte Zieldatei sofort vom Ziel gelöscht und Zähler werden korrigiert, statt das beschädigte Ziel im Folgezyklus fälschlich als aktuell zu überspringen.
+  - Vorab-Prüfung `source.is_dir()` in `sync()` mit Dauer-Erfassung und Fehlerreport bei Nicht-Verzeichnis-Quellpfaden.
+  - Normalisierung und Deduplizierung von Projektpfaden in `BackupScheduler.add_backup()` und `remove_backup()`.
+- Testabdeckung & Verifikation:
+  - 12 neue hermetische Regressionstests in `tests/test_bugsweep_project_and_sync_resilience_20261002.py` (100% bestanden).
+  - Testsuite auf 250 Tests erhöht (100% grün via pytest in 11.31s); `ruff check` und `compileall` fehlerfrei.
+
+### Tier-2 Mehrsprachigkeit (P-006), SettingsDialog-Integration & Scanner-Auditing (2026-10-01) [G 2026-10-01]
+- Tier-2 6-Sprachen-Ausbau (P-006):
+  - `locales/translations.json` um 24 neue Einträge (unter anderem Such-/Ersetzendialog, Tab-Optionen, Checkboxen, Spracheinstellungen) auf 100 Schlüssel ausgebaut mit 100% lückenloser Parität über alle 6 Sprachen (DE, EN, ES, ZH, JA, RU).
+  - Modernisierung von `translator.py`: `LANGUAGE_DISPLAY_NAMES` definiert, `detect_system_language()` auf modernes `locale.getlocale()` umgestellt (verhindert DeprecationWarning unter Python 3.12+), globale `get_translator()`- und `t()`-Hilfsfunktionen bereitgestellt.
+- SettingsDialog-Sprachauswahl (`src/gui/dialogs/settings_dialog.py`):
+  - Neue Gruppe "Sprache" mit ComboBox im Tab "Allgemein" integriert (`language_combo`).
+  - Persistenz von `language` in `_load_settings()` und `_save_settings()` verdrahtet (nutzt `self.settings.get('language')` / `set('language')`).
+- Auto-Scanner & CLI-Auditor (`manage_translations.py`):
+  - Mit `argparse`, `--dir` und `--check`-Prüfmodus ausgerüstet; UTF-8-Encoding für Windows-Terminals (`sys.stdout.reconfigure`) abgesichert.
+  - Erweiterte GUI-Regex-Muster (`QCheckBox`, `setStatusTip`, etc.); `python manage_translations.py --check` validiert 100% Parität ohne fehlende Übersetzungsschlüssel.
+- Testabdeckung & Verifikation:
+  - 5 neue Vertragstests: `test_settings_dialog_loads_and_saves_language`, `test_settings_dialog_language_combo_items_match_supported_languages` in `tests/test_settings_application.py`; `test_language_display_names_parity`, `test_global_translator_singleton_and_t_helper`, `test_manage_translations_check_mode_success` in `tests/test_i18n.py`.
+  - Gesamtsuite wuchs von 233 auf 238 Tests (100% grün via pytest in 17.13s).
+
 ### Pfad A Repository Hygiene, CI Lifecycle Workflows, PEP 621 Standardisierung & Level 1 SBOM (2026-09-30) [G 2026-09-30]
 - Version-Freeze-Disziplin (T-20260920-167562623):
   - Version `1.0.3` in `pyproject.toml`, Quellcode und Manifesten unverändert beibehalten.

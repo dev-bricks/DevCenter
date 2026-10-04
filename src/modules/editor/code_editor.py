@@ -166,7 +166,7 @@ class LineNumberArea(QWidget):
         self.editor = editor
 
     def sizeHint(self):
-        """Gibt die empfohlene Groesse basierend auf Zeilennummernbreite zurueck."""
+        """Gibt die empfohlene Größe basierend auf Zeilennummernbreite zurück."""
         return QSize(self.editor.line_number_area_width(), 0)
 
     def paintEvent(self, event):
