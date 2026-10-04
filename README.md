@@ -4,7 +4,7 @@
 
 **Local-first Python IDE and developer toolkit for Windows, Linux, and macOS.** DevCenter combines a PySide6 code editor, AST static analyzer, PyInstaller build helper, icon converter, license collector, full-text SQLite file index, and optional Claude/Anthropic AI assistant in one cohesive desktop suite.
 
-[English](README.md) · [Deutsch](README_de.md)
+[English](README.md) · [Deutsch](README_de.md) · [Español](README_es.md) · [简体中文](README_zh.md) · [日本語](README_ja.md) · [Русский](README_ru.md)
 
 [![Version](https://img.shields.io/badge/version-1.0.3-blue)](CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-green)](https://python.org)

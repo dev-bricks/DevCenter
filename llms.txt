@@ -46,6 +46,10 @@ Privacy and Safety:
 - `NOTICE`: Canonical open-source attribution notice (Lukas Geiger, dev-bricks, open-bricks).
 - `README.md`: English overview, 18-point bilateral quick navigation, dual Mermaid architecture diagrams, invariants, and ecosystem matrix.
 - `README_de.md`: German overview with 100% mutual dual-anchor and feature parity.
+- `README_es.md`: Spanish translation (machine-assisted; English README.md is authoritative).
+- `README_zh.md`: Simplified Chinese translation (machine-assisted; English README.md is authoritative).
+- `README_ja.md`: Japanese translation (machine-assisted; English README.md is authoritative).
+- `README_ru.md`: Russian translation (machine-assisted; English README.md is authoritative).
 - `SECURITY.md`: Bilingual security policy detailing zero-egress invariants, keyring isolation, and 48h/5d SLA.
 - `CONTRIBUTING.md`: Contribution guidelines, Developer Certificate of Origin (DCO), Quality Gates, and Version Freeze discipline.
 - `PRIVACY_POLICY.md`: Privacy scope for local settings, indexes, build artifacts, and optional API usage.
