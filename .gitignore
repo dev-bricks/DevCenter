@@ -142,3 +142,5 @@ uv.lock
 !package-lock.json
 LOCK.permissions.json
 TASKPLAN_*.md
+# Interne Analyse-/Planungsdokumente
+ANALYSIS_builder_refactoring.md
