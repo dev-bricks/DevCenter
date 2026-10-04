@@ -19,15 +19,15 @@
 [![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 [![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20Level%201%20SBOM-brightgreen)](THIRD_PARTY_LICENSES.md)
 [![Level 1 SBOM: Plain Text](https://img.shields.io/badge/Level%201%20SBOM-Plain--Text%20Companion-brightgreen)](THIRD_PARTY_LICENSES.txt)
-[![Tests: 228 Passed](https://img.shields.io/badge/tests-228%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Tests: 250 Passed](https://img.shields.io/badge/tests-250%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
-[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--09--30-blue)](CHANGELOG.md)
+[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--10--04-blue)](CHANGELOG.md)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![Umbrella: open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
 
 > [!NOTE]
-> **For AI Agents & LLM Tools:** This repository maintains an [`llms.txt`](llms.txt) machine-readable index for automated discovery, capability summaries, and CLI interfaces. Last checked: **2026-09-30** (baseline: 2026-09-28).
+> **For AI Agents & LLM Tools:** This repository maintains an [`llms.txt`](llms.txt) machine-readable index for automated discovery, capability summaries, and CLI interfaces. Last checked: **2026-10-04** (baseline: 2026-09-28).
 
 > **Not** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter or Devbox. This is `dev-bricks/DevCenter` — an open-source Python desktop suite.
 
@@ -90,6 +90,7 @@
 | **Encoding Diagnostics & Repair** | BOM/mojibake detection, UTF-8 normalization (`ftfy`) | Analyze → Encoding Tab |
 | **Full-Text File Index** | SQLite FTS5 file search, duplicate finder, backup sync | FileManager Tab |
 | **Redacted Workspace Export** | Sanitized project metadata export for handoff | File → Export Workspace |
+| **Multilingual UI** | UI in 6 languages (DE, EN, ES, ZH, JA, RU) with 4-stage fallback chain | Settings dialog |
 | **Windows Quick Launcher** | Direct desktop startup script | `START_DevCenter.bat` |
 | **Diagnostics & CLI Suite** | Automated health check, version, and headless AST inspection | `debug.bat` / `python main.py --check` |
 
@@ -517,7 +518,7 @@ ruff check .
 python -m compileall -q .
 ```
 
-Current local verification (**2026-09-28**): `python -m pytest -q` passed **208 tests** (100% green). Continuous Integration validates the test matrix across Python 3.11 and 3.12 on Windows, Linux, and macOS.
+CI verification (**2026-10-04**): `python -m pytest -q` passed **250 tests** (100% green) on Python 3.11 and 3.12. Continuous Integration validates the test matrix across Python 3.11 and 3.12 on Windows, Linux, and macOS.
 
 ---
 
@@ -569,8 +570,6 @@ DevCenter is the flagship Python IDE and packaging center within the **dev-brick
 | **dev-bricks** | [pythonbox](https://github.com/dev-bricks/pythonbox) | Lightweight Python IDE and interactive PDB debugger | PySide6 GUI |
 | **dev-bricks** | [safe-start-for-codex](https://github.com/dev-bricks/safe-start-for-codex) | Preflight validation & secure bootloader for Codex | Python CLI |
 | **dev-bricks** | [automizer-for-claude-desktop](https://github.com/dev-bricks/automizer-for-claude-desktop) | Automation bridge and launcher for Claude Desktop | Python GUI |
-| **dev-bricks** | [automation-master](https://github.com/dev-bricks/automation-master) | Fleet-wide automation orchestrator & task scheduler | Python Core |
-| **ellmos-ai** | [ellmos-core](https://github.com/ellmos-ai/ellmos-core) | Multi-agent coordination kernel, MCP bridges & task runners | Python Core |
 | **ellmos-ai** | [clutch](https://github.com/ellmos-ai/clutch) | Subprocess management & PTY terminal bridge | Python CLI |
 | **ellmos-ai** | [coma](https://github.com/ellmos-ai/coma) | Multi-host conflict resolution & distributed state sync | Python CLI |
 | **ellmos-ai** | [swarm-ai](https://github.com/ellmos-ai/swarm-ai) | Distributed agent swarm coordination & consensus engine | Python Core |
@@ -580,4 +579,4 @@ DevCenter is the flagship Python IDE and packaging center within the **dev-brick
 | **file-bricks** | [ProSync](https://github.com/file-bricks/ProSync) | SQLite-aware backup engine & multi-target sync manager | PySide6 GUI |
 | **doc-bricks** | [DokuZen](https://github.com/doc-bricks/DokuZen) | Markdown document manager, PDF converter & search engine | PySide6 GUI |
 | **doc-bricks** | [PDFtoPDFocr](https://github.com/doc-bricks/PDFtoPDFocr) | Local OCR text layer injector for scanned PDF documents | PySide6 / CLI |
-| **open-bricks** | [open-bricks](https://github.com/open-bricks/open-bricks) | Umbrella index for local-first, privacy-respecting software | Open Source |
+| **open-bricks** | [open-bricks](https://github.com/open-bricks) | Umbrella index for local-first, privacy-respecting software | Open Source |
