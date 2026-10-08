@@ -5,7 +5,7 @@ description = "Entwickler-Zentrale: Build, Analyse, Sync und AI-Assistent"
 authors = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md", "THIRD_PARTY_LICENSES.txt"]
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md", "THIRD_PARTY_LICENSES.txt", "CONTRIBUTING.md"]
 readme = "README.md"
 
 keywords = [
@@ -42,6 +42,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Desktop Environment",
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Code Generators",
@@ -89,7 +90,7 @@ minversion = "7.0"
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra -v --basetemp=.pytest_temp"
-norecursedirs = [".git", ".pytest_cache", ".pytest_temp", ".pytest_tmp*", "__pycache__", "build", "dist", "temp", "tmp", "_sources", "*.sync-temp-*"]
+norecursedirs = [".git", ".pytest_cache", ".pytest_temp", ".pytest_tmp*", "__pycache__", "build", "dist", "temp", "tmp", "_sources", "*.sync-temp-*", ".turbo", ".nyc_output", ".tox"]
 
 [tool.ruff]
 target-version = "py311"

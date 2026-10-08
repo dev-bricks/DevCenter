@@ -4,7 +4,7 @@
 # DevCenter is licensed under GNU General Public License v3.0 (GPLv3).
 # Canonical Notice: NOTICE
 # Comprehensive Markdown SBOM: THIRD_PARTY_LICENSES.md
-# Audit Date: 2026-09-30 (Pfad A Level 1 SBOM Audit; Baseline: 2026-09-28)
+# Audit Date: 2026-10-08 (Pfad A Level 1 SBOM Re-Audit; Baseline: 2026-09-30 / 2026-09-28)
 # Architecture & Governance: 100% Local-First, Zero-Egress, RunAsInvoker
 # This document provides the plain-text Level 1 Software Bill of Materials (SBOM)
 # and third-party transparency inventory across runtime, build, and test tooling.

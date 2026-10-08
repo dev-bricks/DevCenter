@@ -5,6 +5,28 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Pfad A Repository Hygiene, Dependabot Actions Guard, PEP 621 Standardisierung & Level 1 SBOM Re-Audit (2026-10-08) [G 2026-10-08]
+- Version-Freeze-Disziplin (T-20260920-167562623):
+  - Version `1.0.3` in `pyproject.toml`, Quellcode und allen Manifesten strikt unverändert beibehalten.
+  - Alle Neuerungen unter `## [Unreleased]` im Changelog dokumentiert.
+- Automated CI Maintenance Guard & Dependabot Actions Guard:
+  - `.github/dependabot.yml` um wöchentliche Updates für `github-actions` erweitert (Montags 06:00 Berlin Zeit, Open-PRs-Limit: 3).
+- Bilinguale CONTRIBUTING.md Guidelines:
+  - Vollständige tabellarische Spezifikation aller 10 Governance- und Laufzeit-Invarianten `INV-LOCAL-01` bis `INV-SLA-10` in deutscher und englischer Fassung.
+  - Dokumentation des unprivilegierten `RunAsInvoker` Non-Elevation Modus (`INV-USER-08`), des Plan D Source of Truth Workflows (`C:\_Local_DEV\repos\DevCenter`), des gesetzlichen Haftungsausschlusses (§ 521 BGB Gefälligkeitsrecht) und der verbindlichen 48h Security Response SLA (`security@dev-bricks.org`, `security@open-bricks.org`, `support@lukasgeiger.com`, `lukas@open-bricks.org`).
+- Multi-Host Cloud-Sync-, Lock- und OS-Defense in `.gitignore`:
+  - Erweiterung um `*-TASKPLAN*`, `LOCK.dev.*`, `LOCK.antigravity.*`, `LOCK.bugsearch.*`, `thumbs.db` und `*-IDEAPAD-GEI.*`.
+- PEP 621 Metadaten-Standardisierung in `pyproject.toml`:
+  - `license-files` Whitelist um `CONTRIBUTING.md` erweitert.
+  - `norecursedirs` in pytest ini_options um `.turbo`, `.nyc_output` und `.tox` gehärtet.
+  - Python 3.13 Classifier ergänzt.
+- Level 1 SBOM Re-Audit Stand 2026-10-08:
+  - `THIRD_PARTY_LICENSES.txt` und `THIRD_PARTY_LICENSES.md` Re-Audit Stand 2026-10-08 mit Invarianten-Matrix, RunAsInvoker Non-Elevation, § 521 BGB Haftungsausschluss und 100% Zero-Copyleft Permissive Stack.
+- Synchrone Dokumentations-, Badge- und RAG-Kontext-Aktualisierung:
+  - `README.md`, `README_de.md` und `llms.txt` mit aktuellen Badges, Re-Audit-Datum 2026-10-08 und Test-Suite-Stand synchronisiert.
+- Automatisierte Vertragstest-Erweiterung:
+  - 6 neue Contract-Tests in `tests/test_metadata.py` (`test_ci_workflows_dependabot_actions_guard`, `test_contributing_bilingual_parity_and_invariants`, `test_extended_gitignore_lock_and_os_hardening`, `test_pyproject_license_files_contributing_whitelist`, `test_changelog_recent_pfad_a_unreleased_entry_20261008`, `test_marketing_log_recent_pfad_a_entry_20261008`).
+
 ### Bugsweep #13: Resilienz-Härtung von Projektverwaltung & Datei-Synchronisation (2026-10-02) [G 2026-10-02]
 - `ProjectManager` (`src/core/project_manager.py`):
   - Robuste Absicherung von `_load_recent_projects()`, `_save_recent_projects()`, `create_project()`, `open_project()` und `save_project()` gegen nicht-dict JSON-Dateien (z. B. Arrays `[]`, Skalare oder `null` in `settings.json` und `devcenter.json`), wodurch bisher unhandled `AttributeError` und `TypeError` auftraten.

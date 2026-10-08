@@ -472,3 +472,83 @@ def test_marketing_log_recent_pfad_a_entry_20260930():
     """Prüft, dass MARKETING-LOG.txt den Pfad A Hygiene-Eintrag vom 2026-09-30 führt."""
     content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
     assert "2026-09-30 [HYG Pfad A] Repository Hygiene, CI Lifecycle Workflows & Level 1 SBOM:" in content
+
+def test_ci_workflows_dependabot_actions_guard():
+    """Prüft Bereitstellung und Härtung des Dependabot Actions Maintenance Guards."""
+    dep_file = REPO_ROOT / ".github" / "dependabot.yml"
+    assert dep_file.is_file(), "dependabot.yml fehlt"
+    text = dep_file.read_text(encoding="utf-8")
+
+    assert 'package-ecosystem: "github-actions"' in text
+    assert 'interval: "weekly"' in text
+    assert "open-pull-requests-limit: 3" in text
+
+
+def test_contributing_bilingual_parity_and_invariants():
+    """Prüft detaillierte Invarianten-Matrix, Plan D Workflow, § 521 BGB und 48h SLA in CONTRIBUTING.md."""
+    contrib_path = REPO_ROOT / "CONTRIBUTING.md"
+    assert contrib_path.is_file(), "CONTRIBUTING.md fehlt"
+    text = contrib_path.read_text(encoding="utf-8")
+
+    for inv in [
+        "INV-LOCAL-01",
+        "INV-OPTIN-02",
+        "INV-KEYRING-03",
+        "INV-EXPORT-04",
+        "INV-STATIC-05",
+        "INV-SECURITY-06",
+        "INV-PERM-07",
+        "INV-USER-08",
+        "INV-MULTI-09",
+        "INV-SLA-10",
+    ]:
+        assert inv in text, f"{inv} fehlt in CONTRIBUTING.md"
+
+    assert "C:\\_Local_DEV\\repos\\DevCenter" in text
+    assert "521" in text and "BGB" in text
+    assert "48" in text
+    assert "security@dev-bricks.org" in text
+    assert "security@open-bricks.org" in text
+    assert "support@lukasgeiger.com" in text
+
+
+def test_extended_gitignore_lock_and_os_hardening():
+    """Prüft erweiterte Lock- und OS-Patterns in .gitignore."""
+    content = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8")
+
+    for pat in [
+        "LOCK.dev.*",
+        "LOCK.antigravity.*",
+        "LOCK.bugsearch.*",
+        "*-TASKPLAN*",
+        "thumbs.db",
+        "*-IDEAPAD-GEI.*",
+        "*-ASUS-GEI.*",
+    ]:
+        assert pat in content, f"{pat} fehlt in .gitignore"
+
+
+def test_pyproject_license_files_contributing_whitelist():
+    """Prüft Whitelisting von CONTRIBUTING.md in license-files und erweiterte norecursedirs."""
+    pyproject = REPO_ROOT / "pyproject.toml"
+    assert pyproject.is_file()
+    content = pyproject.read_text(encoding="utf-8")
+
+    assert '"CONTRIBUTING.md"' in content
+    for pattern in [".turbo", ".nyc_output", ".tox"]:
+        assert pattern in content, f"{pattern} fehlt in pyproject.toml norecursedirs"
+    assert "Programming Language :: Python :: 3.13" in content
+
+
+def test_changelog_recent_pfad_a_unreleased_entry_20261008():
+    """Prüft, dass CHANGELOG.md den Pfad A Hygiene-Eintrag vom 2026-10-08 unter [Unreleased] führt."""
+    content = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "### Pfad A Repository Hygiene, Dependabot Actions Guard, PEP 621 Standardisierung & Level 1 SBOM Re-Audit (2026-10-08) [G 2026-10-08]" in content
+    assert "T-20260920-167562623" in content
+    assert "INV-LOCAL-01" in content
+
+
+def test_marketing_log_recent_pfad_a_entry_20261008():
+    """Prüft, dass MARKETING-LOG.txt den Pfad A Hygiene-Eintrag vom 2026-10-08 führt."""
+    content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-10-08 [HYG Pfad A] Repository Hygiene, Dependabot Actions Guard, PEP 621 & Level 1 SBOM:" in content

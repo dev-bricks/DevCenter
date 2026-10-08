@@ -93,6 +93,7 @@ logs/
 desktop.ini
 Desktop.ini
 Thumbs.db
+thumbs.db
 .DS_Store
 ehthumbs.db
 
@@ -104,8 +105,10 @@ ehthumbs.db
 *-ASUS*
 *-ASUS-GEI*
 *-ASUS-GEI.md
+*-ASUS-GEI.*
 *-IDEAPAD*
 *-IDEAPAD-GEI*
+*-IDEAPAD-GEI.*
 *-LAPTOP*
 *-Mac Studio*
 *-MacBook*
@@ -142,5 +145,10 @@ uv.lock
 !package-lock.json
 LOCK.permissions.json
 TASKPLAN_*.md
+*-TASKPLAN*
+LOCK.dev.*
+LOCK.antigravity.*
+LOCK.bugsearch.*
+
 # Interne Analyse-/Planungsdokumente
 ANALYSIS_builder_refactoring.md

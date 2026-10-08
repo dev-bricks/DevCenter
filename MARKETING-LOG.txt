@@ -167,3 +167,11 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - Updated CONTRIBUTING.md with Quality Gates (pytest, ruff, compileall) and strict Version-Freeze policy (T-20260920-167562623 / 1.0.3).
             - Synchronized llms.txt, README.md, and README_de.md badges and documentation parity.
             - Expanded contract test suite in tests/test_metadata.py.
+2026-10-08 [HYG Pfad A] Repository Hygiene, Dependabot Actions Guard, PEP 621 & Level 1 SBOM:
+            - Provisioned automated Dependabot Maintenance Guard for github-actions in .github/dependabot.yml (weekly on Mondays at 06:00 Berlin time, limit 3).
+            - Enriched bilingual CONTRIBUTING.md guidelines with detailed 10 Governance & Runtime Invariants (INV-LOCAL-01..INV-SLA-10), unprivileged RunAsInvoker non-elevation mode, Plan D Source of Truth workflow (C:\_Local_DEV\repos\DevCenter), statutory disclaimer (§ 521 BGB Gefälligkeitsrecht), and binding 48h Security Response SLA.
+            - Hardened .gitignore multi-host cloud-sync and lock defense (*-TASKPLAN*, LOCK.dev.*, LOCK.antigravity.*, LOCK.bugsearch.*, thumbs.db, *-IDEAPAD-GEI.*).
+            - Standardized pyproject.toml PEP 621: license-files whitelist with CONTRIBUTING.md, norecursedirs hardened with .turbo, .nyc_output, .tox, and Python 3.13 classifier.
+            - Level 1 SBOM Re-Audit Stand 2026-10-08 in THIRD_PARTY_LICENSES.txt and THIRD_PARTY_LICENSES.md with Invariants Cross-Reference Matrix and 100% Zero-Copyleft Permissive Stack.
+            - Synchronized llms.txt, README.md, and README_de.md badges, verification date 2026-10-08, and full test suite baseline.
+            - Expanded contract test suite in tests/test_metadata.py with 6 new automated verification tests.

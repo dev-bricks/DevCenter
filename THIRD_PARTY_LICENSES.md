@@ -2,7 +2,7 @@
 
 **Project:** DevCenter (`devcenter-suite`)<br>
 **Version:** 1.0.3<br>
-**Audit Date:** 2026-09-28<br>
+**Audit Date:** 2026-10-08 (Pfad A Level 1 SBOM Re-Audit; Baseline: 2026-09-28)<br>
 **Ecosystem:** dev-bricks (open-bricks umbrella)<br>
 **Primary License:** GNU General Public License v3.0 ([LICENSE](LICENSE))<br>
 **Attribution:** Canonical Open Source Notice ([NOTICE](NOTICE))
