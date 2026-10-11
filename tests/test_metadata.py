@@ -314,7 +314,7 @@ def test_pytest_ini_options_guardrails():
     assert pyproject.is_file()
     content = pyproject.read_text(encoding="utf-8")
 
-    assert 'minversion = "7.0"' in content
+    assert 'minversion = "9.1.1"' in content
     assert 'addopts = "-ra -v --basetemp=.pytest_temp"' in content
     assert "norecursedirs = [" in content
     assert ".pytest_temp" in content

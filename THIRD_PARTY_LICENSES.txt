@@ -4,127 +4,127 @@
 # DevCenter is licensed under GNU General Public License v3.0 (GPLv3).
 # Canonical Notice: NOTICE
 # Comprehensive Markdown SBOM: THIRD_PARTY_LICENSES.md
-# Audit Date: 2026-10-08 (Pfad A Level 1 SBOM Re-Audit; Baseline: 2026-09-30 / 2026-09-28)
+# Audit Date: 2026-10-11 (Software Security & License Compliance Audit; Baseline: 2026-10-08 / 2026-09-30 / 2026-09-28)
 # Architecture & Governance: 100% Local-First, Zero-Egress, RunAsInvoker
 # This document provides the plain-text Level 1 Software Bill of Materials (SBOM)
 # and third-party transparency inventory across runtime, build, and test tooling.
 # =============================================================================
 
-PySide6
+Package: PySide6
 License: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 SPDX: LGPL-3.0-only
 URL: https://pypi.org/project/PySide6/
 Notice: Offizielle Python-Bindungen für das Qt-Anwendungsframework (GUI, Widgets, Syntax-Highlighting, Event-Bus)
 
-Pillow
+Package: Pillow
 License: HPND-sell-variant (Historical Permission Notice and Disclaimer)
 SPDX: HPND-sell-variant
 URL: https://pypi.org/project/Pillow/
 Notice: Bildverarbeitung und Multi-Resolution Icon-Generierung (>=12.3.0 abgesichert gegen GHSA-4x4j-2g7c-83w6 und GHSA-45hq-cxwh-f6vc)
 
-anthropic
+Package: anthropic
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/anthropic/
 Notice: Optionaler lokaler KI-Entwicklungsassistent mit strikter Zero-Egress- und Opt-in-Garantie (>=0.18.0)
 
-keyring
+Package: keyring
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/keyring/
 Notice: Verschlüsselte Persistenz sensibler API-Schlüssel im nativen Betriebssystem-Schlüsselspeicher (>=25.0.0)
 
-chardet
+Package: chardet
 License: LGPL-2.1-or-later
 SPDX: LGPL-2.1-or-later
 URL: https://pypi.org/project/chardet/
 Notice: Robuste universelle Zeichensatz- und Kodierungserkennung für Quellcodedateien (>=5.0.0)
 
-ftfy
+Package: ftfy
 License: Apache-2.0
 SPDX: Apache-2.0
 URL: https://pypi.org/project/ftfy/
 Notice: Reparatur von Mojibake, UTF-8-Fehlkodierungen und Textbeschädigungen (>=6.1.0)
 
-pip-licenses
+Package: pip-licenses
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/pip-licenses/
 Notice: Automatisierte Sammlung und Inspektion von Open-Source-Paketlizenzen im Build-Modul (>=4.0.0)
 
-watchdog
+Package: watchdog
 License: Apache-2.0
 SPDX: Apache-2.0
 URL: https://pypi.org/project/watchdog/
 Notice: Lokale Dateisystem- und Verzeichnisüberwachung für automatische Workspace-Aktualisierungen (>=3.0.0)
 
-pywin32-ctypes
+Package: pywin32-ctypes
 License: BSD-3-Clause
 SPDX: BSD-3-Clause
 URL: https://pypi.org/project/pywin32-ctypes/
 Notice: Reiner Ctypes-Zugriff auf den Windows Credential Manager für keyring ohne Compilerabhängigkeit
 
-jaraco.classes
+Package: jaraco.classes
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/jaraco.classes/
 Notice: Klassen- und Metaklassen-Dienstprogramme für das keyring-Framework
 
-jaraco.context
+Package: jaraco.context
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/jaraco.context/
 Notice: Kontextmanager-Hilfsfunktionen für sichere Credential-Operationen
 
-jaraco.functools
+Package: jaraco.functools
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/jaraco.functools/
 Notice: Funktionale Werkzeuge, Caching und Dekoratoren für keyring
 
-PyInstaller
+Package: PyInstaller
 License: GPL-2.0-or-later WITH Bootloader-exception
 SPDX: GPL-2.0-or-later WITH Bootloader-exception
 URL: https://www.pyinstaller.org/
-Notice: Build-System zur Paketierung eigenständiger Desktop-Binärdateien unter der PyInstaller Bootloader Special Exception (>=5.0.0)
+Notice: Build-System zur Paketierung eigenständiger Desktop-Binärdateien unter der PyInstaller Bootloader Special Exception (>=6.10.0)
 
-pyinstaller-hooks-contrib
+Package: pyinstaller-hooks-contrib
 License: Apache-2.0
 SPDX: Apache-2.0
 URL: https://github.com/pyinstaller/pyinstaller-hooks-contrib
-Notice: Community-gepflegte Import- und Paketierungs-Hooks für PyInstaller
+Notice: Community-gepflegte Import- und Paketierungs-Hooks für PyInstaller (>=2024.0)
 
-altgraph
+Package: altgraph
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/altgraph/
-Notice: Statische Abhängigkeits-Graph-Analyse während der PyInstaller-Kompilierung
+Notice: Statische Abhängigkeits-Graph-Analyse während der PyInstaller-Kompilierung (>=0.17.4)
 
-packaging
+Package: packaging
 License: Apache-2.0 OR BSD-2-Clause
 SPDX: Apache-2.0 OR BSD-2-Clause
 URL: https://pypi.org/project/packaging/
-Notice: PEP 440/508 Versions- und Spezifikationsverarbeitung für Abhängigkeitsprüfungen
+Notice: PEP 440/508 Versions- und Spezifikationsverarbeitung für Abhängigkeitsprüfungen (>=24.0)
 
-pytest
+Package: pytest
 License: MIT
 SPDX: MIT
 URL: https://pytest.org/
 Notice: Testframework und Suite-Runner (>=9.1.1 abgesichert gegen CVE-2025-7117 / GHSA-6w46-j5rx-g56g)
 
-pluggy
+Package: pluggy
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/pluggy/
 Notice: Plugin- und Hook-Management-Architektur für pytest
 
-iniconfig
+Package: iniconfig
 License: MIT
 SPDX: MIT
 URL: https://pypi.org/project/iniconfig/
 Notice: Schneller Parser für Testkonfigurationen in pyproject.toml
 
-ruff
+Package: ruff
 License: MIT OR Apache-2.0
 SPDX: MIT OR Apache-2.0
 URL: https://github.com/astral-sh/ruff
@@ -138,7 +138,7 @@ INV-OPTIN-02: PASS (Opt-In AI Boundary; anthropic API accessed only on explicit 
 INV-KEYRING-03: PASS (Keyring Secret Vault; OS Windows Credential Manager integration)
 INV-EXPORT-04: PASS (Redacted Workspace Export; devcenter-workspace-v1.json redacts secrets)
 INV-STATIC-05: PASS (Inert AST Inspection; pure ast parse without executing target code)
-INV-SECURITY-06: PASS (Vulnerability Floors; Pillow>=12.3.0, keyring>=25.0.0, pytest>=9.1.1)
+INV-SECURITY-06: PASS (Vulnerability Floors; Pillow>=12.3.0, keyring>=25.0.0, pytest>=9.1.1, pyinstaller>=6.10.0)
 INV-PERM-07: PASS (100% Permissive / Separation; LGPLv3 dynamic linking & PyInstaller bootloader exception)
 INV-USER-08: PASS (Unprivileged RunAsInvoker; strictly user-space non-elevation)
 INV-MULTI-09: PASS (Multi-Host Sync Discipline; .gitignore prevents sync conflict copies and locks)

@@ -2,7 +2,7 @@
 
 **Project:** DevCenter (`devcenter-suite`)<br>
 **Version:** 1.0.3<br>
-**Audit Date:** 2026-10-08 (Pfad A Level 1 SBOM Re-Audit; Baseline: 2026-09-28)<br>
+**Audit Date:** 2026-10-11 (Software Security & License Compliance Audit; Baseline: 2026-10-08 / 2026-09-28)<br>
 **Ecosystem:** dev-bricks (open-bricks umbrella)<br>
 **Primary License:** GNU General Public License v3.0 ([LICENSE](LICENSE))<br>
 **Attribution:** Canonical Open Source Notice ([NOTICE](NOTICE))
@@ -53,10 +53,10 @@ All dependencies are distributed under permissive open-source licenses (MIT, Apa
 
 | Package | Minimum Version | License | SPDX Identifier | Upstream URL | Purpose |
 |---|---|---|---|---|---|
-| **PyInstaller** | `>=5.0.0` | GPL-2.0-or-later WITH Bootloader-exception | `GPL-2.0-or-later WITH Bootloader-exception` | [PyInstaller](https://www.pyinstaller.org/) | Desktop executable bundling. Packaged output does not relicense user code due to the Bootloader Exception. |
-| **pyinstaller-hooks-contrib** | `>=2023.0` | Apache-2.0 | `Apache-2.0` | [hooks-contrib](https://github.com/pyinstaller/pyinstaller-hooks-contrib) | Official community packaging hooks for PySide6, Pillow, and standard packages. |
-| **altgraph** | `>=0.17` | MIT | `MIT` | [altgraph](https://pypi.org/project/altgraph/) | Static AST dependency graph analysis during executable compilation. |
-| **packaging** | `>=23.0` | Apache-2.0 OR BSD-2-Clause | `Apache-2.0 OR BSD-2-Clause` | [packaging](https://pypi.org/project/packaging/) | PEP 440/508 version parsing and specification verification. |
+| **PyInstaller** | `>=6.10.0` | GPL-2.0-or-later WITH Bootloader-exception | `GPL-2.0-or-later WITH Bootloader-exception` | [PyInstaller](https://www.pyinstaller.org/) | Desktop executable bundling. Packaged output does not relicense user code due to the Bootloader Exception. |
+| **pyinstaller-hooks-contrib** | `>=2024.0` | Apache-2.0 | `Apache-2.0` | [hooks-contrib](https://github.com/pyinstaller/pyinstaller-hooks-contrib) | Official community packaging hooks for PySide6, Pillow, and standard packages. |
+| **altgraph** | `>=0.17.4` | MIT | `MIT` | [altgraph](https://pypi.org/project/altgraph/) | Static AST dependency graph analysis during executable compilation. |
+| **packaging** | `>=24.0` | Apache-2.0 OR BSD-2-Clause | `Apache-2.0 OR BSD-2-Clause` | [packaging](https://pypi.org/project/packaging/) | PEP 440/508 version parsing and specification verification. |
 
 ---
 
