@@ -5,6 +5,11 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### High-End-Kontrolle / High-end review (2026-10-13) [P 2026-10-13]
+- CI-Vertragstests prüfen versionierte Actions ohne Bindung an eine feste Major-Version (PR #7).
+- Die zwei persönlichen OneDrive-Rechnerpfade in der deutschen und englischen Beitragsrichtlinie durch den hostneutralen Platzhalter `<OneDrive>` ersetzt.
+- Nachtrag zum Pfad-Scan vom 2026-10-11: In `CONTRIBUTING.md` waren persönliche Rechnerpfade vorhanden; die damalige Nullmeldung war für den vollständigen Dokumentbestand nicht zutreffend. Der aktuelle Dokumentstand ist bereinigt; die Git-Historie bleibt erhalten.
+
 ### Software Security & License Compliance Audit (SOFTWARE_SECURITY_LICENSE_AUDIT) (2026-10-11) [G 2026-10-11]
 - Standardisiertes 5-Felder-SBOM-Schema:
   - `THIRD_PARTY_LICENSES.txt` vollständig auf das standardisierte 5-Felder-Schema (`Package:`, `License:`, `SPDX:`, `URL:`, `Notice:`) für alle 20 Laufzeit-, Transitive-, Test- und Build-Werkzeuge umgestellt.
