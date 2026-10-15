@@ -5,6 +5,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### KI-Modellkennungen / AI model IDs (2026-10-15)
+- Die Claude-4.6-Modellkennungen für Sonnet und Opus verwenden das dokumentierte Format ohne Datumsanhang. Die Haiku-4.5-Kennung bleibt unverändert.
+- Regressionstests prüfen die an das SDK übergebenen Modellkennungen für Standardauswahl, Opus und Haiku mit einem Testdouble, ohne echte API-Anfragen.
+
 ### High-End-Kontrolle / High-end review (2026-10-13) [P 2026-10-13]
 - CI-Vertragstests prüfen versionierte Actions ohne Bindung an eine feste Major-Version (PR #7).
 - Die zwei persönlichen OneDrive-Rechnerpfade in der deutschen und englischen Beitragsrichtlinie durch den hostneutralen Platzhalter `<OneDrive>` ersetzt.
