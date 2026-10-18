@@ -55,7 +55,7 @@ Damit bestätigen Sie, dass Sie das Recht haben, den Code unter der Projektlizen
 ### Plan D Source of Truth & Entwicklungs-Workflow
 
 - **Kanonischer Arbeitsort (Source of Truth):** `C:\_Local_DEV\repos\DevCenter` (lokaler Klon) und GitHub `origin`.
-- **OneDrive-Rolle:** Nur gitloser Projektions- und Lesespiegel (`C:\Users\lukas\OneDrive\.TOPICS\.SOFTWARE\DEV\REL-PUB_DevCenter_SUITE`). Entwicklung und Commits erfolgen niemals direkt auf Cloud-gemounteten Datenträgern, um Locking-Konflikte zu vermeiden.
+- **OneDrive-Rolle:** Nur gitloser Projektions- und Lesespiegel (`<OneDrive>/.TOPICS/.SOFTWARE/DEV/REL-PUB_DevCenter_SUITE`; `<OneDrive>` bezeichnet die OneDrive-Wurzel des jeweiligen Hosts). Entwicklung und Commits erfolgen niemals direkt auf Cloud-gemounteten Datenträgern, um Locking-Konflikte zu vermeiden.
 
 ### Haftungsausschluss (§ 521 BGB Gefälligkeitsrecht)
 
@@ -142,7 +142,7 @@ This certifies that you have the right to submit the code under the project lice
 ### Plan D Source of Truth & Development Workflow
 
 - **Canonical Working Directory (Source of Truth):** `C:\_Local_DEV\repos\DevCenter` and GitHub `origin`.
-- **OneDrive Role:** Derived read surface and gitless projection only (`C:\Users\lukas\OneDrive\.TOPICS\.SOFTWARE\DEV\REL-PUB_DevCenter_SUITE`). Development never occurs directly inside cloud-mounted folders to avoid lock collisions.
+- **OneDrive Role:** Derived read surface and gitless projection only (`<OneDrive>/.TOPICS/.SOFTWARE/DEV/REL-PUB_DevCenter_SUITE`; `<OneDrive>` denotes the current host's OneDrive root). Development never occurs directly inside cloud-mounted folders to avoid lock collisions.
 
 ### Statutory Disclaimer (§ 521 BGB German Civil Code)
 

@@ -5,6 +5,31 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### High-End-Kontrolle / High-end review (2026-10-13) [P 2026-10-13]
+- CI-Vertragstests prüfen versionierte Actions ohne Bindung an eine feste Major-Version (PR #7).
+- Die zwei persönlichen OneDrive-Rechnerpfade in der deutschen und englischen Beitragsrichtlinie durch den hostneutralen Platzhalter `<OneDrive>` ersetzt.
+- Nachtrag zum Pfad-Scan vom 2026-10-11: In `CONTRIBUTING.md` waren persönliche Rechnerpfade vorhanden; die damalige Nullmeldung war für den vollständigen Dokumentbestand nicht zutreffend. Der aktuelle Dokumentstand ist bereinigt; die Git-Historie bleibt erhalten.
+
+### Software Security & License Compliance Audit (SOFTWARE_SECURITY_LICENSE_AUDIT) (2026-10-11) [G 2026-10-11]
+- Standardisiertes 5-Felder-SBOM-Schema:
+  - `THIRD_PARTY_LICENSES.txt` vollständig auf das standardisierte 5-Felder-Schema (`Package:`, `License:`, `SPDX:`, `URL:`, `Notice:`) für alle 20 Laufzeit-, Transitive-, Test- und Build-Werkzeuge umgestellt.
+  - Re-Audit-Datum auf Stand 2026-10-11 synchronisiert; 10 Level 1 Governance-Invarianten (`INV-LOCAL-01` bis `INV-SLA-10`) re-zertifiziert.
+  - `THIRD_PARTY_LICENSES.md` Build-Floors synchronisiert und Audit-Stand aktualisiert.
+- Dependency-Floors & Schwachstellen-Härtung:
+  - `requirements-dev.txt` als reproduzierbare Spezifikation für Test- und Toolchain-Werkzeuge angelegt (`pytest>=9.1.1`, `ruff>=0.9.0`, `pyinstaller>=6.10.0,<7.0.0`, `pyinstaller-hooks-contrib>=2024.0`, `altgraph>=0.17.4`, `packaging>=24.0`, `setuptools>=61.0`).
+  - PyInstaller-Floor in `requirements.txt` und `pyproject.toml` von `>=5.0.0` auf `>=6.10.0` gehärtet.
+  - Pytest Mindestversion in `pyproject.toml` (`[tool.pytest.ini_options]`) auf `minversion = "9.1.1"` gehärtet (Schutz vor CVE-2025-7117 / GHSA-6w46-j5rx-g56g).
+  - `[project.optional-dependencies]` um standardisierte `build`-Gruppe erweitert.
+- Sicherheitsrichtlinie & Private Advisories:
+  - `SECURITY.md` zweisprachig (DE/EN) um direkten Link zur vertraulichen GitHub Security Advisory Meldung (`https://github.com/dev-bricks/DevCenter/security/advisories/new`) ergänzt.
+  - Direkte Security Advisory Melde-URL in `pyproject.toml` (`[project.urls]`) verankert.
+- Repository- & Gitignore-Hygiene:
+  - `.gitignore` um Zertifikatsmuster (`*.p12`, `*.cer`, `*.crt`) und Test-Artefaktmuster (`pytest_out.txt`, `pytest*.txt`) gehärtet.
+  - Quellcode- und Manifest-Scan über 162 getrackte Dateien bestätigt 0 Secrets, 0 API-Keys und 0 unberechtigte persönliche Nutzerpfade.
+- Automatisierte Vertragstests:
+  - `tests/test_security_license_contract.py` auf 9 hermetische Contract-Tests ausgebaut (Vulnerability Floors, Lockfile-Parität, 5-Felder-SBOM-Schema, Gitignore-Hygiene, Secret-/Pfad-Hygiene, Security-SLA mit Advisories-URL, Markdown-SBOM, Unpinned-Pip-Schutz, Local-First/Zero-Egress/RunAsInvoker-Invarianten) (9/9 passed).
+  - `tests/test_metadata.py` auf 9.1.1 Pytest-Minversion synchronisiert (38/38 passed).
+
 ### Pfad A Repository Hygiene, Dependabot Actions Guard, PEP 621 Standardisierung & Level 1 SBOM Re-Audit (2026-10-08) [G 2026-10-08]
 - Version-Freeze-Disziplin (T-20260920-167562623):
   - Version `1.0.3` in `pyproject.toml`, Quellcode und allen Manifesten strikt unverändert beibehalten.

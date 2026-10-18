@@ -1,5 +1,6 @@
 """Automatisierte Metadaten-, Sicherheits-, Ökosystem- und Dokumentationsparitätstests für DevCenter."""
 
+import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -205,8 +206,8 @@ def test_cross_platform_smoke_scripts_and_ci():
     assert workflow.is_file(), "tests.yml fehlt in .github/workflows/"
 
     workflow_content = workflow.read_text(encoding="utf-8")
-    assert "actions/checkout@v4" in workflow_content
-    assert "actions/setup-python@v7" in workflow_content
+    assert re.search(r"actions/checkout@v\d+", workflow_content)
+    assert re.search(r"actions/setup-python@v\d+", workflow_content)
     assert "concurrency:" in workflow_content
     assert "cancel-in-progress: true" in workflow_content
     assert "linux-platform-smoke:" in workflow_content
@@ -314,7 +315,7 @@ def test_pytest_ini_options_guardrails():
     assert pyproject.is_file()
     content = pyproject.read_text(encoding="utf-8")
 
-    assert 'minversion = "7.0"' in content
+    assert 'minversion = "9.1.1"' in content
     assert 'addopts = "-ra -v --basetemp=.pytest_temp"' in content
     assert "norecursedirs = [" in content
     assert ".pytest_temp" in content
@@ -379,7 +380,7 @@ def test_ci_workflows_auto_assign_and_label_sync():
     assert "concurrency:" in aa_content
     assert "cancel-in-progress: true" in aa_content
     assert "timeout-minutes: 5" in aa_content
-    assert "actions/github-script@v7" in aa_content
+    assert re.search(r"actions/github-script@v\d+", aa_content)
 
     ls_content = label_sync.read_text(encoding="utf-8")
     assert "concurrency:" in ls_content
