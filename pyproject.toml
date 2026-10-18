@@ -54,7 +54,7 @@ classifiers = [
 
 dependencies = [
     "PySide6>=6.5.0,<7.0.0",
-    "pyinstaller>=5.0.0,<7.0.0",
+    "pyinstaller>=6.10.0,<7.0.0",
     "Pillow>=12.3.0,<13.0.0",
     "anthropic>=0.18.0,<1.0.0",
     "keyring>=25.0.0,<26.0.0",
@@ -72,6 +72,7 @@ Repository = "https://github.com/dev-bricks/DevCenter.git"
 Changelog = "https://github.com/dev-bricks/DevCenter/blob/master/CHANGELOG.md"
 Contributing = "https://github.com/dev-bricks/DevCenter/blob/master/CONTRIBUTING.md"
 Security = "https://github.com/dev-bricks/DevCenter/blob/master/SECURITY.md"
+"Security Advisories" = "https://github.com/dev-bricks/DevCenter/security/advisories/new"
 Notice = "https://github.com/dev-bricks/DevCenter/blob/master/NOTICE"
 "Third-Party Licenses" = "https://github.com/dev-bricks/DevCenter/blob/master/THIRD_PARTY_LICENSES.md"
 "Third-Party Licenses (Text)" = "https://github.com/dev-bricks/DevCenter/blob/master/THIRD_PARTY_LICENSES.txt"
@@ -84,9 +85,10 @@ Notice = "https://github.com/dev-bricks/DevCenter/blob/master/NOTICE"
 
 [project.optional-dependencies]
 dev = ["pytest>=9.1.1", "ruff>=0.9.0"]
+build = ["pyinstaller>=6.10.0,<7.0.0", "altgraph>=0.17.4", "packaging>=24.0"]
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "9.1.1"
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra -v --basetemp=.pytest_temp"

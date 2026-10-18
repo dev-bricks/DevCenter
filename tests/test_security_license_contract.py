@@ -21,6 +21,18 @@ def test_dependency_vulnerability_floors() -> None:
     assert re.search(r"^keyring\s*>=\s*25\.0\.0", req_text, re.MULTILINE), (
         "requirements.txt must enforce keyring>=25.0.0 floor"
     )
+    assert re.search(r"^pyinstaller\s*>=\s*6\.10\.0", req_text, re.MULTILINE), (
+        "requirements.txt must enforce pyinstaller>=6.10.0 floor"
+    )
+
+    dev_req_file = ROOT / "requirements-dev.txt"
+    assert dev_req_file.is_file(), "requirements-dev.txt must exist"
+    dev_req_text = dev_req_file.read_text(encoding="utf-8")
+    assert "pytest>=9.1.1" in dev_req_text
+    assert "ruff>=0.9.0" in dev_req_text
+    assert "pyinstaller>=6.10.0" in dev_req_text
+    assert "altgraph>=0.17.4" in dev_req_text
+    assert "packaging>=24.0" in dev_req_text
 
     pyproject_file = ROOT / "pyproject.toml"
     assert pyproject_file.is_file(), "pyproject.toml must exist"
@@ -30,11 +42,14 @@ def test_dependency_vulnerability_floors() -> None:
     assert "dependencies = [" in pyproject_text, "pyproject.toml must define project.dependencies"
     assert "Pillow>=12.3.0" in pyproject_text, "pyproject.toml must specify Pillow>=12.3.0"
     assert "keyring>=25.0.0" in pyproject_text, "pyproject.toml must specify keyring>=25.0.0"
+    assert "pyinstaller>=6.10.0" in pyproject_text, "pyproject.toml must specify pyinstaller>=6.10.0"
 
     # Dev/test optional dependencies floor (pytest >= 9.1.1 protects against CVE-2025-7117 / GHSA-6w46-j5rx-g56g)
     assert "[project.optional-dependencies]" in pyproject_text, "pyproject.toml must define optional-dependencies"
     assert "pytest>=9.1.1" in pyproject_text, "pyproject.toml dev dependencies must require pytest>=9.1.1"
     assert "ruff>=0.9.0" in pyproject_text, "pyproject.toml dev dependencies must require ruff>=0.9.0"
+    assert 'minversion = "9.1.1"' in pyproject_text, "pyproject.toml pytest minversion must be >= 9.1.1"
+    assert "build = [" in pyproject_text, "pyproject.toml must define build optional dependencies"
 
 
 def test_dependency_lockfile_and_upper_bounds_parity() -> None:
@@ -66,7 +81,6 @@ def test_dependency_lockfile_and_upper_bounds_parity() -> None:
     assert "<26.0.0" in req_text, "requirements.txt must specify keyring upper bound"
 
 
-
 def test_third_party_licenses_complete_and_accurate() -> None:
     """Verify THIRD_PARTY_LICENSES.txt comprehensively covers runtime, transitive, build, and test packages."""
     license_file = ROOT / "THIRD_PARTY_LICENSES.txt"
@@ -96,8 +110,9 @@ def test_third_party_licenses_complete_and_accurate() -> None:
         ("ruff", "MIT OR Apache-2.0"),
     ]
 
+    assert "Package:" in content, "Package: field missing in THIRD_PARTY_LICENSES.txt"
     for pkg, spdx in required_packages:
-        assert pkg in content, f"Package {pkg} missing from THIRD_PARTY_LICENSES.txt"
+        assert f"Package: {pkg}" in content, f"Package {pkg} missing standard 'Package:' entry in THIRD_PARTY_LICENSES.txt"
         assert spdx in content, f"SPDX identifier {spdx} for {pkg} missing from THIRD_PARTY_LICENSES.txt"
 
     # Ensure structured schema fields exist
@@ -114,8 +129,12 @@ def test_gitignore_security_and_multi_host_hardening() -> None:
     content = gitignore_file.read_text(encoding="utf-8")
 
     # Secrets and certificate protection
-    for pat in ["credentials.json", "*.pfx", "*.pem", "*.key", "keyring/", "secrets.*"]:
+    for pat in ["credentials.json", "*.pfx", "*.p12", "*.cer", "*.crt", "*.pem", "*.key", "keyring/", "secrets.*"]:
         assert pat in content, f"Secret pattern {pat} missing in .gitignore"
+
+    # Test artifact protection
+    for test_pat in ["pytest_out.txt", "pytest*.txt"]:
+        assert test_pat in content, f"Test pattern {test_pat} missing in .gitignore"
 
     # Multi-host sync hardening
     for host_pat in ["*-WORKSTATION-LG*", "*-ASUS-GEI*", "*.sync-conflict-*", "*.conflict"]:
@@ -149,7 +168,7 @@ def test_no_hardcoded_user_paths_in_python_code() -> None:
 
 
 def test_security_policy_sla_and_contacts() -> None:
-    """Verify SECURITY.md maintains strict SLA and designated response channels."""
+    """Verify SECURITY.md maintains strict SLA, advisory reporting URL, and designated response channels."""
     sec_file = ROOT / "SECURITY.md"
     assert sec_file.is_file(), "SECURITY.md must exist"
     content = sec_file.read_text(encoding="utf-8")
@@ -158,9 +177,13 @@ def test_security_policy_sla_and_contacts() -> None:
     assert "security@open-bricks.org" in content, "security@open-bricks.org missing from SECURITY.md"
     assert "security@ellmos.ai" in content, "security@ellmos.ai missing from SECURITY.md"
     assert "support@lukasgeiger.com" in content, "support@lukasgeiger.com missing from SECURITY.md"
+    assert "security/advisories/new" in content, "Direct advisory drafting URL missing from SECURITY.md"
     assert "48" in content, "48h initial acknowledgment SLA missing"
     assert "5" in content, "5-day triage commitment missing"
     assert "Sicherheitsrichtlinie" in content, "German section header missing"
+
+    pyproject_text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert '"Security Advisories" =' in pyproject_text, "Security Advisories URL missing from pyproject.toml [project.urls]"
 
 
 def test_third_party_licenses_md_comprehensive_sbom() -> None:
@@ -219,6 +242,18 @@ def test_winstorepackager_resource_no_unpinned_pip_install() -> None:
     assert "ensure_dependencies" in content, (
         "WindowsStorePublisher_3.py must define reproducible ensure_dependencies check"
     )
+
+
+def test_local_first_zero_egress_and_non_elevation() -> None:
+    """Verify DevCenter maintains strict Local-First, Zero-Egress, and unprivileged user-mode execution."""
+    readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de_text = (ROOT / "README_de.md").read_text(encoding="utf-8")
+    sec_text = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
+
+    assert "Zero-Egress" in readme_text or "Offline" in readme_text
+    assert "Zero-Egress" in readme_de_text or "Offline" in readme_de_text
+    assert "Zero-Egress" in sec_text or "100% Offline" in sec_text
+    assert "RunAsInvoker" in (ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":
