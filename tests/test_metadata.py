@@ -206,7 +206,7 @@ def test_cross_platform_smoke_scripts_and_ci():
 
     workflow_content = workflow.read_text(encoding="utf-8")
     assert "actions/checkout@v4" in workflow_content
-    assert "actions/setup-python@v5" in workflow_content
+    assert "actions/setup-python@v7" in workflow_content
     assert "concurrency:" in workflow_content
     assert "cancel-in-progress: true" in workflow_content
     assert "linux-platform-smoke:" in workflow_content
