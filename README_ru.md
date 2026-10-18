@@ -21,15 +21,16 @@
 [![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 [![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20Level%201%20SBOM-brightgreen)](THIRD_PARTY_LICENSES.md)
 [![Level 1 SBOM: Plain Text](https://img.shields.io/badge/Level%201%20SBOM-Plain--Text%20Companion-brightgreen)](THIRD_PARTY_LICENSES.txt)
-[![Tests: 250 Passed](https://img.shields.io/badge/tests-250%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Tests: 260 Passed](https://img.shields.io/badge/tests-260%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
-[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--10--04-blue)](CHANGELOG.md)
+[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--10--18-blue)](CHANGELOG.md)
+[![Contributing: Guidelines](https://img.shields.io/badge/Contributing-Guidelines-blue)](CONTRIBUTING.md)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![Umbrella: open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
 
 > [!NOTE]
-> **Для ИИ-агентов и LLM-инструментов:** в этом репозитории ведётся машиночитаемый индекс [`llms.txt`](llms.txt) для автоматического обнаружения, сводок возможностей и CLI-интерфейсов. Последняя проверка: **2026-10-04** (базовая версия: 2026-09-28).
+> **Для ИИ-агентов и LLM-инструментов:** в этом репозитории ведётся машиночитаемый индекс [`llms.txt`](llms.txt) для автоматического обнаружения, сводок возможностей и CLI-интерфейсов. Последняя проверка: **2026-10-18** (базовая версия: 2026-09-28).
 
 > **Не** Azure DevCenter, Microsoft Dev Box, Moderne DevCenter или Devbox. Это `dev-bricks/DevCenter` — настольный комплект на Python с открытым исходным кодом.
 

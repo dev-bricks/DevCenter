@@ -553,3 +553,41 @@ def test_marketing_log_recent_pfad_a_entry_20261008():
     """Prüft, dass MARKETING-LOG.txt den Pfad A Hygiene-Eintrag vom 2026-10-08 führt."""
     content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
     assert "2026-10-08 [HYG Pfad A] Repository Hygiene, Dependabot Actions Guard, PEP 621 & Level 1 SBOM:" in content
+
+
+def test_six_language_readmes_badges_and_anchors_parity():
+    """Prüft, dass alle 6 Sprachversionen der README 18 Anker, CONTRIBUTING-Badge, 257 Tests und Datum 2026-10-18 aufweisen."""
+    readmes = [
+        "README.md",
+        "README_de.md",
+        "README_es.md",
+        "README_ja.md",
+        "README_ru.md",
+        "README_zh.md",
+    ]
+    for r_name in readmes:
+        p = REPO_ROOT / r_name
+        assert p.is_file(), f"{r_name} fehlt im Repo-Root"
+        content = p.read_text(encoding="utf-8")
+
+        for i in range(1, 19):
+            sec_id = f'id="sec-{i:02d}"'
+            assert sec_id in content, f"{r_name} fehlt Anker {sec_id}"
+
+        assert "CONTRIBUTING.md" in content, f"{r_name} fehlt CONTRIBUTING.md Verlinkung"
+        assert "2026--10--18" in content, f"{r_name} fehlt Stand 2026--10--18 im Prüf-Badge"
+        assert "260" in content, f"{r_name} fehlt 260 bestandene Tests im Badge"
+
+
+def test_changelog_recent_pfad_b_unreleased_entry_20261018():
+    """Prüft, dass CHANGELOG.md den Pfad B Marketing-Eintrag vom 2026-10-18 unter [Unreleased] führt."""
+    content = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "### Pfad B Discoverability, Marketing & Multi-Language Parity Refresh (2026-10-18) [G 2026-10-18]" in content
+    assert "T-20260920-167562623" in content
+    assert "1.0.3" in content
+
+
+def test_marketing_log_recent_pfad_b_entry_20261018():
+    """Prüft, dass MARKETING-LOG.txt den Pfad B Marketing-Eintrag vom 2026-10-18 führt."""
+    content = (REPO_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-10-18 [MKT Pfad B] Release 1.0.3 Discoverability, Marketing & Multi-Language Parity Refresh:" in content

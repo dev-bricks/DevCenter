@@ -21,15 +21,16 @@
 [![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 [![Third-Party: Audited](https://img.shields.io/badge/Third--Party-Audited%20%7C%20Level%201%20SBOM-brightgreen)](THIRD_PARTY_LICENSES.md)
 [![Level 1 SBOM: Plain Text](https://img.shields.io/badge/Level%201%20SBOM-Plain--Text%20Companion-brightgreen)](THIRD_PARTY_LICENSES.txt)
-[![Tests: 250 Passed](https://img.shields.io/badge/tests-250%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![Tests: 260 Passed](https://img.shields.io/badge/tests-260%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![Marketing Log](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM Context](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
-[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--10--04-blue)](CHANGELOG.md)
+[![Last Checked](https://img.shields.io/badge/Last--Checked-2026--10--18-blue)](CHANGELOG.md)
+[![Contributing: Guidelines](https://img.shields.io/badge/Contributing-Guidelines-blue)](CONTRIBUTING.md)
 [![Ecosystem: dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![Umbrella: open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
 
 > [!NOTE]
-> **Para agentes de IA y herramientas LLM:** Este repositorio mantiene un índice legible por máquina [`llms.txt`](llms.txt) para el descubrimiento automatizado, resúmenes de capacidades e interfaces CLI. Última comprobación: **2026-10-04** (línea base: 2026-09-28).
+> **Para agentes de IA y herramientas LLM:** Este repositorio mantiene un índice legible por máquina [`llms.txt`](llms.txt) para el descubrimiento automatizado, resúmenes de capacidades e interfaces CLI. Última comprobación: **2026-10-18** (línea base: 2026-09-28).
 
 > **No** es Azure DevCenter, Microsoft Dev Box, Moderne DevCenter ni Devbox. Este es `dev-bricks/DevCenter`: una suite de escritorio en Python de código abierto.
 

@@ -175,3 +175,11 @@ open-bricks   | open-bricks                | Umbrella index & ecosystem director
             - Level 1 SBOM Re-Audit Stand 2026-10-08 in THIRD_PARTY_LICENSES.txt and THIRD_PARTY_LICENSES.md with Invariants Cross-Reference Matrix and 100% Zero-Copyleft Permissive Stack.
             - Synchronized llms.txt, README.md, and README_de.md badges, verification date 2026-10-08, and full test suite baseline.
             - Expanded contract test suite in tests/test_metadata.py with 6 new automated verification tests.
+2026-10-18 [MKT Pfad B] Release 1.0.3 Discoverability, Marketing & Multi-Language Parity Refresh:
+            - Verified 20/20 saturated GitHub topics and canonical repository homepage URL (https://github.com/dev-bricks/DevCenter#readme).
+            - Upgraded test badges to 260 passed tests (100% green) across all 6 language editions (README.md, README_de.md, README_es.md, README_ja.md, README_ru.md, README_zh.md).
+            - Synchronized Last-Checked verification date to 2026-10-18 and added CONTRIBUTING.md guideline badges across Spanish, Japanese, Russian, and Simplified Chinese editions.
+            - Validated dual Mermaid diagrams (architecture graph TB & zero-egress sequenceDiagram) and 18-point dual-anchor parity (sec-01..sec-18).
+            - Synchronized llms.txt context index Stand 2026-10-18 with 260 passed tests baseline.
+            - Strict preservation of frozen version 1.0.3 per T-20260920-167562623.
+            - Expanded automated contract test suite in tests/test_metadata.py with 3 new verification tests.

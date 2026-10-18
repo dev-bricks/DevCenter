@@ -21,15 +21,16 @@
 [![代码风格：Ruff](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 [![第三方：已审计](https://img.shields.io/badge/Third--Party-Audited%20%7C%20Level%201%20SBOM-brightgreen)](THIRD_PARTY_LICENSES.md)
 [![Level 1 SBOM：纯文本](https://img.shields.io/badge/Level%201%20SBOM-Plain--Text%20Companion-brightgreen)](THIRD_PARTY_LICENSES.txt)
-[![测试：250 项通过](https://img.shields.io/badge/tests-250%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
+[![测试：260 项通过](https://img.shields.io/badge/tests-260%20passed%20%7C%20100%25%20green-brightgreen)](tests/)
 [![营销日志](https://img.shields.io/badge/Marketing%20Log-active-blue)](MARKETING-LOG.txt)
 [![LLM 上下文](https://img.shields.io/badge/LLM--Context-llms.txt-blue)](llms.txt)
-[![最近检查](https://img.shields.io/badge/Last--Checked-2026--10--04-blue)](CHANGELOG.md)
+[![最近检查](https://img.shields.io/badge/Last--Checked-2026--10--18-blue)](CHANGELOG.md)
+[![Contributing: Guidelines](https://img.shields.io/badge/Contributing-Guidelines-blue)](CONTRIBUTING.md)
 [![生态系统：dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-purple)](https://github.com/dev-bricks)
 [![总括：open-bricks](https://img.shields.io/badge/umbrella-open--bricks-blueviolet)](https://github.com/open-bricks)
 
 > [!NOTE]
-> **致 AI 智能体与 LLM 工具：** 本仓库维护了一份机器可读的 [`llms.txt`](llms.txt) 索引，用于自动发现、能力概要和 CLI 接口。最近检查：**2026-10-04**（基线：2026-09-28）。
+> **致 AI 智能体与 LLM 工具：** 本仓库维护了一份机器可读的 [`llms.txt`](llms.txt) 索引，用于自动发现、能力概要和 CLI 接口。最近检查：**2026-10-18**（基线：2026-09-28）。
 
 > **并非** Azure DevCenter、Microsoft Dev Box、Moderne DevCenter 或 Devbox。这里是 `dev-bricks/DevCenter` —— 一套开源的 Python 桌面套件。
 

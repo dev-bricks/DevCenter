@@ -5,6 +5,23 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Pfad B Discoverability, Marketing & Multi-Language Parity Refresh (2026-10-18) [G 2026-10-18]
+- Version-Freeze-Disziplin (T-20260920-167562623):
+  - Version `1.0.3` in `pyproject.toml`, Quellcode und allen Dokumenten strikt beibehalten.
+  - Alle Neuerungen unter `## [Unreleased]` im Changelog dokumentiert.
+- Repository Discoverability & Multi-Language Parity:
+  - 20/20 gesättigte GitHub Topics und kanonische Repository-Homepage (`https://github.com/dev-bricks/DevCenter#readme`) verifiziert.
+  - Badges über alle 6 Sprachversionen (`README.md`, `README_de.md`, `README_es.md`, `README_ja.md`, `README_ru.md`, `README_zh.md`) auf 260 bestandene Tests (100% grün) und `Last-Checked: 2026-10-18` synchronisiert.
+  - Beitragsrichtlinien-Badge (`CONTRIBUTING.md`) für Spanisch, Japanisch, Russisch und Vereinfachtes Chinesisch nachgerüstet.
+  - Wechselseitige 18-Punkte-Schnellnavigation und Anker-Parität (`sec-01` bis `sec-18`) über alle Sprachversionen validiert.
+  - Duallayout-Mermaid-Diagramme (Systemarchitektur `graph TB` und Zero-Egress Sequence Diagram) validiert.
+- RAG- & LLM-Kontext-Index:
+  - `llms.txt` Stand 2026-10-18 mit 260 bestandenen Tests Baseline, Invarianten-Matrix (`INV-LOCAL-01` bis `INV-SLA-10`) und Notice-Referenz synchronisiert.
+- Lokales Marketing-Log:
+  - `MARKETING-LOG.txt` um Audit-Eintrag Stand 2026-10-18 ergänzt.
+- Automatisierte Vertragstest-Erweiterung:
+  - `tests/test_metadata.py` um 3 neue Vertragstests für die 6-Sprachen-Parität, Changelog- und Marketing-Log-Aktualität erweitert (260/260 Tests grün).
+
 ### High-End-Kontrolle / High-end review (2026-10-13) [P 2026-10-13]
 - CI-Vertragstests prüfen versionierte Actions ohne Bindung an eine feste Major-Version (PR #7).
 - Die zwei persönlichen OneDrive-Rechnerpfade in der deutschen und englischen Beitragsrichtlinie durch den hostneutralen Platzhalter `<OneDrive>` ersetzt.
