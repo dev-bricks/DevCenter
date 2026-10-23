@@ -77,7 +77,7 @@ def test_dependency_lockfile_and_upper_bounds_parity() -> None:
     req_file = ROOT / "requirements.txt"
     req_text = req_file.read_text(encoding="utf-8")
     assert "<7.0.0" in req_text, "requirements.txt must specify PySide6 / pyinstaller upper bounds"
-    assert "<13.0.0" in req_text, "requirements.txt must specify Pillow upper bound"
+    assert "<14.0.0" in req_text, "requirements.txt must specify Pillow upper bound"
     assert "<26.0.0" in req_text, "requirements.txt must specify keyring upper bound"
 
 
