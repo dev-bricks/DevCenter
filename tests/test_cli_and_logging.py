@@ -58,6 +58,50 @@ def test_cli_check_healthy(capsys):
     assert "[Erfolg] Alle Integritätsprüfungen bestanden." in captured.out
 
 
+def test_cli_status_console_and_json(tmp_path, capsys):
+    """Prüft den Status-Befehl --status auf Konsole und als JSON-Export."""
+    # 1. Konsolenausgabe
+    code = run_cli(["--status"])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "DevCenter Status (v1.0.3)" in captured.out
+    assert "SQLite FTS5 Index" in captured.out
+    assert "Konfigurationsordner:" in captured.out
+
+    # 2. JSON-Export
+    out_json = tmp_path / "status.json"
+    code = run_cli(["--status", "--output", str(out_json)])
+    assert code == 0
+    assert out_json.exists()
+
+    data = json.loads(out_json.read_text(encoding="utf-8"))
+    assert data["app_name"] == "DevCenter"
+    assert data["version"] == "1.0.3"
+    assert "paths" in data
+    assert "capabilities" in data
+    assert data["capabilities"]["sqlite_fts5"] is True
+
+
+def test_cli_logs_display(capsys):
+    """Prüft die Log-Anzeige über --logs."""
+    code = run_cli(["--logs", "--lines", "20"])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "DevCenter Logs" in captured.out or "[Info] Keine Logdatei" in captured.out
+
+
+def test_cli_logs_missing_file(monkeypatch, tmp_path, capsys):
+    """Prüft Verhalten von --logs bei nicht existierender Logdatei."""
+    non_existent = tmp_path / "does_not_exist" / "app.log"
+    import core.cli
+    monkeypatch.setattr(core.cli, "get_log_file_path", lambda: non_existent)
+
+    code = run_cli(["--logs"])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "[Info] Keine Logdatei vorhanden" in captured.out
+
+
 def test_cli_analyze_file_and_json_output(tmp_path, capsys):
     """Prüft --analyze auf einer Datei mit Terminalausgabe und JSON-Export."""
     sample_py = tmp_path / "sample.py"
@@ -103,6 +147,43 @@ def test_cli_export_workspace(tmp_path):
     assert data["schema"] == "devcenter-workspace-v1"
     assert data["project"]["name"] == "test_proj"
     assert len(data["tasks"]) == 1
+
+
+def test_cli_sync_and_backup(tmp_path, capsys):
+    """Prüft die Headless-Synchronisation und Projekt-Backup über die CLI."""
+    src = tmp_path / "source_project"
+    src.mkdir()
+    (src / "app.py").write_text("print('hello')", encoding="utf-8")
+    (src / "README.md").write_text("# Readme", encoding="utf-8")
+
+    dst = tmp_path / "target_sync"
+
+    # Sync
+    code = run_cli(["--sync", str(src), str(dst)])
+    assert code == 0
+    assert (dst / "app.py").exists()
+    assert (dst / "README.md").exists()
+
+    captured = capsys.readouterr()
+    assert "[Erfolg] Sync abgeschlossen" in captured.out
+
+    # Backup
+    backup_base = tmp_path / "my_backups"
+    code = run_cli(["--backup", str(src), "--backup-dir", str(backup_base)])
+    assert code == 0
+    assert backup_base.exists()
+    backup_subdirs = list(backup_base.iterdir())
+    assert len(backup_subdirs) == 1
+    assert (backup_subdirs[0] / "app.py").exists()
+
+
+def test_cli_build_validation(tmp_path, capsys):
+    """Prüft Fehlerbehandlung bei nicht existierender Build-Datei."""
+    non_existent = tmp_path / "missing_app.py"
+    code = run_cli(["--build", str(non_existent)])
+    assert code == 1
+    captured = capsys.readouterr()
+    assert "Build-Skript nicht gefunden" in captured.err
 
 
 def test_cli_headless_open(capsys):

@@ -4,9 +4,9 @@ type: project-docs
 profile: "STANDARD"
 version: 1.0.1
 created: "2026-08-17"
-updated: 2026-09-20
-reason_last_change: "TASKPLAN #2181: aktive Versions-, Test-, CI- und Produktgrenzen gegen den aktuellen Checkout synchronisiert."
-last_verified: 2026-09-20
+updated: 2026-10-30
+reason_last_change: "CLI-Headless-Befehle (--status, --logs, --build, --sync, --backup) implementiert; Deploypfad auf DEV/REL-PUB_DevCenter_SUITE harmonisiert."
+last_verified: 2026-10-30
 author: "Gemini"
 anthropic_compatible: true
 description: |
@@ -16,7 +16,7 @@ description: |
 
 # CLAUDE.md — Instructions für AI Coding Agents
 
-> Für LLM-Agenten in `CODING/REL-PUB_DevCenter_SUITE`.
+> Für LLM-Agenten in `DEV/REL-PUB_DevCenter_SUITE`.
 > Diese Datei ergänzt die globalen und Root-Regeln der `.SOFTWARE`-Pipeline um projektlokale
 > Leitplanken für die DevCenter Suite.
 
@@ -29,7 +29,7 @@ description: |
 
 **DevCenter** — Lokale Desktop-Entwicklungsumgebung und Suite für Python-Projekte (Code schreiben, analysieren, testen, kompilieren und exportieren). Integriert Code-Editor, AST-Analyzer, PyInstaller-Builder, Lizenzsammler, SQLite/FTS5-Dateiindex, optionalen Claude-KI-Assistenten und einen redigierten lokalen Workspace-Export.
 
-- **Pfad (OneDrive-Deploykopie):** `<OneDrive>\.TOPICS\.SOFTWARE\CODING\REL-PUB_DevCenter_SUITE` (`<OneDrive>` = der OneDrive-Ordner des jeweiligen Hosts)
+- **Pfad (OneDrive-Deploykopie):** `<OneDrive>\.TOPICS\.SOFTWARE\DEV\REL-PUB_DevCenter_SUITE` (`<OneDrive>` = der OneDrive-Ordner des jeweiligen Hosts)
 - **Klon (Plan-D-Arbeitskopie):** `C:\_Local_DEV\repos\DevCenter`
 - **Repository:** https://github.com/dev-bricks/DevCenter (Kanonischer Branch: `master`)
 - **Sprache/Stack:** Python 3.11+, PySide6 (Qt6 GUI), PyInstaller, Pillow, SQLite (FTS5 / WAL), Anthropic API (optional); der frühere Web/PWA-Companion ist kein Bestandteil der aktuellen Runtime.

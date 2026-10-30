@@ -5,6 +5,19 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Software-Entwicklung: Headless CLI-Befehle (--status, --logs, --build, --sync, --backup), Pfad-Harmonisierung & Testverträge (2026-10-30) [G 2026-10-30]
+- Headless CLI-Befehle (`src/core/cli.py`):
+  - `--status` / `-s`: Detaillierte System-, Pfad-, SQLite/FTS5-, PyInstaller- und Projektübersicht für die Konsole und maschinenlesbaren JSON-Export (`--output`).
+  - `--logs` / `-l`: Ausgabe der letzten N Anwendungs-Logeinträge (`--lines`, Standard: 50) aus der rotierenden Logdatei (`%LOCALAPPDATA%/DevCenter/logs/app.log`).
+  - `--build`: Headless PyInstaller-Kompilierung über den `Kompilator` mit Konsolen-Fortschrittsrückmeldung (`--onefile`, `--onedir`, `--noconsole`, `--output-dir`, `--icon`).
+  - `--sync`: DB-sichere dateisystembasierte Projektsynchronisation über den `SyncManager`.
+  - `--backup`: Zeitstempel-Sicherung von Projektordnern über den `SyncManager` (`--backup-dir`).
+- Dokumentations- & Pfad-Harmonisierung (`CLAUDE.md`, `AUFGABEN.txt`):
+  - `CLAUDE.md` Deploypfad von historischem `CODING/REL-PUB_DevCenter_SUITE` auf das tatsächliche `DEV/REL-PUB_DevCenter_SUITE` (gemäß `releases.json` und `DevCenter.repo.md`) bereinigt.
+  - `AUFGABEN.txt` aktualisiert und offene CLI-Aufgabe formal geschlossen.
+- Automatisierte Vertragstests (`tests/test_cli_and_logging.py`):
+  - 5 neue hermetische Tests für `--status` (Konsole & JSON), `--logs` (Anzeige & Missing-File-Resilienz), `--sync` / `--backup` (Dateitransfer & Backup-Erstellung) und `--build` (Validierung) ergänzt (13/13 CLI-Tests passed; Gesamt-Suite 265/265 passed, 100% grün).
+
 ### Pfad B Discoverability, Marketing & Multi-Language Parity Refresh (2026-10-18) [G 2026-10-18]
 - Version-Freeze-Disziplin (T-20260920-167562623):
   - Version `1.0.3` in `pyproject.toml`, Quellcode und allen Dokumenten strikt beibehalten.
