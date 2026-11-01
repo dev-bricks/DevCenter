@@ -187,7 +187,8 @@ class LicenseGenerator:
     def generate_notice_file(self,
                              output_path: str,
                              app_name: str = "Application",
-                             app_version: str = "1.0.3") -> bool:
+                             app_version: str = "1.0.3",
+                             requirements_file: Optional[str] = None) -> bool:
         """
         Generiert eine THIRD-PARTY-NOTICES Datei
 
@@ -195,11 +196,12 @@ class LicenseGenerator:
             output_path: Ausgabepfad
             app_name: Name der Anwendung
             app_version: Version der Anwendung
+            requirements_file: Optionale requirements.txt zur Filterung
 
         Returns:
             True bei Erfolg
         """
-        licenses = self.get_licenses()
+        licenses = self.get_licenses(requirements_file=requirements_file)
 
         if not licenses:
             return False
@@ -246,9 +248,11 @@ class LicenseGenerator:
             print(f"Fehler beim Generieren der Notice-Datei: {e}")
             return False
 
-    def generate_json(self, output_path: str) -> bool:
+    def generate_json(self,
+                      output_path: str,
+                      requirements_file: Optional[str] = None) -> bool:
         """Exportiert Lizenzen als JSON"""
-        licenses = self.get_licenses()
+        licenses = self.get_licenses(requirements_file=requirements_file)
 
         try:
             parent_dir = Path(output_path).parent
@@ -274,12 +278,14 @@ class LicenseGenerator:
             return False
 
     def check_license_compatibility(self,
-                                    allowed_licenses: List[str] = None) -> List[str]:
+                                    allowed_licenses: List[str] = None,
+                                    requirements_file: Optional[str] = None) -> List[str]:
         """
         Prüft auf inkompatible Lizenzen
 
         Args:
             allowed_licenses: Liste erlaubter Lizenzen
+            requirements_file: Optionale requirements.txt zur Filterung
 
         Returns:
             Liste problematischer Packages
@@ -298,7 +304,7 @@ class LicenseGenerator:
                 'WTFPL'
             ]
 
-        licenses = self.get_licenses()
+        licenses = self.get_licenses(requirements_file=requirements_file)
         problematic = []
 
         for lic in licenses:

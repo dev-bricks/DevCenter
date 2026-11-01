@@ -2,7 +2,8 @@
 """
 DevCenter - Command Line Interface (CLI) & Health Diagnostics
 Ermöglicht Steuerung, Selbstdiagnose, AST-Analyse, Headless-Build,
-DB-sicheren Sync, Log-Einsicht und Workspace-Export über die Kommandozeile.
+DB-sicheren Sync, Log-Einsicht, Encoding-Reparatur, Icon-Erstellung,
+Lizenz-Management und Workspace-Export über die Kommandozeile.
 """
 
 from __future__ import annotations
@@ -147,6 +148,64 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         default=None,
         help="Zielbasis-Verzeichnis für --backup (Standard: %APPDATA%/DevCenter/backups)",
+    )
+    parser.add_argument(
+        "--fix-encoding",
+        metavar="PATH",
+        type=str,
+        help="Encoding einer Datei reparieren oder Verzeichnis auf Encoding-Probleme prüfen",
+    )
+    parser.add_argument(
+        "--check-only",
+        action="store_true",
+        help="Bei --fix-encoding nur prüfen ohne Änderungen durchzuführen",
+    )
+    parser.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Bei --fix-encoding kein .bak-Backup der Originaldatei erstellen",
+    )
+    parser.add_argument(
+        "--target-encoding",
+        type=str,
+        default="utf-8",
+        help="Ziel-Encoding für --fix-encoding (Standard: utf-8)",
+    )
+    parser.add_argument(
+        "--make-icon",
+        metavar="IMAGE_PATH",
+        type=str,
+        help="Bild (PNG/JPG/BMP) in ein Windows-ICO mit Standardgrößen konvertieren",
+    )
+    parser.add_argument(
+        "--icon-text",
+        type=str,
+        default=None,
+        help="Text (1-2 Zeichen) für Platzhalter-Icon bei --make-icon",
+    )
+    parser.add_argument(
+        "--icon-sizes",
+        type=int,
+        nargs="+",
+        default=None,
+        help="Icon-Größen für --make-icon (Standard: 16 24 32 48 64 128 256)",
+    )
+    parser.add_argument(
+        "--licenses",
+        action="store_true",
+        help="Third-Party Lizenzinformationen der installierten Pakete oder Projekt-Abhängigkeiten sammeln",
+    )
+    parser.add_argument(
+        "--requirements",
+        metavar="FILE",
+        type=str,
+        default=None,
+        help="Pfad zu requirements.txt zur Filterung für --licenses",
+    )
+    parser.add_argument(
+        "--check-licenses",
+        action="store_true",
+        help="Lizenzen auf Kompatibilität (Permissive / Copyleft-Check) prüfen",
     )
     parser.add_argument(
         "--output",
@@ -577,6 +636,176 @@ def run_ast_analysis(target_path_str: str, output_file: Optional[str] = None) ->
     return 0
 
 
+def run_fix_encoding(
+    target_path_str: str,
+    target_encoding: str = "utf-8",
+    backup: bool = True,
+    check_only: bool = False,
+    output_file: Optional[str] = None,
+) -> int:
+    """
+    Prüft oder repariert Encoding-Probleme in Dateien oder Verzeichnissen.
+    """
+    from modules.analyzer.encoding_fixer import EncodingFixer
+
+    target = Path(target_path_str).resolve()
+    if not target.exists():
+        print(f"[Fehler] Pfad nicht gefunden: {target}", file=sys.stderr)
+        return 1
+
+    fixer = EncodingFixer()
+
+    if target.is_file():
+        if check_only:
+            result = fixer.check_file(str(target))
+            print(f"Datei: {result['path']}")
+            print(f"Encoding: {result['encoding']} ({result['confidence']:.0%})")
+            print(f"Valid UTF-8: {result['is_valid_utf8']}")
+            print(f"UTF-8 BOM: {result['has_bom']}")
+            if result["issues"]:
+                print("Probleme:")
+                for issue in result["issues"]:
+                    print(f"  - {issue}")
+            if output_file:
+                out_p = Path(output_file).resolve()
+                out_p.parent.mkdir(parents=True, exist_ok=True)
+                with open(out_p, "w", encoding="utf-8") as f:
+                    json.dump(result, f, indent=2, ensure_ascii=False)
+                print(f"[Erfolg] Prüfbericht gespeichert unter: {out_p}")
+            return 0
+        else:
+            success, msg = fixer.fix_file(
+                str(target),
+                target_encoding=target_encoding,
+                backup=backup,
+            )
+            if success:
+                print(f"[Erfolg] {msg} ({target.name})")
+                return 0
+            else:
+                print(f"[Fehler] {msg}", file=sys.stderr)
+                return 1
+    else:
+        results = fixer.check_directory(str(target))
+        valid_count = sum(1 for r in results if r.get("is_valid_utf8"))
+        issues_count = sum(len(r.get("issues", [])) for r in results)
+
+        summary = {
+            "directory": str(target),
+            "files_checked": len(results),
+            "valid_utf8_files": valid_count,
+            "total_issues": issues_count,
+            "results": results,
+        }
+
+        if output_file:
+            out_p = Path(output_file).resolve()
+            out_p.parent.mkdir(parents=True, exist_ok=True)
+            with open(out_p, "w", encoding="utf-8") as f:
+                json.dump(summary, f, indent=2, ensure_ascii=False)
+            print(f"[Erfolg] Encoding-Bericht gespeichert unter: {out_p}")
+        else:
+            print("\n--- Encoding-Prüfung ---")
+            print(f"Dateien geprüft:    {len(results)}")
+            print(f"Valides UTF-8:      {valid_count}/{len(results)}")
+            print(f"Erkannte Probleme:  {issues_count}")
+
+        return 0
+
+
+def run_make_icon(
+    image_path_str: str,
+    output_path: Optional[str] = None,
+    sizes: Optional[list[int]] = None,
+    placeholder_text: Optional[str] = None,
+) -> int:
+    """
+    Erstellt ein Windows ICO-Icon aus einem Quellbild oder als Platzhalter.
+    """
+    from modules.builder.icon_builder import IcoBuilder
+
+    builder = IcoBuilder()
+    if not builder.is_available():
+        print("[Fehler] Pillow ist nicht installiert. Bitte installieren: pip install Pillow", file=sys.stderr)
+        return 1
+
+    out_p = output_path
+    if not out_p:
+        out_p = str(Path(image_path_str).with_suffix(".ico"))
+
+    if placeholder_text:
+        success, res = builder.create_placeholder(
+            out_p,
+            text=placeholder_text,
+            sizes=sizes,
+        )
+    else:
+        src = Path(image_path_str).resolve()
+        if not src.is_file():
+            print(f"[Fehler] Quellbild nicht gefunden: {src}", file=sys.stderr)
+            return 1
+        success, res = builder.convert(
+            str(src),
+            output_path=out_p,
+            sizes=sizes,
+        )
+
+    if success:
+        print(f"[Erfolg] Icon erfolgreich erstellt: {res}")
+        return 0
+    else:
+        print(f"[Fehler] Icon-Erstellung fehlgeschlagen: {res}", file=sys.stderr)
+        return 1
+
+
+def run_licenses(
+    requirements_file: Optional[str] = None,
+    output_file: Optional[str] = None,
+    check_compat: bool = False,
+) -> int:
+    """
+    Sammelt Lizenzinformationen und exportiert sie als Tabelle, Markdown oder JSON.
+    """
+    from modules.builder.license_generator import LicenseGenerator
+
+    generator = LicenseGenerator()
+    req_path = str(Path(requirements_file).resolve()) if requirements_file else None
+
+    if check_compat:
+        problematic = generator.check_license_compatibility(requirements_file=req_path)
+        if problematic:
+            print(f"[Warnung] {len(problematic)} potenziell inkompatible oder nicht-permissive Lizenzen gefunden:")
+            for p in problematic:
+                print(f"  - {p}")
+        else:
+            print("[Erfolg] Alle analysierten Pakete entsprechen den erlaubten Lizenzen.")
+
+    if output_file:
+        out_p = Path(output_file).resolve()
+        if out_p.suffix.lower() == ".json":
+            success = generator.generate_json(str(out_p), requirements_file=req_path)
+        else:
+            success = generator.generate_notice_file(str(out_p), app_name="DevCenter", app_version=APP_VERSION, requirements_file=req_path)
+        if success:
+            print(f"[Erfolg] Lizenz-Bericht gespeichert unter: {out_p}")
+            return 0
+        else:
+            print("[Fehler] Export der Lizenz-Datei fehlgeschlagen.", file=sys.stderr)
+            return 1
+
+    licenses = generator.get_licenses(requirements_file=req_path)
+    if not licenses:
+        print("[Info] Keine Third-Party-Lizenzen gefunden.")
+        return 0
+
+    print(f"\n--- Gefundene Third-Party-Lizenzen ({len(licenses)}) ---")
+    for lic in sorted(licenses, key=lambda x: x.name.lower()):
+        lic_str = lic.license if lic.license else "Unknown"
+        print(f"{lic.name:30} {lic.version:12} {lic_str}")
+
+    return 0
+
+
 def run_workspace_export(project_path_str: str, output_file: Optional[str] = None) -> int:
     """
     Exportiert das Projekt als redigierten devcenter-workspace-v1.json Workspace.
@@ -673,11 +902,38 @@ def run_cli(argv: Optional[list[str]] = None) -> int | argparse.Namespace:
             icon=args.icon,
         )
 
-    # 8. Sync
+    # 8. Encoding reparieren / prüfen
+    if args.fix_encoding:
+        return run_fix_encoding(
+            target_path_str=args.fix_encoding,
+            target_encoding=args.target_encoding,
+            backup=not args.no_backup,
+            check_only=args.check_only,
+            output_file=args.output,
+        )
+
+    # 9. Icon erstellen
+    if args.make_icon:
+        return run_make_icon(
+            image_path_str=args.make_icon,
+            output_path=args.output,
+            sizes=args.icon_sizes,
+            placeholder_text=args.icon_text,
+        )
+
+    # 10. Third-Party Lizenzen
+    if args.licenses:
+        return run_licenses(
+            requirements_file=args.requirements,
+            output_file=args.output,
+            check_compat=args.check_licenses,
+        )
+
+    # 11. Sync
     if args.sync:
         return run_sync(source_str=args.sync[0], target_str=args.sync[1])
 
-    # 9. Backup
+    # 12. Backup
     if args.backup:
         return run_backup(project_path_str=args.backup, backup_base_dir=args.backup_dir)
 

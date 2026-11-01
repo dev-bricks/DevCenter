@@ -5,6 +5,17 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Software-Entwicklung: Developer-Toolchain CLI-Befehle (--fix-encoding, --make-icon, --licenses), LicenseGenerator-Filterung & Testverträge (2026-11-01) [G 2026-11-01]
+- Headless Developer-Toolchain CLI-Befehle (`src/core/cli.py`):
+  - `--fix-encoding`: Encoding-Reparatur und -Prüfung für einzelne Dateien oder rekursive Verzeichnisprüfung via `EncodingFixer`. Unterstützt `--check-only`, `--target-encoding`, `--no-backup` und JSON-Berichtsexport (`--output`).
+  - `--make-icon`: Direkte Windows `.ico`-Erstellung aus Bildern (PNG/JPG/BMP) mit Multi-Resolution-Kompilierung (`--icon-sizes`) oder Generierung von Text-Platzhalter-Icons (`--icon-text`) via `IcoBuilder`.
+  - `--licenses`: Headless Third-Party-Lizenzinventar-Sammlung via `LicenseGenerator` mit Filterung nach Projekt-Abhängigkeiten (`--requirements`), Tabellenausgabe, Kompatibilitätsprüfung (`--check-licenses`) und Export nach JSON (`--output *.json`) oder NOTICE-Markdown/Text (`--output *.txt|*.md`).
+- Tooling-Härtung (`src/modules/builder/license_generator.py`):
+  - `generate_notice_file()`, `generate_json()` und `check_license_compatibility()` um den optionalen Parameter `requirements_file` erweitert für hermetische Projekt-Lizenzprüfungen.
+- Automatisierte Vertragstests (`tests/test_cli_and_logging.py`):
+  - 6 neue hermetische Tests für `--fix-encoding` (Einzeldatei, Backup, rekursives Verzeichnis), `--make-icon` (PNG-Konvertierung, Platzhalter) und `--licenses` (Tabelle, JSON, Notice-Datei, Kompatibilität).
+  - Gesamttestsuite auf 271 passed (100% grün via pytest) erhöht.
+
 ### Software-Entwicklung: Headless CLI-Befehle (--status, --logs, --build, --sync, --backup), Pfad-Harmonisierung & Testverträge (2026-10-30) [G 2026-10-30]
 - Headless CLI-Befehle (`src/core/cli.py`):
   - `--status` / `-s`: Detaillierte System-, Pfad-, SQLite/FTS5-, PyInstaller- und Projektübersicht für die Konsole und maschinenlesbaren JSON-Export (`--output`).

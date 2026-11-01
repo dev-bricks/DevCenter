@@ -212,3 +212,122 @@ def test_method_analyzer_analyze_code():
     assert result.classes[0].name == "Calculator"
     assert result.functions[0].name == "helper"
     assert result.total_lines == 7
+
+def test_cli_fix_encoding_file_check_only(tmp_path, capsys):
+    """Prüft --fix-encoding mit --check-only auf Konsole und als JSON-Export."""
+    sample = tmp_path / "sample.py"
+    sample.write_text("# -*- coding: utf-8 -*-\nname = 'Müller'\n", encoding="utf-8")
+    out_json = tmp_path / "check.json"
+
+    # 1. Konsole
+    code = run_cli(["--fix-encoding", str(sample), "--check-only"])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "Datei:" in captured.out
+    assert "Valid UTF-8: True" in captured.out
+
+    # 2. JSON-Export
+    code = run_cli(["--fix-encoding", str(sample), "--check-only", "--output", str(out_json)])
+    assert code == 0
+    assert out_json.exists()
+    data = json.loads(out_json.read_text(encoding="utf-8"))
+    assert data["is_valid_utf8"] is True
+
+
+def test_cli_fix_encoding_file_convert(tmp_path, capsys):
+    """Prüft --fix-encoding Reparatur/Konvertierung einer Datei inkl. Backup."""
+    sample = tmp_path / "cp1252_file.txt"
+    # Schreibe Datei in cp1252 (mit Umlaut 'ä')
+    sample.write_bytes("Parität und Prüfung\n".encode("latin-1"))
+
+    code = run_cli(["--fix-encoding", str(sample)])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "[Erfolg]" in captured.out
+
+    # Backup prüfen
+    bak = tmp_path / "cp1252_file.txt.bak"
+    assert bak.exists()
+
+    # Reparierte Datei als UTF-8 lesen
+    content = sample.read_text(encoding="utf-8")
+    assert "Parität und Prüfung" in content
+
+
+def test_cli_fix_encoding_directory_report(tmp_path, capsys):
+    """Prüft rekursive Verzeichnisprüfung mit --fix-encoding."""
+    sub = tmp_path / "proj"
+    sub.mkdir()
+    (sub / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (sub / "b.md").write_text("# Doc\n", encoding="utf-8")
+    out_json = tmp_path / "dir_report.json"
+
+    code = run_cli(["--fix-encoding", str(sub), "--output", str(out_json)])
+    assert code == 0
+    assert out_json.exists()
+
+    data = json.loads(out_json.read_text(encoding="utf-8"))
+    assert data["files_checked"] == 2
+    assert data["valid_utf8_files"] == 2
+
+
+def test_cli_make_icon_placeholder_and_convert(tmp_path, capsys):
+    """Prüft --make-icon für Platzhalter und Quellbild-Konvertierung."""
+    from PIL import Image
+
+    # 1. Platzhalter-Icon
+    ico_placeholder = tmp_path / "placeholder.ico"
+    code = run_cli(["--make-icon", "dummy", "--icon-text", "DC", "--output", str(ico_placeholder)])
+    assert code == 0
+    assert ico_placeholder.exists()
+    assert ico_placeholder.stat().st_size > 0
+
+    # 2. PNG Bild erstellen und zu ICO konvertieren
+    src_png = tmp_path / "test_logo.png"
+    img = Image.new("RGBA", (64, 64), color=(0, 120, 215, 255))
+    img.save(str(src_png), format="PNG")
+
+    out_ico = tmp_path / "converted.ico"
+    code = run_cli(["--make-icon", str(src_png), "--output", str(out_ico), "--icon-sizes", "16", "32", "64"])
+    assert code == 0
+    assert out_ico.exists()
+    assert out_ico.stat().st_size > 0
+
+
+def test_cli_licenses_summary_and_export(tmp_path, capsys):
+    """Prüft --licenses Tabellenausgabe, JSON-Export und Notice-Generierung."""
+    req_file = tmp_path / "req.txt"
+    req_file.write_text("pytest>=9.0\n", encoding="utf-8")
+
+    # 1. Tabellenausgabe
+    code = run_cli(["--licenses", "--requirements", str(req_file)])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "Third-Party-Lizenzen" in captured.out or "Keine Third-Party-Lizenzen" in captured.out
+
+    # 2. JSON-Export
+    out_json = tmp_path / "licenses.json"
+    code = run_cli(["--licenses", "--requirements", str(req_file), "--output", str(out_json)])
+    assert code == 0
+    assert out_json.exists()
+    lic_data = json.loads(out_json.read_text(encoding="utf-8"))
+    assert isinstance(lic_data, list)
+
+    # 3. Notice-Datei Export
+    out_notice = tmp_path / "NOTICES.txt"
+    code = run_cli(["--licenses", "--requirements", str(req_file), "--output", str(out_notice)])
+    assert code == 0
+    assert out_notice.exists()
+    notice_text = out_notice.read_text(encoding="utf-8")
+    assert "THIRD-PARTY SOFTWARE NOTICES" in notice_text
+
+
+def test_cli_licenses_check_compat(tmp_path, capsys):
+    """Prüft --licenses mit --check-licenses."""
+    req_file = tmp_path / "req.txt"
+    req_file.write_text("pytest>=9.0\n", encoding="utf-8")
+
+    code = run_cli(["--licenses", "--requirements", str(req_file), "--check-licenses"])
+    assert code == 0
+    captured = capsys.readouterr()
+    assert "[Erfolg]" in captured.out or "[Warnung]" in captured.out
