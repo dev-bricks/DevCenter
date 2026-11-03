@@ -39,6 +39,8 @@ from gui.dialogs.new_project_dialog import NewProjectDialog
 from gui.dialogs.settings_dialog import SettingsDialog
 from gui.dialogs.build_dialog import BuildDialog
 from gui.dialogs.search_replace_dialog import SearchReplaceDialog
+from gui.dialogs.shortcuts_dialog import ShortcutsDialog
+from gui.dialogs.about_dialog import AboutDialog
 
 
 class MainWindow(QMainWindow):
@@ -211,6 +213,8 @@ class MainWindow(QMainWindow):
 
         # Editor-Tabs
         self.editor_tabs = QTabWidget()
+        self.editor_tabs.setAccessibleName("Editor-Reiter")
+        self.editor_tabs.setAccessibleDescription("Geöffnete Dokumente und Editoren im DevCenter")
         self.editor_tabs.setTabsClosable(True)
         self.editor_tabs.setMovable(True)
         self.editor_tabs.setDocumentMode(True)
@@ -221,6 +225,8 @@ class MainWindow(QMainWindow):
 
         # Output Tabs (Terminal + Problems)
         self.output_tabs = QTabWidget()
+        self.output_tabs.setAccessibleName("Ausgabe-Reiter")
+        self.output_tabs.setAccessibleDescription("Terminal-Ausgabe und Problemliste")
         self.output_tabs.setMaximumHeight(250)
 
         self.output_panel = OutputPanel()
@@ -339,6 +345,8 @@ class MainWindow(QMainWindow):
     def _setup_menus(self):
         """Erstellt die Menüleiste"""
         menubar = self.menuBar()
+        menubar.setAccessibleName("Hauptmenü")
+        menubar.setAccessibleDescription("Hauptmenüzeile für Datei, Bearbeiten, Ansicht, Ausführen, Analyse und Hilfe")
 
         # === Datei-Menü ===
         file_menu = menubar.addMenu("&Datei")
@@ -364,6 +372,11 @@ class MainWindow(QMainWindow):
         open_file_action.setShortcut(QKeySequence("Ctrl+O"))
         open_file_action.triggered.connect(self._open_file)
         file_menu.addAction(open_file_action)
+
+        self.close_tab_action = QAction("Datei schließen", self)
+        self.close_tab_action.setShortcut(QKeySequence("Ctrl+W"))
+        self.close_tab_action.triggered.connect(self._close_current_tab)
+        file_menu.addAction(self.close_tab_action)
 
         file_menu.addSeparator()
 
@@ -391,7 +404,7 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
 
         exit_action = QAction("Beenden", self)
-        exit_action.setShortcut(QKeySequence("Alt+F4"))
+        exit_action.setShortcuts([QKeySequence("Ctrl+Q"), QKeySequence("Alt+F4")])
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
 
@@ -476,6 +489,18 @@ class MainWindow(QMainWindow):
         self.unfold_all_action.triggered.connect(self._unfold_all)
         view_menu.addAction(self.unfold_all_action)
 
+        view_menu.addSeparator()
+
+        self.next_tab_action = QAction("Nächster Reiter", self)
+        self.next_tab_action.setShortcut(QKeySequence("Ctrl+Tab"))
+        self.next_tab_action.triggered.connect(self._next_editor_tab)
+        view_menu.addAction(self.next_tab_action)
+
+        self.prev_tab_action = QAction("Vorheriger Reiter", self)
+        self.prev_tab_action.setShortcut(QKeySequence("Ctrl+Shift+Tab"))
+        self.prev_tab_action.triggered.connect(self._prev_editor_tab)
+        view_menu.addAction(self.prev_tab_action)
+
         # === Ausführen-Menü ===
         run_menu = menubar.addMenu("&Ausführen")
 
@@ -506,47 +531,76 @@ class MainWindow(QMainWindow):
         # === Hilfe-Menü ===
         help_menu = menubar.addMenu("&Hilfe")
 
+        shortcuts_action = QAction("Tastaturkürzel & Hilfe", self)
+        shortcuts_action.setShortcut(QKeySequence("F1"))
+        shortcuts_action.triggered.connect(self._show_shortcuts)
+        help_menu.addAction(shortcuts_action)
+
         about_action = QAction("Über DevCenter", self)
+        about_action.setShortcut(QKeySequence("Shift+F1"))
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
 
+        # Tab-Direktnavigation Ctrl+1 bis Ctrl+9
+        for i in range(1, 10):
+            tab_action = QAction(self)
+            tab_action.setShortcut(QKeySequence(f"Ctrl+{i}"))
+            tab_action.triggered.connect(lambda checked=False, idx=i-1: self._switch_to_editor_tab(idx))
+            self.addAction(tab_action)
+
     def _setup_toolbar(self):
-        """Erstellt die Toolbar"""
+        """Erstellt die Toolbar mit barrierefreien Namen und Tastaturhinweisen."""
         toolbar = QToolBar("Hauptwerkzeugleiste")
+        toolbar.setObjectName("main_toolbar")
         toolbar.setMovable(False)
         toolbar.setIconSize(QSize(20, 20))
+        toolbar.setAccessibleName("Hauptwerkzeugleiste")
+        toolbar.setAccessibleDescription("Werkzeugleiste für Schnellzugriff auf Projekt, Datei, Ausführen, Build, Analyse und AI")
         self.addToolBar(toolbar)
 
+        def add_btn(text: str, accessible_name: str, tooltip: str, callback, checkable: bool = False):
+            action = toolbar.addAction(text)
+            action.setToolTip(tooltip)
+            action.setStatusTip(tooltip)
+            action.setCheckable(checkable)
+            action.triggered.connect(callback)
+            btn = toolbar.widgetForAction(action)
+            if btn:
+                btn.setAccessibleName(accessible_name)
+                btn.setAccessibleDescription(tooltip)
+            return action
+
         # Projekt-Aktionen
-        toolbar.addAction("📁 Neu").triggered.connect(self._new_project)
-        toolbar.addAction("📂 Öffnen").triggered.connect(self._open_project)
+        add_btn("📁 Neu", "Neues Projekt", "Neues Projekt erstellen (Ctrl+Shift+N)", self._new_project)
+        add_btn("📂 Öffnen", "Projekt öffnen", "Bestehendes Projekt öffnen (Ctrl+Shift+O)", self._open_project)
         toolbar.addSeparator()
 
         # Datei-Aktionen
-        toolbar.addAction("💾 Speichern").triggered.connect(self._save_file)
+        add_btn("💾 Speichern", "Datei speichern", "Aktuelle Datei speichern (Ctrl+S)", self._save_file)
         toolbar.addSeparator()
 
         # Ausführen
-        toolbar.addAction("▶ Ausführen").triggered.connect(self._run_current)
-        toolbar.addAction("🔨 Build").triggered.connect(self._show_build_dialog)
+        add_btn("▶ Ausführen", "Ausführen", "Aktuelle Datei ausführen (F5)", self._run_current)
+        add_btn("🔨 Build", "Build erstellen", "Build-Dialog öffnen (F6)", self._show_build_dialog)
         toolbar.addSeparator()
 
         # Analyse
-        toolbar.addAction("📊 Analysieren").triggered.connect(self._analyze_current_file)
+        add_btn("📊 Analysieren", "Datei analysieren", "Aktuelle Datei analysieren (Ctrl+F7)", self._analyze_current_file)
         toolbar.addSeparator()
 
         # AI
-        self.ai_toolbar_btn = toolbar.addAction("🤖 AI")
-        self.ai_toolbar_btn.setCheckable(True)
-        self.ai_toolbar_btn.triggered.connect(self._toggle_ai_panel)
+        self.ai_toolbar_btn = add_btn("🤖 AI", "AI-Assistent", "AI-Assistent ein-/ausblenden (Ctrl+Shift+A)", self._toggle_ai_panel, checkable=True)
 
     def _setup_statusbar(self):
-        """Erstellt die Statusleiste"""
+        """Erstellt die Statusleiste mit barrierefreien Namen."""
         self.statusbar = QStatusBar()
+        self.statusbar.setAccessibleName("Statusleiste")
+        self.statusbar.setAccessibleDescription("Zeigt Statusmeldungen, aktives Projekt, Cursorposition und Zeichenkodierung an")
         self.setStatusBar(self.statusbar)
 
         # Projekt-Name
         self.project_label = QLabel("Kein Projekt")
+        self.project_label.setAccessibleName("Aktives Projekt")
         self.statusbar.addWidget(self.project_label)
 
         # Spacer
@@ -556,10 +610,12 @@ class MainWindow(QMainWindow):
 
         # Cursor-Position
         self.cursor_label = QLabel("Ln 1, Col 1")
+        self.cursor_label.setAccessibleName("Cursorposition")
         self.statusbar.addPermanentWidget(self.cursor_label)
 
         # Encoding
         self.encoding_label = QLabel("UTF-8")
+        self.encoding_label.setAccessibleName("Zeichenkodierung")
         self.statusbar.addPermanentWidget(self.encoding_label)
 
     def _setup_connections(self):
@@ -1210,29 +1266,40 @@ class MainWindow(QMainWindow):
             if isinstance(widget, CodeEditor):
                 self._apply_editor_settings(widget)
 
+    def _close_current_tab(self):
+        """Schließt den aktuellen Editor-Tab (Ctrl+W)"""
+        index = self.editor_tabs.currentIndex()
+        if index >= 0:
+            self._close_tab(index)
+
+    def _next_editor_tab(self):
+        """Wechselt zum nächsten Editor-Tab (Ctrl+Tab)"""
+        count = self.editor_tabs.count()
+        if count > 1:
+            next_idx = (self.editor_tabs.currentIndex() + 1) % count
+            self.editor_tabs.setCurrentIndex(next_idx)
+
+    def _prev_editor_tab(self):
+        """Wechselt zum vorherigen Editor-Tab (Ctrl+Shift+Tab)"""
+        count = self.editor_tabs.count()
+        if count > 1:
+            prev_idx = (self.editor_tabs.currentIndex() - 1) % count
+            self.editor_tabs.setCurrentIndex(prev_idx)
+
+    def _switch_to_editor_tab(self, index: int):
+        """Springt direkt zu einem bestimmten Tab (Ctrl+1..Ctrl+9)"""
+        if 0 <= index < self.editor_tabs.count():
+            self.editor_tabs.setCurrentIndex(index)
+
+    def _show_shortcuts(self):
+        """Öffnet den barrierefreien Tastaturkürzel-Dialog (F1)"""
+        dialog = ShortcutsDialog(self)
+        dialog.exec()
+
     def _show_about(self):
-        """Zeigt den Über-Dialog"""
-        QMessageBox.about(
-            self,
-            "Über DevCenter",
-            """<h2>🚀 DevCenter</h2>
-            <p><b>Version 1.0.3</b></p>
-            <p>Python Development Suite</p>
-            <p>Eine integrierte Entwicklungsumgebung für den<br>
-            kompletten Python-Entwicklungszyklus.</p>
-            <hr>
-            <p>Fusionierte Tools:</p>
-            <ul>
-            <li>PythonBox - Code Editor</li>
-            <li>MethodenAnalyser - Code Analysis</li>
-            <li>UltimateKompilator - Build System</li>
-            <li>Entwicklerschleife - AI Assistant</li>
-            <li>ProFiler/ProSync - File Management</li>
-            </ul>
-            <hr>
-            <p>© 2026 - Erstellt mit PySide6</p>
-            """
-        )
+        """Zeigt den barrierefreien Über-Dialog (Shift+F1)"""
+        dialog = AboutDialog(self)
+        dialog.exec()
 
     # === Events ===
 

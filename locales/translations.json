@@ -95,6 +95,46 @@
     "ja": "更新",
     "ru": "Обновить"
   },
+  "Aktuelle Datei analysieren (Ctrl+F7)": {
+    "de": "Aktuelle Datei analysieren (Ctrl+F7)",
+    "en": "Analyze current file (Ctrl+F7)",
+    "es": "Analizar archivo actual (Ctrl+F7)",
+    "zh": "分析当前文件 (Ctrl+F7)",
+    "ja": "現在のファイルを分析 (Ctrl+F7)",
+    "ru": "Анализировать текущий файл (Ctrl+F7)"
+  },
+  "Aktuelle Datei ausführen (F5)": {
+    "de": "Aktuelle Datei ausführen (F5)",
+    "en": "Run current file (F5)",
+    "es": "Ejecutar archivo actual (F5)",
+    "zh": "运行当前文件 (F5)",
+    "ja": "現在のファイルを実行 (F5)",
+    "ru": "Запустить текущий файл (F5)"
+  },
+  "Aktuelle Datei speichern (Ctrl+S)": {
+    "de": "Aktuelle Datei speichern (Ctrl+S)",
+    "en": "Save current file (Ctrl+S)",
+    "es": "Guardar archivo actual (Ctrl+S)",
+    "zh": "保存当前文件 (Ctrl+S)",
+    "ja": "現在のファイルを保存 (Ctrl+S)",
+    "ru": "Сохранить текущий файл (Ctrl+S)"
+  },
+  "Aktuellen Treffer ersetzen (Eingabetaste im Ersetzen-Feld oder Alt+E)": {
+    "de": "Aktuellen Treffer ersetzen (Eingabetaste im Ersetzen-Feld oder Alt+E)",
+    "en": "Replace current match (Enter in replace field or Alt+E)",
+    "es": "Reemplazar coincidencia actual (Entrar en campo de reemplazo o Alt+E)",
+    "zh": "替换当前匹配项（在替换框中按 Enter 或 Alt+E）",
+    "ja": "現在の一致を置換（置換フィールドで Enter または Alt+E）",
+    "ru": "Заменить текущее совпадение (Enter в поле замены или Alt+E)"
+  },
+  "Alle Treffer im gewählten Bereich ersetzen (Alt+A)": {
+    "de": "Alle Treffer im gewählten Bereich ersetzen (Alt+A)",
+    "en": "Replace all matches in selected scope (Alt+A)",
+    "es": "Reemplazar todas las coincidencias en el ámbito seleccionado (Alt+A)",
+    "zh": "替换所选范围内的所有匹配项（Alt+A）",
+    "ja": "選択した範囲内のすべての一致を置換（Alt+A）",
+    "ru": "Заменить все совпадения в выбранной области (Alt+A)"
+  },
   "Alles schließen": {
     "de": "Alles schließen",
     "en": "Close All",
@@ -110,6 +150,22 @@
     "zh": "全部保存",
     "ja": "すべて保存",
     "ru": "Сохранить все"
+  },
+  "Alte Build-Dateien löschen": {
+    "de": "Alte Build-Dateien löschen",
+    "en": "Delete old build files",
+    "es": "Eliminar archivos de compilación antiguos",
+    "zh": "删除旧的构建文件",
+    "ja": "古いビルドファイルを削除",
+    "ru": "Удалить старые файлы сборки"
+  },
+  "Anzeigen": {
+    "de": "Anzeigen",
+    "en": "View",
+    "es": "Ver",
+    "zh": "查看",
+    "ja": "表示",
+    "ru": "Просмотр"
   },
   "Ausgabeordner öffnen": {
     "de": "Ausgabeordner öffnen",
@@ -127,6 +183,22 @@
     "ja": "除外項目",
     "ru": "Исключения"
   },
+  "Auto-Speichern": {
+    "de": "Auto-Speichern",
+    "en": "Auto Save",
+    "es": "Guardado automático",
+    "zh": "自动保存",
+    "ja": "自動保存",
+    "ru": "Автосохранение"
+  },
+  "Auto-Vervollständigung": {
+    "de": "Auto-Vervollständigung",
+    "en": "Auto-completion",
+    "es": "Autocompletado",
+    "zh": "自动补全",
+    "ja": "オートコンプリート",
+    "ru": "Автодополнение"
+  },
   "Beenden": {
     "de": "Beenden",
     "en": "Exit",
@@ -134,6 +206,14 @@
     "zh": "退出",
     "ja": "終了",
     "ru": "Выход"
+  },
+  "Bestehendes Projekt öffnen (Ctrl+Shift+O)": {
+    "de": "Bestehendes Projekt öffnen (Ctrl+Shift+O)",
+    "en": "Open existing project (Ctrl+Shift+O)",
+    "es": "Abrir proyecto existente (Ctrl+Shift+O)",
+    "zh": "打开现有项目 (Ctrl+Shift+O)",
+    "ja": "既存のプロジェクトを開く (Ctrl+Shift+O)",
+    "ru": "Открыть существующий проект (Ctrl+Shift+O)"
   },
   "Build erstellen": {
     "de": "Build erstellen",
@@ -150,6 +230,14 @@
     "zh": "正在构建...",
     "ja": "ビルド実行中...",
     "ru": "Выполняется сборка..."
+  },
+  "Build-Dialog öffnen (F6)": {
+    "de": "Build-Dialog öffnen (F6)",
+    "en": "Open build dialog (F6)",
+    "es": "Abrir diálogo de compilación (F6)",
+    "zh": "打开构建对话框 (F6)",
+    "ja": "ビルドダイアログを開く (F6)",
+    "ru": "Открыть диалог сборки (F6)"
   },
   "Build-Einstellungen": {
     "de": "Build-Einstellungen",
@@ -182,6 +270,14 @@
     "zh": "加载文件",
     "ja": "ファイルを読み込む",
     "ru": "Загрузить файл"
+  },
+  "Datei schließen": {
+    "de": "Datei schließen",
+    "en": "Close File",
+    "es": "Cerrar archivo",
+    "zh": "关闭文件",
+    "ja": "ファイルを閉じる",
+    "ru": "Закрыть файл"
   },
   "Dateien": {
     "de": "Dateien",
@@ -239,6 +335,14 @@
     "ja": "正常に完了しました",
     "ru": "Успешно завершено"
   },
+  "Erstellt Ausgabeordner mit allen Assets": {
+    "de": "Erstellt Ausgabeordner mit allen Assets",
+    "en": "Creates output folder with all assets",
+    "es": "Crea una carpeta de salida con todos los recursos",
+    "zh": "创建包含所有资源的输出文件夹",
+    "ja": "すべてのアセットを含む出力フォルダーを作成します",
+    "ru": "Создает папку вывода со всеми ресурсами"
+  },
   "Fehler: Prozess konnte nicht gestartet werden": {
     "de": "Fehler: Prozess konnte nicht gestartet werden",
     "en": "Error: Process could not be started",
@@ -254,6 +358,14 @@
     "zh": "筛选:",
     "ja": "フィルター:",
     "ru": "Фильтр:"
+  },
+  "Groß- und Kleinschreibung genau beachten": {
+    "de": "Groß- und Kleinschreibung genau beachten",
+    "en": "Match case exactly",
+    "es": "Distinguir mayúsculas y minúsculas exactamente",
+    "zh": "严格区分大小写",
+    "ja": "大文字と小文字を正確に区別",
+    "ru": "Строго учитывать регистр"
   },
   "Hidden Imports": {
     "de": "Hidden Imports",
@@ -271,6 +383,14 @@
     "ja": "アイコンジェネレーター",
     "ru": "Генератор иконок"
   },
+  "Integrierte Entwicklungsumgebung für den kompletten Python-Lebenszyklus.": {
+    "de": "Integrierte Entwicklungsumgebung für den kompletten Python-Lebenszyklus.",
+    "en": "Integrated development environment for the complete Python lifecycle.",
+    "es": "Entorno de desarrollo integrado para el ciclo de vida completo de Python.",
+    "zh": "用于完整 Python 生命周期的集成开发环境。",
+    "ja": "完全な Python ライフサイクルに対応した統合開発環境。",
+    "ru": "Интегрированная среда разработки для полного жизненного цикла Python."
+  },
   "Kein Projekt": {
     "de": "Kein Projekt",
     "en": "No Project",
@@ -279,6 +399,14 @@
     "ja": "プロジェクトなし",
     "ru": "Нет проекта"
   },
+  "Konsole anzeigen": {
+    "de": "Konsole anzeigen",
+    "en": "Show console",
+    "es": "Mostrar consola",
+    "zh": "显示控制台",
+    "ja": "コンソールを表示",
+    "ru": "Показать консоль"
+  },
   "Letzte Projekte:": {
     "de": "Letzte Projekte:",
     "en": "Recent Projects:",
@@ -286,6 +414,14 @@
     "zh": "最近的项目:",
     "ja": "最近のプロジェクト:",
     "ru": "Недавние проекты:"
+  },
+  "Letztes Projekt beim Start öffnen": {
+    "de": "Letztes Projekt beim Start öffnen",
+    "en": "Open last project on startup",
+    "es": "Abrir último proyecto al iniciar",
+    "zh": "启动时打开最近的项目",
+    "ja": "起動時に最後のプロジェクトを開く",
+    "ru": "Открывать последний проект при запуске"
   },
   "Lizenz (Text/Dateien):": {
     "de": "Lizenz (Text/Dateien):",
@@ -302,6 +438,14 @@
     "zh": "收集许可证",
     "ja": "ライセンスを収集",
     "ru": "Собрать лицензии"
+  },
+  "Mein Python Projekt": {
+    "de": "Mein Python Projekt",
+    "en": "My Python Project",
+    "es": "Mi proyecto Python",
+    "zh": "我的 Python 项目",
+    "ja": "マイ Python プロジェクト",
+    "ru": "Мой проект Python"
   },
   "Muster für Dateien/Ordner die nicht synchronisiert werden": {
     "de": "Muster für Dateien/Ordner die nicht synchronisiert werden",
@@ -327,6 +471,38 @@
     "ja": "新規プロジェクトを作成",
     "ru": "Создать новый проект"
   },
+  "Neues Projekt erstellen (Ctrl+Shift+N)": {
+    "de": "Neues Projekt erstellen (Ctrl+Shift+N)",
+    "en": "Create new project (Ctrl+Shift+N)",
+    "es": "Crear nuevo proyecto (Ctrl+Shift+N)",
+    "zh": "创建新项目 (Ctrl+Shift+N)",
+    "ja": "新規プロジェクトを作成 (Ctrl+Shift+N)",
+    "ru": "Создать новый проект (Ctrl+Shift+N)"
+  },
+  "Nur vollständige Wörter als Treffer werten": {
+    "de": "Nur vollständige Wörter als Treffer werten",
+    "en": "Match whole words only",
+    "es": "Coincidir solo con palabras completas",
+    "zh": "仅匹配全字",
+    "ja": "単語全体のみに一致",
+    "ru": "Учитывать только слова целиком"
+  },
+  "Nächsten Treffer anspringen (Eingabetaste / Alt+N / F3)": {
+    "de": "Nächsten Treffer anspringen (Eingabetaste / Alt+N / F3)",
+    "en": "Jump to next match (Enter / Alt+N / F3)",
+    "es": "Ir a la siguiente coincidencia (Entrar / Alt+N / F3)",
+    "zh": "跳转到下一个匹配项（Enter / Alt+N / F3）",
+    "ja": "次の一致へ移動（Enter / Alt+N / F3）",
+    "ru": "Перейти к следующему совпадению (Enter / Alt+N / F3)"
+  },
+  "Nächster Reiter": {
+    "de": "Nächster Reiter",
+    "en": "Next Tab",
+    "es": "Pestaña siguiente",
+    "zh": "下一标签页",
+    "ja": "次のタブ",
+    "ru": "Следующая вкладка"
+  },
   "Optionen": {
     "de": "Optionen",
     "en": "Options",
@@ -335,6 +511,14 @@
     "ja": "オプション",
     "ru": "Параметры"
   },
+  "Projektbeschreibung eingeben...": {
+    "de": "Projektbeschreibung eingeben...",
+    "en": "Enter project description...",
+    "es": "Introducir descripción del proyecto...",
+    "zh": "输入项目描述...",
+    "ja": "プロジェクトの説明を入力...",
+    "ru": "Введите описание проекта..."
+  },
   "Projektdetails": {
     "de": "Projektdetails",
     "en": "Project Details",
@@ -342,6 +526,14 @@
     "zh": "项目详情",
     "ja": "プロジェクトの詳細",
     "ru": "Детали проекта"
+  },
+  "Projektverzeichnis wählen...": {
+    "de": "Projektverzeichnis wählen...",
+    "en": "Select project directory...",
+    "es": "Seleccionar directorio del proyecto...",
+    "zh": "选择项目目录...",
+    "ja": "プロジェクトディレクトリを選択...",
+    "ru": "Выберите каталог проекта..."
   },
   "Projektvorlage:": {
     "de": "Projektvorlage:",
@@ -399,6 +591,22 @@
     "ja": "名前を付けて保存...",
     "ru": "Сохранить как..."
   },
+  "Sprache": {
+    "de": "Sprache",
+    "en": "Language",
+    "es": "Idioma",
+    "zh": "语言",
+    "ja": "言語",
+    "ru": "Язык"
+  },
+  "Sprache:": {
+    "de": "Sprache:",
+    "en": "Language:",
+    "es": "Idioma:",
+    "zh": "语言：",
+    "ja": "言語:",
+    "ru": "Язык:"
+  },
   "Standard-Optionen": {
     "de": "Standard-Optionen",
     "en": "Standard Options",
@@ -415,6 +623,30 @@
     "ja": "起動時の動作",
     "ru": "Поведение при запуске"
   },
+  "Suchbegriff als regulären Python-Ausdruck auswerten": {
+    "de": "Suchbegriff als regulären Python-Ausdruck auswerten",
+    "en": "Evaluate search term as regular Python expression",
+    "es": "Evaluar término de búsqueda como expresión regular de Python",
+    "zh": "将搜索词作为 Python 正则表达式求值",
+    "ja": "検索語を Python 正規表現として評価",
+    "ru": "Обрабатывать поисковый запрос как регулярное выражение Python"
+  },
+  "Suchbereich auswählen (Alt+B)": {
+    "de": "Suchbereich auswählen (Alt+B)",
+    "en": "Select search scope (Alt+B)",
+    "es": "Seleccionar ámbito de búsqueda (Alt+B)",
+    "zh": "选择搜索范围（Alt+B）",
+    "ja": "検索範囲を選択（Alt+B）",
+    "ru": "Выбрать область поиска (Alt+B)"
+  },
+  "Suchdialog schließen (Escape)": {
+    "de": "Suchdialog schließen (Escape)",
+    "en": "Close search dialog (Escape)",
+    "es": "Cerrar diálogo de búsqueda (Escape)",
+    "zh": "关闭搜索对话框（Escape）",
+    "ja": "検索ダイアログを閉じる（Escape）",
+    "ru": "Закрыть диалог поиска (Escape)"
+  },
   "Suchen und Ersetzen": {
     "de": "Suchen und Ersetzen",
     "en": "Find and Replace",
@@ -423,6 +655,22 @@
     "ja": "検索と置換",
     "ru": "Поиск и замена"
   },
+  "Suchen...": {
+    "de": "Suchen...",
+    "en": "Search...",
+    "es": "Buscar...",
+    "zh": "搜索...",
+    "ja": "検索...",
+    "ru": "Поиск..."
+  },
+  "Tastaturkürzel & Hilfe": {
+    "de": "Tastaturkürzel & Hilfe",
+    "en": "Keyboard Shortcuts & Help",
+    "es": "Atajos de teclado y ayuda",
+    "zh": "键盘快捷键与帮助",
+    "ja": "キーボードショートカットとヘルプ",
+    "ru": "Горячие клавиши и справка"
+  },
   "Ungenutzte Imports": {
     "de": "Ungenutzte Imports",
     "en": "Unused Imports",
@@ -430,6 +678,30 @@
     "zh": "未使用的导入",
     "ja": "未使用のインポート",
     "ru": "Неиспользуемые импорты"
+  },
+  "Virtual Environment erstellen": {
+    "de": "Virtual Environment erstellen",
+    "en": "Create virtual environment",
+    "es": "Crear entorno virtual",
+    "zh": "创建虚拟环境",
+    "ja": "仮想環境を作成",
+    "ru": "Создать виртуальное окружение"
+  },
+  "Vorherigen Treffer anspringen (Umschalt+Eingabetaste / Alt+V / Umschalt+F3)": {
+    "de": "Vorherigen Treffer anspringen (Umschalt+Eingabetaste / Alt+V / Umschalt+F3)",
+    "en": "Jump to previous match (Shift+Enter / Alt+V / Shift+F3)",
+    "es": "Ir a la coincidencia anterior (Mayús+Entrar / Alt+V / Mayús+F3)",
+    "zh": "跳转到上一个匹配项（Shift+Enter / Alt+V / Shift+F3）",
+    "ja": "前の一致へ移動（Shift+Enter / Alt+V / Shift+F3）",
+    "ru": "Перейти к предыдущему совпадению (Shift+Enter / Alt+V / Shift+F3)"
+  },
+  "Vorheriger Reiter": {
+    "de": "Vorheriger Reiter",
+    "en": "Previous Tab",
+    "es": "Pestaña anterior",
+    "zh": "上一标签页",
+    "ja": "前のタブ",
+    "ru": "Предыдущая вкладка"
   },
   "WACK-Test starten": {
     "de": "WACK-Test starten",
@@ -471,6 +743,22 @@
     "ja": "作成されたファイルを表示",
     "ru": "Показывает созданные файлы"
   },
+  "Zeigt Statusmeldungen, aktives Projekt, Cursorposition und Zeichenkodierung an": {
+    "de": "Zeigt Statusmeldungen, aktives Projekt, Cursorposition und Zeichenkodierung an",
+    "en": "Displays status messages, active project, cursor position, and character encoding",
+    "es": "Muestra mensajes de estado, proyecto activo, posición del cursor y codificación de caracteres",
+    "zh": "显示状态信息、活动项目、光标位置和字符编码",
+    "ja": "ステータスメッセージ、アクティブなプロジェクト、カーソル位置、文字エンコーディングを表示します",
+    "ru": "Отображает сообщения о состоянии, активный проект, позицию курсора и кодировку символов"
+  },
+  "Zeilennummern anzeigen": {
+    "de": "Zeilennummern anzeigen",
+    "en": "Show line numbers",
+    "es": "Mostrar números de línea",
+    "zh": "显示行号",
+    "ja": "行番号を表示",
+    "ru": "Показывать номера строк"
+  },
   "Zurücksetzen": {
     "de": "Zurücksetzen",
     "en": "Reset",
@@ -502,6 +790,14 @@
     "zh": "关于 DevCenter",
     "ja": "DevCenter について",
     "ru": "О программе DevCenter"
+  },
+  "⌨️ Tastaturkürzel & Schnelle Navigation": {
+    "de": "⌨️ Tastaturkürzel & Schnelle Navigation",
+    "en": "⌨️ Keyboard Shortcuts & Quick Navigation",
+    "es": "⌨️ Atajos de teclado y navegación rápida",
+    "zh": "⌨️ 键盘快捷键与快速导航",
+    "ja": "⌨️ キーボードショートカットとクイックナビゲーション",
+    "ru": "⌨️ Горячие клавиши и быстрая навигация"
   },
   "▶ Ausführen": {
     "de": "▶ Ausführen",
@@ -583,6 +879,14 @@
     "ja": "📖 説明",
     "ru": "📖 Объяснить"
   },
+  "🔍 Dateien filtern...": {
+    "de": "🔍 Dateien filtern...",
+    "en": "🔍 Filter files...",
+    "es": "🔍 Filtrar archivos...",
+    "zh": "🔍 筛选文件...",
+    "ja": "🔍 ファイルをフィルター...",
+    "ru": "🔍 Фильтр файлов..."
+  },
   "🔨 Build starten": {
     "de": "🔨 Build starten",
     "en": "🔨 Start Build",
@@ -598,205 +902,5 @@
     "zh": "🚀 新建 Python 项目",
     "ja": "🚀 新規 Python プロジェクト",
     "ru": "🚀 Новый проект Python"
-  },
-  "Erstellt Ausgabeordner mit allen Assets": {
-    "de": "Erstellt Ausgabeordner mit allen Assets",
-    "en": "Creates output folder with all assets",
-    "es": "Crea una carpeta de salida con todos los recursos",
-    "zh": "创建包含所有资源的输出文件夹",
-    "ja": "すべてのアセットを含む出力フォルダーを作成します",
-    "ru": "Создает папку вывода со всеми ресурсами"
-  },
-  "Aktuellen Treffer ersetzen (Eingabetaste im Ersetzen-Feld oder Alt+E)": {
-    "de": "Aktuellen Treffer ersetzen (Eingabetaste im Ersetzen-Feld oder Alt+E)",
-    "en": "Replace current match (Enter in replace field or Alt+E)",
-    "es": "Reemplazar coincidencia actual (Entrar en campo de reemplazo o Alt+E)",
-    "zh": "替换当前匹配项（在替换框中按 Enter 或 Alt+E）",
-    "ja": "現在の一致を置換（置換フィールドで Enter または Alt+E）",
-    "ru": "Заменить текущее совпадение (Enter в поле замены или Alt+E)"
-  },
-  "Alle Treffer im gewählten Bereich ersetzen (Alt+A)": {
-    "de": "Alle Treffer im gewählten Bereich ersetzen (Alt+A)",
-    "en": "Replace all matches in selected scope (Alt+A)",
-    "es": "Reemplazar todas las coincidencias en el ámbito seleccionado (Alt+A)",
-    "zh": "替换所选范围内的所有匹配项（Alt+A）",
-    "ja": "選択した範囲内のすべての一致を置換（Alt+A）",
-    "ru": "Заменить все совпадения в выбранной области (Alt+A)"
-  },
-  "Groß- und Kleinschreibung genau beachten": {
-    "de": "Groß- und Kleinschreibung genau beachten",
-    "en": "Match case exactly",
-    "es": "Distinguir mayúsculas y minúsculas exactamente",
-    "zh": "严格区分大小写",
-    "ja": "大文字と小文字を正確に区別",
-    "ru": "Строго учитывать регистр"
-  },
-  "Nur vollständige Wörter als Treffer werten": {
-    "de": "Nur vollständige Wörter als Treffer werten",
-    "en": "Match whole words only",
-    "es": "Coincidir solo con palabras completas",
-    "zh": "仅匹配全字",
-    "ja": "単語全体のみに一致",
-    "ru": "Учитывать только слова целиком"
-  },
-  "Nächsten Treffer anspringen (Eingabetaste / Alt+N / F3)": {
-    "de": "Nächsten Treffer anspringen (Eingabetaste / Alt+N / F3)",
-    "en": "Jump to next match (Enter / Alt+N / F3)",
-    "es": "Ir a la siguiente coincidencia (Entrar / Alt+N / F3)",
-    "zh": "跳转到下一个匹配项（Enter / Alt+N / F3）",
-    "ja": "次の一致へ移動（Enter / Alt+N / F3）",
-    "ru": "Перейти к следующему совпадению (Enter / Alt+N / F3)"
-  },
-  "Suchbegriff als regulären Python-Ausdruck auswerten": {
-    "de": "Suchbegriff als regulären Python-Ausdruck auswerten",
-    "en": "Evaluate search term as regular Python expression",
-    "es": "Evaluar término de búsqueda como expresión regular de Python",
-    "zh": "将搜索词作为 Python 正则表达式求值",
-    "ja": "検索語を Python 正規表現として評価",
-    "ru": "Обрабатывать поисковый запрос как регулярное выражение Python"
-  },
-  "Suchbereich auswählen (Alt+B)": {
-    "de": "Suchbereich auswählen (Alt+B)",
-    "en": "Select search scope (Alt+B)",
-    "es": "Seleccionar ámbito de búsqueda (Alt+B)",
-    "zh": "选择搜索范围（Alt+B）",
-    "ja": "検索範囲を選択（Alt+B）",
-    "ru": "Выбрать область поиска (Alt+B)"
-  },
-  "Suchdialog schließen (Escape)": {
-    "de": "Suchdialog schließen (Escape)",
-    "en": "Close search dialog (Escape)",
-    "es": "Cerrar diálogo de búsqueda (Escape)",
-    "zh": "关闭搜索对话框（Escape）",
-    "ja": "検索ダイアログを閉じる（Escape）",
-    "ru": "Закрыть диалог поиска (Escape)"
-  },
-  "Vorherigen Treffer anspringen (Umschalt+Eingabetaste / Alt+V / Umschalt+F3)": {
-    "de": "Vorherigen Treffer anspringen (Umschalt+Eingabetaste / Alt+V / Umschalt+F3)",
-    "en": "Jump to previous match (Shift+Enter / Alt+V / Shift+F3)",
-    "es": "Ir a la coincidencia anterior (Mayús+Entrar / Alt+V / Mayús+F3)",
-    "zh": "跳转到上一个匹配项（Shift+Enter / Alt+V / Shift+F3）",
-    "ja": "前の一致へ移動（Shift+Enter / Alt+V / Shift+F3）",
-    "ru": "Перейти к предыдущему совпадению (Shift+Enter / Alt+V / Shift+F3)"
-  },
-  "Sprache": {
-    "de": "Sprache",
-    "en": "Language",
-    "es": "Idioma",
-    "zh": "语言",
-    "ja": "言語",
-    "ru": "Язык"
-  },
-  "Sprache:": {
-    "de": "Sprache:",
-    "en": "Language:",
-    "es": "Idioma:",
-    "zh": "语言：",
-    "ja": "言語:",
-    "ru": "Язык:"
-  },
-  "Alte Build-Dateien löschen": {
-    "de": "Alte Build-Dateien löschen",
-    "en": "Delete old build files",
-    "es": "Eliminar archivos de compilación antiguos",
-    "zh": "删除旧的构建文件",
-    "ja": "古いビルドファイルを削除",
-    "ru": "Удалить старые файлы сборки"
-  },
-  "Anzeigen": {
-    "de": "Anzeigen",
-    "en": "View",
-    "es": "Ver",
-    "zh": "查看",
-    "ja": "表示",
-    "ru": "Просмотр"
-  },
-  "Auto-Speichern": {
-    "de": "Auto-Speichern",
-    "en": "Auto Save",
-    "es": "Guardado automático",
-    "zh": "自动保存",
-    "ja": "自動保存",
-    "ru": "Автосохранение"
-  },
-  "Auto-Vervollständigung": {
-    "de": "Auto-Vervollständigung",
-    "en": "Auto-completion",
-    "es": "Autocompletado",
-    "zh": "自动补全",
-    "ja": "オートコンプリート",
-    "ru": "Автодополнение"
-  },
-  "Konsole anzeigen": {
-    "de": "Konsole anzeigen",
-    "en": "Show console",
-    "es": "Mostrar consola",
-    "zh": "显示控制台",
-    "ja": "コンソールを表示",
-    "ru": "Показать консоль"
-  },
-  "Letztes Projekt beim Start öffnen": {
-    "de": "Letztes Projekt beim Start öffnen",
-    "en": "Open last project on startup",
-    "es": "Abrir último proyecto al iniciar",
-    "zh": "启动时打开最近的项目",
-    "ja": "起動時に最後のプロジェクトを開く",
-    "ru": "Открывать последний проект при запуске"
-  },
-  "Mein Python Projekt": {
-    "de": "Mein Python Projekt",
-    "en": "My Python Project",
-    "es": "Mi proyecto Python",
-    "zh": "我的 Python 项目",
-    "ja": "マイ Python プロジェクト",
-    "ru": "Мой проект Python"
-  },
-  "Projektbeschreibung eingeben...": {
-    "de": "Projektbeschreibung eingeben...",
-    "en": "Enter project description...",
-    "es": "Introducir descripción del proyecto...",
-    "zh": "输入项目描述...",
-    "ja": "プロジェクトの説明を入力...",
-    "ru": "Введите описание проекта..."
-  },
-  "Projektverzeichnis wählen...": {
-    "de": "Projektverzeichnis wählen...",
-    "en": "Select project directory...",
-    "es": "Seleccionar directorio del proyecto...",
-    "zh": "选择项目目录...",
-    "ja": "プロジェクトディレクトリを選択...",
-    "ru": "Выберите каталог проекта..."
-  },
-  "Suchen...": {
-    "de": "Suchen...",
-    "en": "Search...",
-    "es": "Buscar...",
-    "zh": "搜索...",
-    "ja": "検索...",
-    "ru": "Поиск..."
-  },
-  "Virtual Environment erstellen": {
-    "de": "Virtual Environment erstellen",
-    "en": "Create virtual environment",
-    "es": "Crear entorno virtual",
-    "zh": "创建虚拟环境",
-    "ja": "仮想環境を作成",
-    "ru": "Создать виртуальное окружение"
-  },
-  "Zeilennummern anzeigen": {
-    "de": "Zeilennummern anzeigen",
-    "en": "Show line numbers",
-    "es": "Mostrar números de línea",
-    "zh": "显示行号",
-    "ja": "行番号を表示",
-    "ru": "Показывать номера строк"
-  },
-  "🔍 Dateien filtern...": {
-    "de": "🔍 Dateien filtern...",
-    "en": "🔍 Filter files...",
-    "es": "🔍 Filtrar archivos...",
-    "zh": "🔍 筛选文件...",
-    "ja": "🔍 ファイルをフィルター...",
-    "ru": "🔍 Фильтр файлов..."
   }
 }

@@ -5,6 +5,35 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Software UX & Accessibility Review: WCAG 2.1 AA / BITV 2.0 Tastatur-Ergonomie, Shortcuts- & About-Dialog, Tab-Navigation, Toolbars & 11 Vertragstests (2026-11-03) [G 2026-11-03]
+- Barrierefreie Menüleiste & Alt-Mnemonics (`src/gui/main_window.py`):
+  - `MainWindow.menuBar()` mit barrierefreiem Namen ("Hauptmenü") und detaillierter Beschreibung deklariert.
+  - Vollständige Mnemonics über alle Menüs (`&Datei` Alt+D, `&Bearbeiten` Alt+B, `&Ansicht` Alt+A, `&Ausführen` Alt+U, `&Analyse` Alt+N, `&Hilfe` Alt+H).
+- Tastatur-Ergonomie & Schnellnavigation (`src/gui/main_window.py`):
+  - Datei-Menü: Neue Aktion "Datei schließen" mit Standard-Shortcut `Ctrl+W` (`_close_current_tab`).
+  - Beenden: Standard-Shortcuts `Ctrl+Q` und `Alt+F4` gebunden.
+  - Ansicht-Menü: Neue Aktionen "Nächster Reiter" (`Ctrl+Tab`) und "Vorheriger Reiter" (`Ctrl+Shift+Tab`) für zyklische Tab-Navigation (`_next_editor_tab`, `_prev_editor_tab`).
+  - Direkte Tab-Sprung-Kürzel `Ctrl+1` bis `Ctrl+9` für sofortigen Wechsel zwischen geöffneten Dokumenten (`_switch_to_editor_tab`).
+  - Hilfe-Menü: Schneller Zugriff auf "Tastaturkürzel & Hilfe" via `F1` (`_show_shortcuts`) und "Über DevCenter" via `Shift+F1` (`_show_about`).
+- Barrierefreier Hilfedialog (`src/gui/dialogs/shortcuts_dialog.py`):
+  - Neuer modal gestalteter `ShortcutsDialog` nach WCAG 2.1 AA / BITV 2.0 mit strukturierter 3-Spalten-Tabelle (`QTableWidget`: Kategorie, Tastenkombination, Beschreibung) über 37 Tastaturkürzel in 5 Gruppen (Datei & Projekt, Bearbeiten & Suchen, Ansicht & Navigation, Ausführen & Analyse, Hilfe & Barrierefreiheit).
+  - Ausgestattet mit Screenreader-Attributen, Initialfokus auf dem Schließen-Button und barrierefreiem Escape-Handler (`keyPressEvent`).
+- Barrierefreier Über-Dialog (`src/gui/dialogs/about_dialog.py`):
+  - Neuer strukturierter `AboutDialog` als Ablösung des unstrukturierten MessageBox-Hinweises.
+  - Mit App-Icon, Version (v1.0.3), GPL-3.0 Lizenzangabe, 100% Local-First / Zero-Egress Reassurance und BITV 2.0 / WCAG 2.1 AA Barrierefreiheitsdeklaration inklusive Escape-Taste-Schließlogik.
+- Werkzeug- & Statusleisten-Barrierefreiheit (`src/gui/main_window.py`):
+  - `QToolBar` mit barrierefreiem Namen ("Hauptwerkzeugleiste") und `main_toolbar` ObjectName versehen.
+  - Sämtliche Toolbar-Buttons über `widgetForAction` mit sprechenden Accessible Names (ohne Symbol-Glyphen-Verwirrung) und informativen Tooltips mit Tastenkürzeln ("Neues Projekt erstellen (Ctrl+Shift+N)", "Datei speichern (Ctrl+S)", "Ausführen (F5)", "Build erstellen (F6)", etc.) ausgestattet.
+  - `QStatusBar` und permanente Widgets (`project_label`, `cursor_label`, `encoding_label`) mit barrierefreien Namen und Beschreibungen versehen.
+  - `self.editor_tabs` und `self.output_tabs` mit barrierefreien Namen ("Editor-Reiter", "Ausgabe-Reiter") deklariert.
+- Deutsche Typografie & Echte Umlaute:
+  - Alle neuen und bestehenden Dialog-, Menü- und Statusleistentexte verwenden echte deutsche Umlaute (ä, ö, ü, Ä, Ö, Ü, ß) ohne Digraphenersetzungen.
+- Tier-2 6-Sprachen-Parität (Policy P-006):
+  - 13 neue/aktualisierte Lokalisierungsschlüssel in `locales/translations.json` mit 100% Übersetzungsparität über DE, EN, ES, ZH, JA, RU ausgebaut (`manage_translations.py --check` Exit 0).
+- Automatisierte Vertragstests (`tests/test_ui_accessibility.py`):
+  - 11 neue hermetische Vertragstests implementiert (Menüs, F1/Shift+F1, Ctrl+W, Tab-Wechsel, Toolbar-A11y, Tabs-A11y, Statusbar-A11y, ShortcutsDialog, AboutDialog, Escape-Handling und Umlaut-Prüfung) (11/11 passed).
+  - Gesamte Pytest-Suite auf 282 passed (100% grün in 48.37s) ausgebaut.
+
 ### Software-Entwicklung: Developer-Toolchain CLI-Befehle (--fix-encoding, --make-icon, --licenses), LicenseGenerator-Filterung & Testverträge (2026-11-01) [G 2026-11-01]
 - Headless Developer-Toolchain CLI-Befehle (`src/core/cli.py`):
   - `--fix-encoding`: Encoding-Reparatur und -Prüfung für einzelne Dateien oder rekursive Verzeichnisprüfung via `EncodingFixer`. Unterstützt `--check-only`, `--target-encoding`, `--no-backup` und JSON-Berichtsexport (`--output`).
