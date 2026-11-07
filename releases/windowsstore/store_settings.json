@@ -1,0 +1,92 @@
+{
+  "app_name": "DevCenter Suite",
+  "publisher": "CN=52596601-BAB4-4F3F-B182-E8F3F273B202",
+  "publisher_display": "Geiger",
+  "identity_name": "Geiger.DevCenterSuite",
+  "version": "1.0.3.0",
+  "exe_name": "DevCenter",
+  "msix_name": "DevCenterSuite.msix",
+  "output_dir": "store_package",
+  "makeappx_path": "C:/Program Files (x86)/Windows Kits/10/App Certification Kit/makeappx.exe",
+  "signtool_path": "C:/Program Files (x86)/Windows Kits/10/App Certification Kit/signtool.exe",
+  "pfx_path": "",
+  "pfx_password": "",
+  "timestamp_url": "http://timestamp.digicert.com",
+  "license_files": [
+    "../../LICENSE"
+  ],
+  "enable_i18n": true,
+  "capabilities": "runFullTrust",
+  "privacy_url": "https://github.com/dev-bricks/DevCenter/blob/master/PRIVACY_POLICY.md",
+  "support_url": "https://github.com/dev-bricks/DevCenter/blob/master/SUPPORT.md",
+  "category": "Developer Tools",
+  "age_rating": "3+",
+  "languages": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "zh-CN",
+    "ja-JP",
+    "ru-RU"
+  ],
+  "description_de": "Lokale Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Sync und KI-Assistenz.",
+  "description_en": "Local developer desktop hub for Python: build, code analysis, file indexing, sync, and AI help.",
+  "description_es": "Centro de desarrollo para Python: empaquetado, análisis de código, índice de archivos e IA local.",
+  "description_zh": "Python 本地开发者工作站：自动化构建打包、代码静态分析、快速文件索引与智能辅助。",
+  "description_ja": "Python向けローカル開発ワークステーション：ビルド、コード解析、高速ファイル索引、AI支援。",
+  "description_ru": "Рабочая станция для Python: сборка PyInstaller, статический анализ кода, быстрый поиск и ИИ-помощь.",
+  "keywords_de": [
+    "Python",
+    "IDE",
+    "Entwicklertools",
+    "PyInstaller",
+    "Code-Analyse",
+    "Datei-Index",
+    "Desktop-App"
+  ],
+  "keywords_en": [
+    "Python",
+    "IDE",
+    "Developer Tools",
+    "PyInstaller",
+    "Code Analysis",
+    "File Index",
+    "Desktop App"
+  ],
+  "keywords_es": [
+    "Python",
+    "IDE",
+    "Herramientas desarrollador",
+    "PyInstaller",
+    "Análisis de código",
+    "Índice de archivos",
+    "App de escritorio"
+  ],
+  "keywords_zh": [
+    "Python",
+    "IDE",
+    "开发者工具",
+    "PyInstaller",
+    "代码分析",
+    "文件索引",
+    "桌面应用"
+  ],
+  "keywords_ja": [
+    "Python",
+    "IDE",
+    "開発者ツール",
+    "PyInstaller",
+    "コード解析",
+    "ファイル検索",
+    "デスクトップアプリ"
+  ],
+  "keywords_ru": [
+    "Python",
+    "IDE",
+    "Инструменты разработки",
+    "PyInstaller",
+    "Анализ кода",
+    "Индекс файлов",
+    "Десктопное приложение"
+  ]
+}

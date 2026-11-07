@@ -5,6 +5,23 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### Software-Entwicklung: Windows Store Packaging, Tier-2 6-Sprachen-Harmonisierung nach Policy P-006 (DE, EN, ES, ZH, JA, RU), Staging in releases/windowsstore/, Preflight-Readiness Linter scripts/check_store_readiness.py und Test-Suite-Ausbau (2026-11-08) [G 2026-11-08]
+- Tier-2 6-Sprachen Store-Packaging nach Policy P-006 (DE, EN, ES, ZH, JA, RU):
+  - `store_package.json`: languages-Array um alle 6 Tier-2-Sprachen (`de-DE`, `en-US`, `es-ES`, `zh-CN`, `ja-JP`, `ru-RU`) erweitert; Store-konforme Kurzbeschreibungen (`description_de/en/es/zh/ja/ru`) strikt <= 100 Zeichen validiert; je genau 7 Richtlinien-konforme Keywords nach Microsoft Partner Center Policy 10.1.3 (<= 30 Zeichen, 0 geschützte Drittmarken) eingepflegt.
+  - `releases/windowsstore/store_settings.json`: Synchronisiert mit allen 6 Sprachen, Kurzbeschreibungen und Keywords.
+  - `store_package/DevCenter/AppxManifest.xml`: Angelegt mit Identity `Geiger.DevCenterSuite`, Version `1.0.3.0`, Capability `runFullTrust` und allen 6 `<Resource Language="..."/>`-Deklarationen (`de-de`, `en-us`, `es-es`, `zh-cn`, `ja-jp`, `ru-ru`).
+  - `store_package/DevCenter/icons/`: Staging-Icons vollständig bereitgestellt (`Square44x44Logo.png`, `Square150x150Logo.png`, `Wide310x150Logo.png`, `Square310x310Logo.png`, `StoreLogo.png`, `SplashScreen.png`).
+- 6-Sprachen Store Listings & Staging (`releases/windowsstore/`, `STORE_LISTING.md`):
+  - Staging-Verzeichnis `releases/windowsstore/` um `BUILD.md`, `WACK_PROTOCOL.md` und alle 6 Sprach-Listings (`store_listing_de.md`, `store_listing_en.md`, `store_listing_es.md`, `store_listing_zh.md`, `store_listing_ja.md`, `store_listing_ru.md`) vervollständigt.
+  - `STORE_LISTING.md`: Vollständig um Abschnitte für Deutsch, English, Español, 简体中文, 日本語 und Русский mit Titel, Kurzbeschreibung (<= 100 Zeichen), Feature-Listen und je 7 Keywords ausgebaut.
+  - `.gitignore`: Whitelist für `releases/windowsstore/` und Ausschluss von Binärdateien eingerichtet.
+- Preflight-Readiness Linter & Tooling (`scripts/check_store_readiness.py`):
+  - Automatisierter Store-Readiness-Preflight-Check mit 55+ Prüfungen (Metadaten, 6-Sprachen-Grenzwerte, Dokumente, Store-Icons, Staging-Dateien, Manifest-XML und HTTPS-URLs) mit `--json`-Support implementiert (0 Findings / 100% PASS).
+  - `manage_translations.py`: Scanner-Filterung gehärtet (`skip_dirs` um `tests`, `scratch`, `resources`, `_archive`, `node_modules`, `store_package` erweitert; 113/113 Keys 100% grün).
+- Qualitätssicherung & Test-Suite-Ausbau (`tests/test_store_materials.py`):
+  - Testsuite von 8 auf 16 automatisierte Vertragstests erweitert (alle 6 Sprachen, Kurzbeschreibungen <= 100 Zeichen, Keywords-Grenzwerte, Staging-Konsistenz, AppxManifest-XML-Ressourcen und Integration des Store-Readiness-Linters).
+  - Gesamte Pytest-Suite wächst auf 290 Tests (100% grün via pytest in 25.12s); `python -m ruff check` sauber (0 Fehler); `python -m compileall` fehlerfrei; `git diff --check` sauber.
+
 ### Software UX & Accessibility Review: WCAG 2.1 AA / BITV 2.0 Tastatur-Ergonomie, Shortcuts- & About-Dialog, Tab-Navigation, Toolbars & 11 Vertragstests (2026-11-03) [G 2026-11-03]
 - Barrierefreie Menüleiste & Alt-Mnemonics (`src/gui/main_window.py`):
   - `MainWindow.menuBar()` mit barrierefreiem Namen ("Hauptmenü") und detaillierter Beschreibung deklariert.

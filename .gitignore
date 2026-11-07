@@ -73,7 +73,13 @@ secrets.*
 *.db-shm
 
 # ---- Build-Artefakte & Releases ----
-releases/
+releases/*
+!releases/windowsstore/
+!releases/windowsstore/**
+releases/**/*.exe
+releases/**/*.msi
+releases/**/*.msix
+releases/**/*.appx
 *.exe
 *.msi
 *.msix

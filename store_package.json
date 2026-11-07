@@ -5,6 +5,66 @@
   "identity_name": "Geiger.DevCenterSuite",
   "version": "1.0.3.0",
   "description": "Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Repository-Sync und KI-Assistenz.",
+  "description_de": "Lokale Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Sync und KI-Assistenz.",
+  "description_en": "Local developer desktop hub for Python: build, code analysis, file indexing, sync, and AI help.",
+  "description_es": "Centro de desarrollo para Python: empaquetado, análisis de código, índice de archivos e IA local.",
+  "description_zh": "Python 本地开发者工作站：自动化构建打包、代码静态分析、快速文件索引与智能辅助。",
+  "description_ja": "Python向けローカル開発ワークステーション：ビルド、コード解析、高速ファイル索引、AI支援。",
+  "description_ru": "Рабочая станция для Python: сборка PyInstaller, статический анализ кода, быстрый поиск и ИИ-помощь.",
+  "keywords_de": [
+    "Python",
+    "IDE",
+    "Entwicklertools",
+    "PyInstaller",
+    "Code-Analyse",
+    "Datei-Index",
+    "Desktop-App"
+  ],
+  "keywords_en": [
+    "Python",
+    "IDE",
+    "Developer Tools",
+    "PyInstaller",
+    "Code Analysis",
+    "File Index",
+    "Desktop App"
+  ],
+  "keywords_es": [
+    "Python",
+    "IDE",
+    "Herramientas desarrollador",
+    "PyInstaller",
+    "Análisis de código",
+    "Índice de archivos",
+    "App de escritorio"
+  ],
+  "keywords_zh": [
+    "Python",
+    "IDE",
+    "开发者工具",
+    "PyInstaller",
+    "代码分析",
+    "文件索引",
+    "桌面应用"
+  ],
+  "keywords_ja": [
+    "Python",
+    "IDE",
+    "開発者ツール",
+    "PyInstaller",
+    "コード解析",
+    "ファイル検索",
+    "デスクトップアプリ"
+  ],
+  "keywords_ru": [
+    "Python",
+    "IDE",
+    "Инструменты разработки",
+    "PyInstaller",
+    "Анализ кода",
+    "Индекс файлов",
+    "Десктопное приложение"
+  ],
   "executable": "DevCenter.exe",
   "capabilities": "runFullTrust",
   "category": "Developer Tools",
@@ -12,5 +72,14 @@
   "privacy_url": "https://github.com/dev-bricks/DevCenter/blob/master/PRIVACY_POLICY.md",
   "support_url": "https://github.com/dev-bricks/DevCenter/blob/master/SUPPORT.md",
   "license": "GPL-3.0",
-  "pricing": "Free"
+  "pricing": "Free",
+  "languages": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "zh-CN",
+    "ja-JP",
+    "ru-RU"
+  ],
+  "logo": "store_assets/StoreLogo.png"
 }

@@ -66,7 +66,10 @@ def is_german(text: str) -> bool:
 def find_german_strings(source_dir: str) -> Set[str]:
     """Scannt Quelltextdateien nach GUI-Strings."""
     german_strings = set()
-    skip_dirs = {'build', 'dist', 'venv', '.venv', '__pycache__', 'releases', '.git'}
+    skip_dirs = {
+        'build', 'dist', 'venv', '.venv', '__pycache__', 'releases',
+        '.git', 'tests', 'scratch', 'resources', '_archive', 'node_modules', 'store_package'
+    }
 
     for root, dirs, files in os.walk(source_dir):
         dirs[:] = [d for d in dirs if d not in skip_dirs]

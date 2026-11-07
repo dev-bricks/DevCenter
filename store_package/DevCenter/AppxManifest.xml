@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+         IgnorableNamespaces="uap rescap">
+
+  <Identity Name="Geiger.DevCenterSuite"
+            Publisher="CN=52596601-BAB4-4F3F-B182-E8F3F273B202"
+            Version="1.0.3.0"
+            ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>DevCenter Suite</DisplayName>
+    <PublisherDisplayName>Geiger</PublisherDisplayName>
+    <Logo>icons\StoreLogo.png</Logo>
+    <Description>Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Repository-Sync und KI-Assistenz.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="de-de" />
+    <Resource Language="en-us" />
+    <Resource Language="es-es" />
+    <Resource Language="zh-cn" />
+    <Resource Language="ja-jp" />
+    <Resource Language="ru-ru" />
+  </Resources>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+  <Applications>
+    <Application Id="DevCenterSuiteApp"
+                 Executable="DevCenter.exe"
+                 EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="DevCenter Suite"
+                          Square150x150Logo="icons\Square150x150Logo.png"
+                          Square44x44Logo="icons\Square44x44Logo.png"
+                          Description="Entwickler-Zentrale für Python: Build, Code-Analyse, Datei-Index, Repository-Sync und KI-Assistenz."
+                          BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="icons\Wide310x150Logo.png"
+                         Square310x310Logo="icons\Square310x310Logo.png" />
+        <uap:SplashScreen Image="icons\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+</Package>
