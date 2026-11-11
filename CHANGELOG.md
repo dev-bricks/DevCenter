@@ -5,6 +5,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+### KI-Modellkennungen / AI model IDs (2026-10-15, integriert 2026-11-11)
+- Die Claude-4.6-Modellkennungen für Sonnet und Opus verwenden das dokumentierte Format ohne Datumsanhang. Die Haiku-4.5-Kennung bleibt unverändert.
+- Regressionstests prüfen die an das SDK übergebenen Modellkennungen für Standardauswahl, Opus und Haiku mit einem Testdouble, ohne echte API-Anfragen.
+
 ### Software-Entwicklung: Windows Store Packaging, Tier-2 6-Sprachen-Harmonisierung nach Policy P-006 (DE, EN, ES, ZH, JA, RU), Staging in releases/windowsstore/, Preflight-Readiness Linter scripts/check_store_readiness.py und Test-Suite-Ausbau (2026-11-08) [G 2026-11-08]
 - Tier-2 6-Sprachen Store-Packaging nach Policy P-006 (DE, EN, ES, ZH, JA, RU):
   - `store_package.json`: languages-Array um alle 6 Tier-2-Sprachen (`de-DE`, `en-US`, `es-ES`, `zh-CN`, `ja-JP`, `ru-RU`) erweitert; Store-konforme Kurzbeschreibungen (`description_de/en/es/zh/ja/ru`) strikt <= 100 Zeichen validiert; je genau 7 Richtlinien-konforme Keywords nach Microsoft Partner Center Policy 10.1.3 (<= 30 Zeichen, 0 geschützte Drittmarken) eingepflegt.
