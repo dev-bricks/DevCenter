@@ -215,6 +215,33 @@ def broken(:
         self.assertTrue(len(result.errors) > 0)
         self.assertEqual(result.errors[0]['type'], 'SyntaxError')
 
+    def test_duplicate_function_and_method_detection(self):
+        """Erkennt überschriebene Funktionen und Methoden im selben Scope."""
+        code = '''
+def duplicate():
+    return 1
+
+def duplicate():
+    return 2
+
+class Example:
+    def repeated(self):
+        return 1
+
+    def repeated(self):
+        return 2
+'''
+
+        file_path = os.path.join(self.temp_dir, "duplicates.py")
+        with open(file_path, 'w', encoding='utf-8') as handle:
+            handle.write(code)
+
+        result = self.analyzer.analyze_file(file_path)
+        warnings_by_type = {warning['type']: warning for warning in result.warnings}
+
+        self.assertEqual(warnings_by_type['DuplicateFunction']['line'], 5)
+        self.assertEqual(warnings_by_type['DuplicateMethod']['line'], 12)
+
     def test_complexity_calculation(self):
         """Testet Komplexitäts-Berechnung"""
         code = '''

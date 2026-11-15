@@ -457,6 +457,20 @@ class MethodAnalyzer:
     def _check_common_issues(self, tree: ast.AST, result: AnalysisResult, source: str):
         """Prüft auf häufige Code-Probleme"""
 
+        # 1. Doppelte Funktionsdefinitionen auf Modul-Ebene
+        seen_top_functions: Dict[str, int] = {}
+        for item in getattr(tree, 'body', []):
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if item.name in seen_top_functions:
+                    first_line = seen_top_functions[item.name]
+                    result.warnings.append({
+                        'type': 'DuplicateFunction',
+                        'message': f"Doppelte Funktion '{item.name}' im Modul-Scope (überschreibt Definition in Zeile {first_line})",
+                        'line': item.lineno
+                    })
+                else:
+                    seen_top_functions[item.name] = item.lineno
+
         for node in ast.walk(tree):
             # Bare except
             if isinstance(node, ast.ExceptHandler):
@@ -487,6 +501,89 @@ class MethodAnalyzer:
                         'message': f'Hohe Komplexität ({cv.complexity}) in {node.name}()',
                         'line': node.lineno
                     })
+
+            # Doppelte Methodendefinitionen in Klassen
+            if isinstance(node, ast.ClassDef):
+                seen_methods: Dict[str, int] = {}
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if item.name in seen_methods:
+                            first_line = seen_methods[item.name]
+                            result.warnings.append({
+                                'type': 'DuplicateMethod',
+                                'message': f"Doppelte Methode '{item.name}' in Klasse '{node.name}' (überschreibt Definition in Zeile {first_line})",
+                                'line': item.lineno
+                            })
+                        else:
+                            seen_methods[item.name] = item.lineno
+
+            # Assert mit Tupel-Literal (immer wahr)
+            if isinstance(node, ast.Assert):
+                if isinstance(node.test, ast.Tuple) and len(node.test.elts) > 0:
+                    result.warnings.append({
+                        'type': 'AssertTuple',
+                        'message': "Assert mit Tupel-Literal ist immer wahr: 'assert (cond, msg)' -> 'assert cond, msg' verwenden",
+                        'line': node.lineno
+                    })
+
+            # Vergleiche: None, boolesche Literale und Identitätsvergleiche
+            if isinstance(node, ast.Compare):
+                for op, comparator in zip(node.ops, node.comparators):
+                    if isinstance(op, (ast.Eq, ast.NotEq)):
+                        left_none = isinstance(node.left, ast.Constant) and node.left.value is None
+                        right_none = isinstance(comparator, ast.Constant) and comparator.value is None
+                        if left_none or right_none:
+                            result.warnings.append({
+                                'type': 'ComparisonToNone',
+                                'message': "Vergleich mit None sollte 'is None' bzw. 'is not None' verwenden (PEP 8)",
+                                'line': node.lineno
+                            })
+                        left_bool = isinstance(node.left, ast.Constant) and isinstance(node.left.value, bool)
+                        right_bool = isinstance(comparator, ast.Constant) and isinstance(comparator.value, bool)
+                        if left_bool or right_bool:
+                            result.warnings.append({
+                                'type': 'ComparisonToBool',
+                                'message': "Vergleich mit booleschem Literal sollte 'if x:' bzw. 'if not x:' verwenden (PEP 8)",
+                                'line': node.lineno
+                            })
+                    elif isinstance(op, (ast.Is, ast.IsNot)):
+                        left_lit = isinstance(node.left, ast.Constant) and isinstance(node.left.value, (int, float, str, bytes)) and not isinstance(node.left.value, bool)
+                        right_lit = isinstance(comparator, ast.Constant) and isinstance(comparator.value, (int, float, str, bytes)) and not isinstance(comparator.value, bool)
+                        if left_lit or right_lit:
+                            result.warnings.append({
+                                'type': 'LiteralIdentityComparison',
+                                'message': "Identitätsvergleich ('is'/'is not') mit Literal ist implementationsabhängig - '==' bzw. '!=' verwenden",
+                                'line': node.lineno
+                            })
+
+            # Raise von Literalen anstelle von Exceptions
+            if isinstance(node, ast.Raise):
+                if node.exc and isinstance(node.exc, ast.Constant) and isinstance(node.exc.value, (str, int, float)):
+                    result.warnings.append({
+                        'type': 'RaiseNotAnException',
+                        'message': f"Raise mit Literal ({type(node.exc.value).__name__}) anstelle einer Exception-Klasse",
+                        'line': node.lineno
+                    })
+
+            # Nicht erreichbarer Code nach return, raise, break, continue
+            for attr in ('body', 'orelse', 'finalbody'):
+                stmts = getattr(node, attr, None)
+                if isinstance(stmts, list) and len(stmts) > 1:
+                    terminal_found = False
+                    terminal_name = ""
+                    terminal_line = 0
+                    for s in stmts:
+                        if terminal_found:
+                            result.warnings.append({
+                                'type': 'UnreachableCode',
+                                'message': f"Nicht erreichbarer Code nach '{terminal_name}' (Zeile {terminal_line})",
+                                'line': s.lineno
+                            })
+                            break
+                        if isinstance(s, (ast.Return, ast.Raise, ast.Break, ast.Continue)):
+                            terminal_found = True
+                            terminal_name = type(s).__name__.lower()
+                            terminal_line = s.lineno
 
             # TODO-Kommentare finden
             pass  # Wird über Source-Lines gemacht
