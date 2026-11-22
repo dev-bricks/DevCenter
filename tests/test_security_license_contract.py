@@ -74,11 +74,25 @@ def test_dependency_lockfile_and_upper_bounds_parity() -> None:
         assert re.search(rf"^{pkg}==[\d.]+", lock_text, re.MULTILINE), f"{pkg} must be pinned in requirements-lock.txt"
 
     # Verify requirements.txt defines upper bounds matching pyproject.toml
+    # (compared structurally so that Dependabot range bumps stay green when both files move together)
     req_file = ROOT / "requirements.txt"
     req_text = req_file.read_text(encoding="utf-8")
-    assert "<7.0.0" in req_text, "requirements.txt must specify PySide6 / pyinstaller upper bounds"
-    assert "<13.0.0" in req_text, "requirements.txt must specify Pillow upper bound"
-    assert "<26.0.0" in req_text, "requirements.txt must specify keyring upper bound"
+    pyproject_text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    spec_re = r"^\s*\"?{pkg}(>=[\d.]+,<[\d.]+)\"?,?\s*$"
+    for pkg in ("PySide6", "pyinstaller", "Pillow", "keyring"):
+        req_match = re.search(spec_re.format(pkg=pkg), req_text, re.MULTILINE)
+        pyproject_match = re.search(spec_re.format(pkg=pkg), pyproject_text, re.MULTILINE)
+        assert req_match, f"requirements.txt must specify a lower and upper bound for {pkg}"
+        assert pyproject_match, f"pyproject.toml must specify a lower and upper bound for {pkg}"
+        assert req_match.group(1) == pyproject_match.group(1), (
+            f"{pkg} range differs: requirements.txt {req_match.group(1)} vs pyproject.toml {pyproject_match.group(1)}"
+        )
+        lock_match = re.search(rf"^{pkg}==([\d.]+)", lock_text, re.MULTILINE)
+        upper = req_match.group(1).split(",<")[1]
+        lock_version = tuple(int(p) for p in lock_match.group(1).split("."))
+        assert lock_version < tuple(int(p) for p in upper.split(".")), (
+            f"{pkg}=={lock_match.group(1)} in requirements-lock.txt violates upper bound <{upper}"
+        )
 
 
 def test_third_party_licenses_complete_and_accurate() -> None:
