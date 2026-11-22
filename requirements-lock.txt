@@ -10,7 +10,7 @@ PySide6==6.8.2.1
 shiboken6==6.8.2.1
 PySide6_Essentials==6.8.2.1
 PySide6_Addons==6.8.2.1
-Pillow==12.3.0
+Pillow==13.0.0
 anthropic==0.42.0
 keyring==25.6.0
 chardet==5.2.0
